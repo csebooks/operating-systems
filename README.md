@@ -1,2 +1,4 @@
-# operating-systems
-Operating Systems Notes
+# Dev
+```sh
+hugo server --themesDir ../
+```
