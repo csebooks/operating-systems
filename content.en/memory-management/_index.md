@@ -13,9 +13,7 @@ The main purpose of a computer system is to execute programs. These programs, to
 
 Modern computer systems maintain several processes in memory during system execution. Many memory-management schemes exist, reflecting various approaches, and the effectiveness of each algorithm varieswith the situation. Selection of amemory-management scheme for a system depends onmany factors, especially on the system’s _hardware_ design. Most algorithms require some form of hardware support.  
 
-_9_**CHAPTER**
-
-_Main Memory_
+# Main Memory
 
 In Chapter 5, we showed how the CPU can be shared by a set of processes. As a result of CPU scheduling, we can improve both the utilization of the CPU and the speed of the computer’s response to its users. To realize this increase in performance, however, we must keepmany processes in memory—that is, we must share memory.
 
@@ -35,13 +33,9 @@ In this chapter, we discuss various ways to manage memory. The memory- managemen
 
 • Describe address translation for IA-32, x86-64, and ARMv8 architectures.
 
-**9.1 Background**
+## Background
 
 As we saw in Chapter 1, memory is central to the operation of a modern computer system. Memory consists of a large array of bytes, each with its own address. The CPU fetches instructions from memory according to the value of
-
-**349**  
-
-**350 Chapter 9 Main Memory**
 
 the program counter. These instructions may cause additional loading from and storing to specific memory addresses.
 
@@ -49,40 +43,14 @@ A typical instruction-execution cycle, for example, first fetches an instruc- ti
 
 We begin our discussion by covering several issues that are pertinent to managing memory: basic hardware, the binding of symbolic (or virtual) mem- ory addresses to actual physical addresses, and the distinction between logical and physical addresses. We conclude the section with a discussion of dynamic linking and shared libraries.
 
-**9.1.1 Basic Hardware**
+### Basic Hardware
 
 Main memory and the registers built into each processing core are the only general-purpose storage that the CPU can access directly. There are machine instructions that take memory addresses as arguments, but none that take disk addresses. Therefore, any instructions in execution, and any data being used by the instructions, must be in one of these direct-access storage devices. If the data are not in memory, they must be moved there before the CPU can operate on them.
 
 Registers that are built into each CPU core are generally accessible within one cycle of the CPU clock. Some CPU cores can decode instructions and per- form simple operations on register contents at the rate of one or more opera- tions per clock tick. The same cannot be said ofmainmemory,which is accessed via a transaction on the memory bus. Completing a memory access may take many cycles of the CPU clock. In such cases, the processor normally needs to **stall**, since it does not have the data required to complete the instruction that it is executing. This situation is intolerable because of the frequency of memory accesses. The remedy is to add fast memory between the CPU and main mem- ory, typically on the CPU chip for fast access. Such a **cache** was described in Section 1.5.5. Tomanage a cache built into the CPU, the hardware automatically speeds up memory access without any operating-system control. (Recall from Section 5.5.2 that during a memory stall, a multithreaded core can switch from the stalled hardware thread to another hardware thread.)
 
 Not only are we concerned with the relative speed of accessing physi- cal memory, but we also must ensure correct operation. For proper system operation, we must protect the operating system from access by user pro- cesses, as well as protect user processes from one another. This protectionmust be provided by the hardware, because the operating system doesn’t usually intervene between the CPU and its memory accesses (because of the resulting performance penalty). Hardware implements this production in several differ- ent ways, as we show throughout the chapter. Here, we outline one possible implementation.  
-
-**9.1 Background 351**
-
-base
-
-base + limit
-
-operating system
-
-process
-
-process
-
-process
-
-1024000
-
-880000
-
-420940
-
-0
-
-300040
-
-256000
-
+![Alt text](image.png)
 **Figure 9.1** A base and a limit register define a logical address space.
 
 We first need to make sure that each process has a separate memory space. Separate per-processmemory space protects the processes from each other and is fundamental to having multiple processes loaded in memory for concurrent execution. To separate memory spaces, we need the ability to determine the range of legal addresses that the process may access and to ensure that the process can access only these legal addresses. We can provide this protection by using two registers, usually a base and a limit, as illustrated in Figure 9.1. The **base register** holds the smallest legal physical memory address; the **limit register** specifies the size of the range. For example, if the base register holds 300040 and the limit register is 120900, then the program can legally access all addresses from 300040 through 420939 (inclusive).
@@ -92,30 +60,13 @@ Protection of memory space is accomplished by having the CPU hardware compare ev
 The base and limit registers can be loaded only by the operating system, which uses a special privileged instruction. Since privileged instructions can be executed only in kernel mode, and since only the operating system executes in kernelmode, only the operating system can load the base and limit registers. This scheme allows the operating system to change the value of the registers but prevents user programs from changing the registers’ contents.
 
 The operating system, executing in kernel mode, is given unrestricted access to both operating-system memory and users’ memory. This provision allows the operating system to load users’ programs into users’ memory, to dump out those programs in case of errors, to access and modify parameters of system calls, to perform I/O to and from user memory, and to provide many other services. Consider, for example, that an operating system for a  
-
-**352 Chapter 9 Main Memory**
-
-<
-
-base
-
-trap to operating system illegal addressing error
-
-base + limit
-
-memory
-
-CPU address yes yes
-
-no no
-
-≥
+![Alt text](image-1.png)
 
 **Figure 9.2** Hardware address protection with base and limit registers.
 
 multiprocessing systemmust execute context switches, storing the state of one process from the registers into main memory before loading the next process’s context from main memory into the registers.
 
-**9.1.2 Address Binding**
+### Address Binding
 
 Usually, a program resides on a disk as a binary executable file. To run, the program must be brought into memory and placed within the context of a process (as described in Section 2.5), where it becomes eligible for execution on an available CPU. As the process executes, it accesses instructions and data frommemory. Eventually, the process terminates, and its memory is reclaimed for use by other processes.
 
@@ -126,37 +77,7 @@ In most cases, a user program goes through several steps—some of which may be 
 Classically, the binding of instructions and data to memory addresses can be done at any step along the way:
 
 • **Compile time**. If you know at compile timewhere the processwill reside in memory, then **absolute code** can be generated. For example, if you know that a user process will reside starting at location _R,_ then the generated compiler code will start at that location and extend up from there. If, at some later time, the starting location changes, then it will be necessary to recompile this code.  
-
-**9.1 Background 353**
-
-source program
-
-object fileother
-
-object files
-
-dynamically linked
-
-libraries
-
-executable file
-
-program in memory
-
-compiler
-
-linker
-
-loader
-
-compile time
-
-execution time
-
-(run time)
-
-load time
-
+![Alt text](image-2.png)
 **Figure 9.3** Multistep processing of a user program.
 
 • **Load time**. If it is not known at compile time where the process will reside in memory, then the compiler must generate **relocatable code**. In this case, final binding is delayed until load time. If the starting address changes, we need only reload the user code to incorporate this changed value.
@@ -165,18 +86,11 @@ load time
 
 Amajor portion of this chapter is devoted to showing how these various bind- ings can be implemented effectively in a computer system and to discussing appropriate hardware support.
 
-**9.1.3 Logical Versus Physical Address Space**
+### Logical Versus Physical Address Space
 
 An address generated by the CPU is commonly referred to as a **logical address**, whereas an address seen by the memory unit—that is, the one loaded into  
 
-**354 Chapter 9 Main Memory**
-
-logical address
-
-physical address
-
-physical memoryMMUCPU
-
+![Alt text](image-3.png)
 **Figure 9.4** Memory management unit (MMU).
 
 the **memory-address register** of the memory—is commonly referred to as a **physical address**.
@@ -188,30 +102,12 @@ The run-time mapping from virtual to physical addresses is done by a hardware de
 The user program never accesses the real physical addresses. The program can create a pointer to location 346, store it in memory, manipulate it, and com- pare it with other addresses—all as the number 346. Only when it is used as a memory address (in an indirect load or store, perhaps) is it relocated relative to the base register. The user program deals with logical addresses. The memory- mapping hardware converts logical addresses into physical addresses. This form of execution-time binding was discussed in Section 9.1.2. The final loca- tion of a referenced memory address is not determined until the reference is made.
 
 We now have two different types of addresses: logical addresses (in the range 0 to_max_) and physical addresses (in the range _R_ \+ 0 to _R_ +_max_ for a base value _R_). The user program generates only logical addresses and thinks that the process runs in memory locations from 0 to _max._ However, these logical addresses must be mapped to physical addresses before they are used. The  
-
-**9.1 Background 355**
-
-≶
-
-MMU
-
-CPU memory 14346
-
-14000
-
-relocation register
-
-346
-
-logical address
-
-physical address
-
+![Alt text](image-4.png)
 **Figure 9.5** Dynamic relocation using a relocation register.
 
 concept of a logical address space that is bound to a separate physical address space is central to proper memory management.
 
-**9.1.4 Dynamic Loading**
+### Dynamic Loading
 
 In our discussion so far, it has been necessary for the entire program and all data of a process to be in physical memory for the process to execute. The size of a process has thus been limited to the size of physical memory. To obtain better memory-space utilization, we can use **dynamic loading**. With dynamic loading, a routine is not loaded until it is called. All routines are kept on disk in a relocatable load format. The main program is loaded into memory and is executed. When a routine needs to call another routine, the calling routine first checks to see whether the other routine has been loaded. If it has not, the relocatable linking loader is called to load the desired routine intomemory and to update the program’s address tables to reflect this change. Then control is passed to the newly loaded routine.
 
@@ -219,13 +115,9 @@ The advantage of dynamic loading is that a routine is loaded only when it is nee
 
 Dynamic loading does not require special support from the operating system. It is the responsibility of the users to design their programs to take advantage of such a method. Operating systems may help the programmer, however, by providing library routines to implement dynamic loading.
 
-**9.1.5 Dynamic Linking and Shared Libraries**
+### Dynamic Linking and Shared Libraries
 
-**Dynamically linked libraries** (**DLLs**) are system libraries that are linked to user programswhen the programs are run (refer back to Figure 9.3). Some operating systems support only **static linking**, in which system libraries are treated  
-
-**356 Chapter 9 Main Memory**
-
-like any other object module and are combined by the loader into the binary program image. Dynamic linking, in contrast, is similar to dynamic loading. Here, though, linking, rather than loading, is postponed until execution time. This feature is usually used with system libraries, such as the standard C language library.Without this facility, each programon a systemmust include a copy of its language library (or at least the routines referenced by the program) in the executable image. This requirement not only increases the size of an executable image but also may waste main memory. A second advantage of DLLs is that these libraries can be shared among multiple processes, so that only one instance of the DLL in main memory. For this reason, DLLs are also known as **shared libraries**, and are used extensively in Windows and Linux systems.
+**Dynamically linked libraries** (**DLLs**) are system libraries that are linked to user programswhen the programs are run (refer back to Figure 9.3). Some operating systems support only **static linking**, in which system libraries are treated like any other object module and are combined by the loader into the binary program image. Dynamic linking, in contrast, is similar to dynamic loading. Here, though, linking, rather than loading, is postponed until execution time. This feature is usually used with system libraries, such as the standard C language library.Without this facility, each programon a systemmust include a copy of its language library (or at least the routines referenced by the program) in the executable image. This requirement not only increases the size of an executable image but also may waste main memory. A second advantage of DLLs is that these libraries can be shared among multiple processes, so that only one instance of the DLL in main memory. For this reason, DLLs are also known as **shared libraries**, and are used extensively in Windows and Linux systems.
 
 When a program references a routine that is in a dynamic library, the loader locates the DLL, loading it into memory if necessary. It then adjusts addresses that reference functions in the dynamic library to the location inmemorywhere the DLL is stored.
 
@@ -233,45 +125,26 @@ Dynamically linked libraries can be extended to library updates (such as bug fix
 
 Unlike dynamic loading, dynamic linking and shared libraries generally require help from the operating system. If the processes in memory are pro- tected from one another, then the operating system is the only entity that can check to see whether the needed routine is in another process’s memory space or that can allow multiple processes to access the same memory addresses. We elaborate on this concept, as well as how DLLs can be shared by multiple processes, when we discuss paging in Section 9.3.4.
 
-**9.2 Contiguous Memory Allocation**
+## Contiguous Memory Allocation
 
 The main memory must accommodate both the operating system and the various user processes. We therefore need to allocate main memory in the most efficientway possible. This section explains one earlymethod, contiguous memory allocation.
 
 The memory is usually divided into two partitions: one for the operating system and one for the user processes. We can place the operating system in either low memory addresses or high memory addresses. This decision depends onmany factors, such as the location of the interrupt vector. However, many operating systems (including Linux and Windows) place the operating system in high memory, and therefore we discuss only that situation.  
 
-**9.2 Contiguous Memory Allocation 357**
-
 We usually want several user processes to reside in memory at the same time. We therefore need to consider how to allocate available memory to the processes that are waiting to be brought into memory. In **contiguous mem- ory allocation**, each process is contained in a single section of memory that is contiguous to the section containing the next process. Before discussing this memory allocation scheme further, though, we must address the issue of memory protection.
 
-**9.2.1 Memory Protection**
+### Memory Protection
 
 We can prevent a process from accessing memory that it does not own by combining two ideas previously discussed. If we have a system with a relo- cation register (Section 9.1.3), together with a limit register (Section 9.1.1), we accomplish our goal. The relocation register contains the value of the smallest physical address; the limit register contains the range of logical addresses (for example, relocation = 100040 and limit = 74600). Each logical address must fall within the range specified by the limit register. The MMU maps the log- ical address dynamically by adding the value in the relocation register. This mapped address is sent to memory (Figure 9.6).
 
 When the CPU scheduler selects a process for execution, the dispatcher loads the relocation and limit registers with the correct values as part of the context switch. Because every address generated by a CPU is checked against these registers, we can protect both the operating system and the other users’ programs and data from being modified by this running process.
 
 The relocation-register scheme provides an effectiveway to allow the oper- ating system’s size to change dynamically. This flexibility is desirable in many situations. For example, the operating system contains code and buffer space for device drivers. If a device driver is not currently in use, it makes little sense to keep it in memory; instead, it can be loaded into memory only when it is needed. Likewise, when the device driver is no longer needed, it can be removed and its memory allocated for other needs.
-
-CPU memory
-
-logical address
-
-trap: addressing error
-
-no
-
-yes physical address
-
-relocation register
-
-+<
-
-limit register
+![Alt text](image-5.png)
 
 **Figure 9.6** Hardware support for relocation and limit registers.  
 
-**358 Chapter 9 Main Memory**
-
-**9.2.2 Memory Allocation**
+### Memory Allocation
 
 Nowweare ready to turn tomemory allocation.One of the simplestmethods of allocating memory is to assign processes to variably sized partitions in mem- ory, where each partition may contain exactly one process. In this **variable- partition** scheme, the operating system keeps a table indicating which parts of memory are available andwhich are occupied. Initially, all memory is available for user processes and is considered one large block of available memory, a **hole**. Eventually, as you will see, memory contains a set of holes of various sizes.
 
@@ -284,30 +157,8 @@ What happens when there isn’t sufficient memory to satisfy the demands of an a
 In general, as mentioned, the memory blocks available comprise a **_set_** of holes of various sizes scattered throughout memory. When a process arrives and needs memory, the system searches the set for a hole that is large enough for this process. If the hole is too large, it is split into two parts. One part is allocated to the arriving process; the other is returned to the set of holes. When a process terminates, it releases its block of memory, which is then placed back in the set of holes. If the newhole is adjacent to other holes, these adjacent holes are merged to form one larger hole.
 
 This procedure is a particular instance of the general **dynamic storage- allocation problem**, which concerns how to satisfy a request of size _n_ from a list of free holes. There aremany solutions to this problem. The **first-fit, best-fi** , and **worst-fi** strategies are the ones most commonly used to select a free hole from the set of available holes.
-
-OS process 5
-
-process 8
-
-process 2
-
-OS
-
-process 2
-
-OS process 5 process 9 process 9
-
-process 2
-
-OS process 5
-
-process 2low memory
-
-high memory
-
+![Alt text](image-6.png)
 **Figure 9.7** Variable partition.  
-
-**9.2 Contiguous Memory Allocation 359**
 
 • **First fit.** Allocate the first hole that is big enough. Searching can start either at the beginning of the set of holes or at the location where the previous first-fit search ended. We can stop searching as soon as we find a free hole that is large enough.
 
@@ -317,7 +168,7 @@ high memory
 
 Simulations have shown that both first fit and best fit are better than worst fit in terms of decreasing time and storage utilization. Neither first fit nor best fit is clearly better than the other in terms of storage utilization, but first fit is generally faster.
 
-**9.2.3 Fragmentation**
+### Fragmentation
 
 Both the first-fit and best-fit strategies for memory allocation suffer from **exter- nal fragmentation**. As processes are loaded and removed from memory, the free memory space is broken into little pieces. External fragmentation exists when there is enough total memory space to satisfy a request but the available spaces are not contiguous: storage is fragmented into a large number of small holes. This fragmentation problem can be severe. In the worst case, we could have a block of free (or wasted) memory between every two processes. If all these small pieces of memory were in one big free block instead, we might be able to run several more processes.
 
@@ -327,30 +178,22 @@ Depending on the total amount ofmemory storage and the average process size, ext
 
 Memory fragmentation can be internal as well as external. Consider a multiple-partition allocation scheme with a hole of 18,464 bytes. Suppose that the next process requests 18,462 bytes. If we allocate exactly the requested block, we are left with a hole of 2 bytes. The overhead to keep track of this hole will be substantially larger than the hole itself. The general approach to avoiding this problem is to break the physical memory into fixed-sized blocks and allocate memory in units based on block size. With this approach, the memory allocated to a process may be slightly larger than the requested memory. The difference between these two numbers is **internal fragmentation** —unused memory that is internal to a partition.  
 
-**360 Chapter 9 Main Memory**
-
 One solution to the problem of external fragmentation is **compaction**. The goal is to shuffle the memory contents so as to place all free memory together in one large block. Compaction is not always possible, however. If relocation is static and is done at assembly or load time, compaction cannot be done. It is possible only if relocation is dynamic and is done at execution time. If addresses are relocated dynamically, relocation requires only moving the program and data and then changing the base register to reflect the new base address. When compaction is possible, we must determine its cost. The simplest compaction algorithm is tomove all processes toward one end ofmemory; all holesmove in the other direction, producing one large hole of availablememory. This scheme can be expensive.
 
 Another possible solution to the external-fragmentation problem is to per- mit the logical address space of processes to be noncontiguous, thus allowing a process to be allocated physical memory wherever such memory is available. This is the strategy used in **_paging,_** the most common memory-management technique for computer systems. We describe paging in the following section.
 
 Fragmentation is a general problem in computing that can occur wherever we must manage blocks of data. We discuss the topic further in the storage management chapters (Chapter 11 through Chapter 15).
 
-**9.3 Paging**
+## Paging
 
 Memory management discussed thus far has required the physical address space of a process to be contiguous. We now introduce **paging**, a memory- management scheme that permits a process’s physical address space to be non- contiguous. Paging avoids external fragmentation and the associated need for compaction, two problems that plague contiguousmemory allocation. Because it offers numerous advantages, paging in its various forms is used inmost oper- ating systems, from those for large servers through those for mobile devices. Paging is implemented through cooperation between the operating systemand the computer hardware.
 
-**9.3.1 Basic Method**
+### Basic Method
 
 The basic method for implementing paging involves breaking physical mem- ory into fixed-sized blocks called **frames** and breaking logical memory into blocks of the same size called **pages**. When a process is to be executed, its pages are loaded into any availablememory frames from their source (a file system or the backing store). The backing store is divided into fixed-sized blocks that are the same size as the memory frames or clusters of multiple frames. This rather simple idea has great functionality and wide ramifications. For example, the logical address space is now totally separate from the physical address space, so a process can have a logical 64-bit address space even though the system has less than 264 bytes of physical memory.
 
 Every address generated by the CPU is divided into two parts: a **page number** (**p**) and a **page offset** (**d**):
-
-_p d_
-
-page number page offset  
-
-**9.3 Paging 361**
-
+![Alt text](image-7.png)
 **Figure 9.8** Paging hardware.
 
 The page number is used as an index into a per-process **page table**. This is illustrated in Figure 9.8. The page table contains the base address of each frame in physical memory, and the offset is the location in the frame being referenced. Thus, the base address of the frame is combined with the page offset to define the physicalmemory address. The pagingmodel ofmemory is shown in Figure 9.9.
@@ -366,71 +209,7 @@ The following outlines the steps taken by the MMU to translate a logical address
 As the offset _d_ does not change, it is not replaced, and the frame number and offset now comprise the physical address.
 
 The page size (like the frame size) is defined by the hardware. The size of a page is a power of 2, typically varying between 4 KB and 1 GB per page, depending on the computer architecture. The selection of a power of 2 as a page size makes the translation of a logical address into a page number and page offset particularly easy. If the size of the logical address space is 2_m_, and a page size is 2_n_ bytes, then the high-order_m_−_n_ bits of a logical address designate the page number, and the _n_ low-order bits designate the page offset. Thus, the logical address is as follows:
-
-_p d_
-
-page number page offset
-
-_m – n n_  
-
-**362 Chapter 9 Main Memory**
-
-page 0
-
-page 1
-
-page 2
-
-page 3
-
-logical memory
-
-page 1
-
-page 3
-
-page 0
-
-page 2
-
-physical memory
-
-page table
-
-frame number
-
-1
-
-4
-
-3
-
-7
-
-0
-
-1
-
-2
-
-3
-
-0
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
+![Alt text](image-8.png)
 **Figure 9.9** Paging model of logical and physical memory.
 
 where _p_ is an index into the page table and _d_ is the displacement within the page.
@@ -440,66 +219,13 @@ As a concrete (although minuscule) example, consider the memory in Figure 9.10. 
 You may have noticed that paging itself is a form of dynamic relocation. Every logical address is bound by the paging hardware to some physical address. Using paging is similar to using a table of base (or relocation) registers, one for each frame of memory.
 
 When we use a paging scheme, we have no external fragmentation: any free frame can be allocated to a process that needs it. However, we may have some internal fragmentation. Notice that frames are allocated as units. If the memory requirements of a process do not happen to coincidewith page bound- aries, the last frame allocated may not be completely full. For example, if page size is 2,048 bytes, a process of 72,766 bytes will need 35 pages plus 1,086 bytes. It will be allocated 36 frames, resulting in internal fragmentation of 2,048 − 1,086 = 962 bytes. In the worst case, a process would need _n_ pages plus 1 byte. It would be allocated _n_ \+ 1 frames, resulting in internal fragmentation of almost an entire frame.  
-
-**9.3 Paging 363**
-
-logical memory
-
-physical memory
-
-page table
-
-i j k l
-
-m n o p
-
-a b c d e f g h
-
-a b c d e f g h i j k l
-
-m n o p
-
-0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-
-0
-
-0
-
-4
-
-8
-
-12
-
-16
-
-20
-
-24
-
-28
-
-1
-
-2
-
-3
-
-5
-
-6
-
-1
-
-2
+![Alt text](image-9.png)
 
 **Figure 9.10** Paging example for a 32-byte memory with 4-byte pages.
 
 If process size is independent of page size, we expect internal fragmen- tation to average one-half page per process. This consideration suggests that small page sizes are desirable. However, overhead is involved in each page- table entry, and this overhead is reduced as the size of the pages increases. Also, disk I/O is more efficient when the amount of data being transferred is larger (Chapter 11). Generally, page sizes have grown over time as processes, data sets, and main memory have become larger. Today, pages are typically either 4 KB or 8 KB in size, and some systems support even larger page sizes. Some CPUs and operating systems even support multiple page sizes. For instance, on x86-64 systems, Windows 10 supports page sizes of 4 KB and 2 MB. Linux also supports twopage sizes: a default page size (typically 4 KB) and an architecture- dependent larger page size called **huge pages**.
 
 Frequently, on a 32-bit CPU, each page-table entry is 4 bytes long, but that size can vary as well. A 32-bit entry can point to one of 232 physical page frames. If the frame size is 4 KB (212), then a system with 4-byte entries can address 244 bytes (or 16 TB) of physical memory. We should note here that the size of physical memory in a paged memory system is typically different from the maximum logical size of a process. As we further explore paging, we will  
-
-**364 Chapter 9 Main Memory**
 
 **_OBTAINING THE PAGE SIZE ON LINUX SYSTEMS_**
 
@@ -514,74 +240,8 @@ introduce other information that must be kept in the page-table entries. That in
 When a process arrives in the system to be executed, its size, expressed in pages, is examined. Each page of the process needs one frame. Thus, if the process requires _n_ pages, at least _n_ frames must be available in memory. If _n_ frames are available, they are allocated to this arriving process. The first page of the process is loaded into one of the allocated frames, and the frame number is put in the page table for this process. The next page is loaded into another frame, its frame number is put into the page table, and so on (Figure 9.11).
 
 An important aspect of paging is the clear separation between the pro- grammer’s view of memory and the actual physical memory. The programmer views memory as one single space, containing only this one program. In fact, the user program is scattered throughout physical memory, which also holds
-
-(a)
-
-free-frame list 14 13 18 20 15
-
-13
-
-14
-
-15
-
-16
-
-17
-
-18
-
-19
-
-20
-
-21
-
-page 0 page 1 page 2 page 3
-
-new process
-
-(b)
-
-free-frame list 15
-
-13 page 1
-
-page 0
-
-page 2
-
-page 3
-
-14
-
-15
-
-16
-
-17
-
-18
-
-19
-
-20
-
-21
-
-page 0 page 1 page 2 page 3
-
-new process
-
-new-process page table
-
-140 1 2 3
-
-13 18 20
-
+![Alt text](image-10.png)
 **Figure 9.11** Free frames (a) before allocation and (b) after allocation.  
-
-**9.3 Paging 365**
 
 other programs. The difference between the programmer’s view of memory and the actual physical memory is reconciled by the address-translation hard- ware. The logical addresses are translated into physical addresses. This map- ping is hidden from the programmer and is controlled by the operating system. Notice that the user process by definition is unable to access memory it does not own. It has no way of addressingmemory outside of its page table, and the table includes only those pages that the process owns.
 
@@ -589,7 +249,7 @@ Since the operating system ismanaging physical memory, it must be aware of the a
 
 In addition, the operating system must be aware that user processes oper- ate in user space, and all logical addressesmust bemapped to produce physical addresses. If a user makes a system call (to do I/O, for example) and provides an address as a parameter (a buffer, for instance), that addressmust bemapped to produce the correct physical address. The operating systemmaintains a copy of the page table for each process, just as it maintains a copy of the instruction counter and register contents. This copy is used to translate logical addresses to physical addresseswhenever the operating systemmust map a logical address to a physical address manually. It is also used by the CPU dispatcher to define the hardware page table when a process is to be allocated the CPU. Paging therefore increases the context-switch time.
 
-**9.3.2 Hardware Support**
+### Hardware Support
 
 As page tables are per-process data structures, a pointer to the page table is stored with the other register values (like the instruction pointer) in the process control block of each process.When the CPU scheduler selects a process for execution, it must reload the user registers and the appropriate hardware page-table values from the stored user page table.
 
@@ -597,11 +257,9 @@ The hardware implementation of the page table can be done in several ways. In th
 
 The use of registers for the page table is satisfactory if the page table is rea- sonably small (for example, 256 entries). Most contemporary CPUs, however, support much larger page tables (for example, 220 entries). For these machines, the use of fast registers to implement the page table is not feasible. Rather, the page table is kept in main memory, and a **page-table base register** (**PTBR**) points to the page table. Changing page tables requires changing only this one register, substantially reducing context-switch time.
 
-**9.3.2.1 Translation Look-Aside Buffer**
+#### Translation Look-Aside Buffer
 
 Although storing the page table in main memory can yield faster context switches, it may also result in slower memory access times. Suppose we want to access location _i._We must first index into the page table, using the value in  
-
-**366 Chapter 9 Main Memory**
 
 the PTBR offset by the page number for _i_. This task requires onememory access. It provides us with the frame number, which is combined with the page offset to produce the actual address.We can then access the desired place inmemory. With this scheme, **_two_**memory accesses are needed to access data (one for the page-table entry and one for the actual data). Thus,memory access is slowedby a factor of 2, a delay that is considered intolerable under most circumstances.
 
@@ -614,37 +272,7 @@ If the page number is not in the TLB (known as a **TLB miss**), address translat
 If the TLB is already full of entries, an existing entry must be selected for replacement. Replacement policies range from least recently used (LRU) through round-robin to random. Some CPUs allow the operating system to par- ticipate in LRU entry replacement, while others handle the matter themselves. Furthermore, some TLBs allow certain entries to be **wired down**, meaning that they cannot be removed from the TLB. Typically, TLB entries for key kernel code are wired down.
 
 Some TLBs store **address-space identifier** (**ASIDs**) in each TLB entry. An ASID uniquely identifies each process and is used to provide address-space protection for that process.When the TLB attempts to resolve virtual page num- bers, it ensures that the ASID for the currently running process matches the ASID associated with the virtual page. If the ASIDs do not match, the attempt is treated as a TLB miss. In addition to providing address-space protection, an ASID allows the TLB to contain entries for several different processes simulta- neously. If the TLB does not support separate ASIDs, then every time a new page table is selected (for instance, with each context switch), the TLB must be **flushe** (or erased) to ensure that the next executing process does not use the  
-
-**9.3 Paging 367**
-
-page table
-
-f
-
-CPU
-
-logical address
-
-p d
-
-f d
-
-physical address
-
-physical memory
-
-p
-
-TLB miss
-
-page number
-
-frame number
-
-TLB hit
-
-TLB
-
+![Alt text](image-11.png)
 **Figure 9.12** Paging hardware with TLB.
 
 wrong translation information. Otherwise, the TLB could include old entries that contain valid virtual addresses but have incorrect or invalid physical addresses left over from the previous process.
@@ -659,15 +287,13 @@ effective access time = 0.99 × 10 + 0.01 × 20 = 10.1 nanoseconds
 
 This increased hit rate produces only a 1 percent slowdown in access time.  
 
-**368 Chapter 9 Main Memory**
-
 As noted earlier, CPUs todaymay providemultiple levels of TLBs. Calculat- ing memory access times in modern CPUs is therefore much more complicated than shown in the example above. For instance, the Intel Core i7 CPU has a 128-entry L1 instruction TLB and a 64-entry L1 data TLB. In the case of a miss at L1, it takes the CPU six cycles to check for the entry in the L2 512-entry TLB. A miss in L2 means that the CPU must either walk through the page-table entries in memory to find the associated frame address, which can take hundreds of cycles, or interrupt to the operating system to have it do the work.
 
 A complete performance analysis of paging overhead in such a system would require miss-rate information about each TLB tier. We can see from the general information above, however, that hardware features can have a signif- icant effect onmemory performance and that operating-system improvements (such as paging) can result in and, in turn, be affected by hardware changes (such as TLBs). We will further explore the impact of the hit ratio on the TLB in Chapter 10.
 
 TLBs are a hardware feature and thereforewould seem to be of little concern to operating systems and their designers. But the designer needs to understand the function and features of TLBs, which vary by hardware platform. For opti- mal operation, an operating-system design for a given platform must imple- ment paging according to the platform’s TLB design. Likewise, a change in the TLB design (for example, between different generations of Intel CPUs) may necessitate a change in the paging implementation of the operating systems that use it.
 
-**9.3.3 Protection**
+### Protection
 
 Memory protection in a paged environment is accomplished by protection bits associated with each frame. Normally, these bits are kept in the page table.
 
@@ -678,75 +304,7 @@ We can easily expand this approach to provide a finer level of protection. We ca
 One additional bit is generally attached to each entry in the page table: a **valid–invalid** bit. When this bit is set to _valid,_ the associated page is in the process’s logical address space and is thus a legal (or valid) page. When the bit is set to _invalid,_ the page is not in the process’s logical address space. Illegal addresses are trapped by use of the valid–invalid bit. The operating system sets this bit for each page to allow or disallow access to the page.
 
 Suppose, for example, that in a system with a 14-bit address space (0 to 16383), we have a program that should use only addresses 0 to 10468. Given a page size of 2 KB, we have the situation shown in Figure 9.13. Addresses in pages 0, 1, 2, 3, 4, and 5 are mapped normally through the page table. Any attempt to generate an address in pages 6 or 7, however, will find that the  
-
-**9.3 Paging 369**
-
-page 5
-
-page 0
-
-page 1
-
-page 2
-
-page 3
-
-page 4
-
-page 5
-
-page _n_
-
-• • •
-
-00000
-
-0
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-frame number
-
-0 1 2 3 4 5 6 7
-
-2 3 4 7 8 9 0 0
-
-v v v v v v i i
-
-page table
-
-valid–invalid bit
-
-10,468
-
-12,287
-
-page 4
-
-page 3
-
-page 2
-
-page 1
-
-page 0
-
+![Alt text](image-12.png)
 **Figure 9.13** Valid (v) or invalid (i) bit in a page table.
 
 valid–invalid bit is set to invalid, and the computer will trap to the operating system (invalid page reference).
@@ -755,303 +313,67 @@ Notice that this scheme has created a problem. Because the program extends only 
 
 Rarely does a process use all its address range. In fact, many processes use only a small fraction of the address space available to them. It would be wasteful in these cases to create a page table with entries for every page in the address range. Most of this table would be unused but would take up valuable memory space. Some systems provide hardware, in the form of a **page-table length register** (**PTLR**), to indicate the size of the page table. This value is checked against every logical address to verify that the address is in the valid range for the process. Failure of this test causes an error trap to the operating system.
 
-**9.3.4 Shared Pages**
+### Shared Pages
 
 Anadvantage of paging is the possibility of **_sharing_** common code, a considera- tion that is particularly important in an environment with multiple processes. Consider the standard C library, which provides a portion of the system call interface for many versions of UNIX and Linux. On a typical Linux system, most user processes require the standard C library libc. One option is to have  
-
-**370 Chapter 9 Main Memory**
 
 each process load its own copy of libc into its address space. If a system has 40 user processes, and the libc library is 2 MB, this would require 80 MB of memory.
 
 If the code is **reentrant code**, however, it can be shared, as shown in Figure 9.14. Here, we see three processes sharing the pages for the standard C library libc. (Although the figure shows the libc library occupying four pages, in reality, it would occupy more.) Reentrant code is non-self-modifying code: it never changes during execution. Thus, two or more processes can execute the same code at the same time. Each process has its own copy of registers and data storage to hold the data for the process’s execution. The data for two different processes will, of course, be different. Only one copy of the standard C library need be kept in physicalmemory, and the page table for each user processmaps onto the same physical copy of libc. Thus, to support 40 processes, we need only one copy of the library, and the total space now required is 2 MB instead of 80 MB—a significant saving!
 
 In addition to run-time libraries such as libc, other heavily used programs can also be shared—compilers, window systems, database systems, and so on. The shared libraries discussed in Section 9.1.5 are typically implemented with shared pages. To be sharable, the code must be reentrant. The read-only nature of shared code should not be left to the correctness of the code; the operating system should enforce this property.
-
-page table for _P_ 1
-
-process _P_ 1
-
-libc 1 0
-
-1
-
-9
-
-5
-
-6
-
-4
-
-3
-
-2
-
-7
-
-8
-
-4
-
-1
-
-6
-
-3 libc 2
-
-libc 3
-
-libc 4
-
-... ...
-
-page table for _P_ 2
-
-process _P_ 2
-
-libc 1
-
-4
-
-1
-
-6
-
-3 libc 2
-
-libc 3
-
-libc 4
-
-... ...
-
-page table for _P_ 3
-
-process _P_ 3
-
-libc 1
-
-libc 1
-
-4
-
-1
-
-6
-
-3 libc 2
-
-libc 2
-
-libc 3
-
-libc 3
-
-libc 4
-
-libc 4
-
-... ...
-
-physical memory
-
+![Alt text](image-13.png)
 **Figure 9.14** Sharing of standard C library in a paging environment.  
-
-**9.4 Structure of the Page Table 371**
 
 The sharing of memory among processes on a system is similar to the sharing of the address space of a task by threads, described in Chapter 4. Furthermore, recall that in Chapter 3we described sharedmemory as amethod of interprocess communication. Some operating systems implement shared memory using shared pages.
 
 Organizing memory according to pages provides numerous benefits in addition to allowing several processes to share the same physical pages. We cover several other benefits in Chapter 10.
 
-**9.4 Structure of the Page Table**
+## Structure of the Page Table
 
 In this section,we explore some of themost common techniques for structuring the page table, including hierarchical paging, hashed page tables, and inverted page tables.
 
-**9.4.1 Hierarchical Paging**
+### Hierarchical Paging
 
 Most modern computer systems support a large logical address space (232 to 264). In such an environment, the page table itself becomes excessively large. For example, consider a systemwith a 32-bit logical address space. If the page size in such a system is 4 KB (212), then a page table may consist of over 1 million entries (220 = 232/212). Assuming that each entry consists of 4 bytes, each process may need up to 4 MB of physical address space for the page table alone. Clearly, we would not want to allocate the page table contiguously in main memory. One simple solution to this problem is to divide the page table into smaller pieces. We can accomplish this division in several ways.
 
 One way is to use a two-level paging algorithm, in which the page table itself is also paged (Figure 9.15). For example, consider again the system with a 32-bit logical address space and a page size of 4 KB. A logical address is divided into a page number consisting of 20 bits and a page offset consisting of 12 bits. Because we page the page table, the page number is further divided into a 10-bit page number and a 10-bit page offset. Thus, a logical address is as follows:
-
-_p1 p2 d_
-
-page number page offset
-
-10 10 12
-
+![Alt text](image-14.png)
 where _p_1 is an index into the outer page table and _p_2 is the displacement within the page of the inner page table. The address-translationmethod for this architecture is shown in Figure 9.16. Because address translation works from the outer page table inward, this scheme is also known as a **forward-mapped** page table.
 
 For a systemwith a 64-bit logical address space, a two-level paging scheme is no longer appropriate. To illustrate this point, let’s suppose that the page size in such a system is 4 KB (212). In this case, the page table consists of up to 252 entries. If we use a two-level paging scheme, then the inner page tables can conveniently be one page long, or contain 210 4-byte entries. The addresses look like this:  
-
-**372 Chapter 9 Main Memory**
-
-• • •
-
-• • •
-
-outer page table
-
-page of page table
-
-page table
-
-memory
-
-929
-
-900
-
-929
-
-900
-
-708
-
-500
-
-100
-
-1
-
-0
-
-• • •
-
-100
-
-708
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-• • •
-
-1
-
-500
-
-**Figure 9.15** A two-level page-table scheme.
-
-_p1 p2 d_
-
-outer page inner page offset
-
-42 10 12
+![Alt text](image-15.png)
 
 The outer page table consists of 242 entries, or 244 bytes. The obvious way to avoid such a large table is to divide the outer page table into smaller pieces. (This approach is also used on some 32-bit processors for added flexibility and efficiency.)
 
 We can divide the outer page table in various ways. For example, we can page the outer page table, giving us a three-level paging scheme. Suppose that the outer page table ismade up of standard-size pages (210 entries, or 212 bytes). In this case, a 64-bit address space is still daunting:
-
-_p1 p2 p3_
-
-2nd outer page outer page inner page
-
-32 10 10
-
-_d_
-
-offset
-
-12
-
+![Alt text](image-16.png)
 The outer page table is still 234 bytes (16 GB) in size. The next stepwould be a four-level paging scheme, where the second-level
 
 outer page table itself is also paged, and so forth. The 64-bit UltraSPARC would require seven levels of paging—a prohibitive number of memory accesses—  
-
-**9.4 Structure of the Page Table 373**
-
-logical address
-
-outer page table
-
-p1 p2
-
-p1
-
-page of page table
-
-p2
-
-d
-
-d
+![Alt text](image-17.png)
 
 **Figure 9.16** Address translation for a two-level 32-bit paging architecture.
 
 to translate each logical address. You can see from this example why, for 64-bit architectures, hierarchical page tables are generally considered inappropriate.
 
-**9.4.2 Hashed Page Tables**
+### Hashed Page Tables
 
 One approach for handling address spaces larger than 32 bits is to use a **hashed page table**, with the hash value being the virtual page number. Each entry in the hash table contains a linked list of elements that hash to the same location (to handle collisions). Each element consists of three fields: (1) the virtual page number, (2) the value of the mapped page frame, and (3) a pointer to the next element in the linked list.
 
 The algorithm works as follows: The virtual page number in the virtual address is hashed into the hash table. The virtual page number is compared with field 1 in the first element in the linked list. If there is a match, the corresponding page frame (field 2) is used to form the desiredphysical address. If there is no match, subsequent entries in the linked list are searched for a matching virtual page number. This scheme is shown in Figure 9.17.
-
-hash table
-
-q s
-
-logical address
-
-physical address
-
-physical memory
-
-p d r d
-
-p r hash
-
-function • • •
-
+![Alt text](image-18.png)
 **Figure 9.17** Hashed page table.  
-
-**374 Chapter 9 Main Memory**
 
 A variation of this scheme that is useful for 64-bit address spaces has been proposed. This variation uses **clustered page tables**, which are similar to hashed page tables except that each entry in the hash table refers to several pages (such as 16) rather than a single page. Therefore, a single page-table entry can store the mappings for multiple physical-page frames. Clustered page tables are particularly useful for **sparse** address spaces, where memory references are noncontiguous and scattered throughout the address space.
 
-**9.4.3 Inverted Page Tables**
+### Inverted Page Tables
 
 Usually, each process has an associated page table. The page table has one entry for each page that the process is using (or one slot for each virtual address, regardless of the latter’s validity). This table representation is a natural one, since processes reference pages through the pages’ virtual addresses. The operating system must then translate this reference into a physical memory address. Since the table is sorted by virtual address, the operating system is able to calculate where in the table the associated physical address entry is located and to use that value directly. One of the drawbacks of this method is that each page table may consist of millions of entries. These tables may consume large amounts of physical memory just to keep track of how other physical memory is being used.
 
 To solve this problem, we can use an **inverted page table**. An inverted page table has one entry for each real page (or frame) of memory. Each entry consists of the virtual address of the page stored in that real memory location, with information about the process that owns the page. Thus, only one page table is in the system, and it has only one entry for each page of physical memory. Figure 9.18 shows the operation of an inverted page table. Compare it with Figure 9.8, which depicts a standard page table in operation. Inverted page tables often require that an address-space identifier (Section 9.3.2) be stored in each entry of the page table, since the table usually contains several
-
-page table
-
-CPU
-
-logical address
-
-physical address
-
-physical memory
-
-i
-
-pid p
-
-pid
-
-search
-
-p
-
-d i d
-
+![Alt text](image-19.png)
 **Figure 9.18** Inverted page table.  
-
-**9.4 Structure of the Page Table 375**
 
 different address spaces mapping physical memory. Storing the address-space identifier ensures that a logical page for a particular process is mapped to the corresponding physical page frame. Examples of systems using inverted page tables include the 64-bit UltraSPARC and PowerPC.
 
@@ -1065,106 +387,36 @@ Although this scheme decreases the amount of memory needed to store each page ta
 
 One interesting issue with inverted page tables involves shared memory. With standard paging, each process has its own page table, which allows multiple virtual addresses to be mapped to the same physical address. This method cannot be used with inverted page tables; because there is only one virtual page entry for every physical page, one physical page cannot have two (or more) shared virtual addresses. Therefore, with inverted page tables, only one mapping of a virtual address to the shared physical address may occur at any given time. A reference by another process sharing the memory will result in a page fault and will replace the mapping with a different virtual address.
 
-**9.4.4 Oracle SPARC Solaris**
+### Oracle SPARC Solaris
 
 Consider as a final example a modern 64-bit CPU and operating system that are tightly integrated to provide low-overhead virtual memory. **Solaris** running on the **SPARC** CPU is a fully 64-bit operating system and as such has to solve the problem of virtual memory without using up all of its physical memory by keeping multiple levels of page tables. Its approach is a bit complex but solves the problem efficiently using hashed page tables. There are two hash tables—one for the kernel and one for all user processes. Each maps memory addresses from virtual to physical memory. Each hash-table entry represents a contiguous area of mapped virtual memory, which is more efficient than  
-
-**376 Chapter 9 Main Memory**
 
 having a separate hash-table entry for each page. Each entry has a base address and a span indicating the number of pages the entry represents.
 
 Virtual-to-physical translationwould take too long if each address required searching through a hash table, so the CPU implements a TLB that holds transla- tion table entries (TTEs) for fast hardware lookups. Acache of these TTEs resides in a translation storage buffer (TSB), which includes an entry per recently accessed page.When a virtual address reference occurs, the hardware searches the TLB for a translation. If none is found, the hardware walks through the in- memory TSB looking for the TTE that corresponds to the virtual address that caused the lookup. This **TLB walk** functionality is found on many modern CPUs. If a match is found in the TSB, the CPU copies the TSB entry into the TLB, and the memory translation completes. If no match is found in the TSB, the kernel is interrupted to search the hash table. The kernel then creates a TTE from the appropriate hash table and stores it in the TSB for automatic loading into the TLB by the CPU memory-management unit. Finally, the interrupt han- dler returns control to the MMU, which completes the address translation and retrieves the requested byte or word from main memory.
 
-**9.5 Swapping**
+## Swapping
 
 Process instructions and the data they operate on must be in memory to be executed. However, a process, or a portion of a process, can be **swapped** temporarily out of memory to a **backing store** and then brought back into memory for continued execution (Figure 9.19). Swapping makes it possible for the total physical address space of all processes to exceed the real physical memory of the system, thus increasing the degree of multiprogramming in a system.
-
-operating system
-
-swap out
-
-swap in
-
-user space
-
-main memory
-
-backing store
-
-process _P_2
-
-process _P_1 1
-
-2
-
+![Alt text](image-20.png)
 **Figure 9.19** Standard swapping of two processes using a disk as a backing store.  
 
-**9.5 Swapping 377**
-
-**9.5.1 Standard Swapping**
+### Standard Swapping
 
 Standard swapping involves moving entire processes between main memory and a backing store. The backing store is commonly fast secondary storage. It must be large enough to accommodate whatever parts of processes need to be stored and retrieved, and it must provide direct access to these memory images. When a process or part is swapped to the backing store, the data structures associated with the process must be written to the backing store. For a multithreaded process, all per-thread data structures must be swapped as well. The operating system must also maintain metadata for processes that have been swapped out, so they can be restored when they are swapped back in to memory.
 
 The advantage of standard swapping is that it allows physical memory to be oversubscribed, so that the system can accommodate more processes than there is actual physical memory to store them. Idle or mostly idle processes are good candidates for swapping; any memory that has been allocated to these inactive processes can then be dedicated to active processes. If an inactive process that has been swapped out becomes active once again, it must then be swapped back in. This is illustrated in Figure 9.19.
 
-**9.5.2 Swapping with Paging**
+### Swapping with Paging
 
 Standard swappingwas used in traditional UNIX systems, but it is generally no longer used in contemporary operating systems, because the amount of time required to move entire processes between memory and the backing store is prohibitive. (An exception to this is Solaris,which still uses standard swapping, however only under dire circumstances when available memory is extremely low.)
 
 Most systems, including Linux andWindows, nowuse a variation of swap- ping in which pages of a process—rather than an entire process—can be swapped. This strategy still allows physical memory to be oversubscribed, but does not incur the cost of swapping entire processes, as presumably only a small number of pageswill be involved in swapping. In fact, the term **_swapping_** now generally refers to standard swapping, and **_paging_** refers to swapping with paging. A **page out** operation moves a page from memory to the backing store; the reverse process is known as a **page in**. Swappingwith paging is illus- trated in Figure 9.20 where a subset of pages for processes _A_ and _B_ are being paged-out and paged-in respectively. As we shall see in Chapter 10, swapping with paging works well in conjunction with virtual memory.
 
-**9.5.3 Swapping on Mobile Systems**
+### Swapping on Mobile Systems
 
 Most operating systems for PCs and servers support swapping pages. In con- trast, mobile systems typically do not support swapping in any form. Mobile devices generally use flash memory rather than more spacious hard disks for nonvolatile storage. The resulting space constraint is one reason why mobile operating-systemdesigners avoid swapping. Other reasons include the limited number of writes that flash memory can tolerate before it becomes unreliable and the poor throughput between main memory and flash memory in these devices.  
-
-**378 Chapter 9 Main Memory**
-
-process A
-
-page out 0 1 2 3
-
-4 5 6 7
-
-8 9 10 11
-
-12 13 14 15
-
-16 17 18 19
-
-20 21 22 23
-
-page in process
-
-B
-
-main memory
-
-backing store
-
-a
-
-b
-
-c
-
-d
-
-e
-
-b c e
-
-f
-
-g
-
-h
-
-i
-
-j
-
-f h j
-
+![Alt text](image-21.png)
 **Figure 9.20** Swapping with paging.
 
 Instead of using swapping, when free memory falls below a certain thresh- old, Apple’s iOS **_asks_** applications to voluntarily relinquish allocated mem- ory. Read-only data (such as code) are removed from main memory and later reloaded from flash memory if necessary. Data that have been modified (such as the stack) are never removed. However, any applications that fail to free up sufficient memory may be terminated by the operating system.
@@ -1177,118 +429,39 @@ Because of these restrictions, developers for mobile systemsmust carefully alloc
 
 Although swapping pages is more efficient than swapping entire processes, when a system is undergoing _any_ form of swapping, it is often a sign there are more active processes than available physical memory. There are generally two approaches for handling this situation: (1) terminate some processes, or (2) get more physical memory!  
 
-**9.6 Example: Intel 32- and 64-bit Architectures 379**
 
-**9.6 Example: Intel 32- and 64-bit Architectures**
+## Example: Intel 32- and 64-bit Architectures
 
 The architecture of Intel chips has dominated the personal computer landscape for decades. The 16-bit Intel 8086 appeared in the late 1970s and was soon followed by another 16-bit chip—the Intel 8088—which was notable for being the chip used in the original IBM PC. Intel later produced a series of 32-bit chips—the IA-32—which included the family of 32-bit Pentium processors. More recently, Intel has produced a series of 64-bit chips based on the x86-64 architecture. Currently, all the most popular PC operating systems run on Intel chips, including Windows, macOS, and Linux (although Linux, of course, runs on several other architectures as well). Notably, however, Intel’s dominance has not spread to mobile systems, where the ARM architecture currently enjoys considerable success (see Section 9.7).
 
 In this section, we examine address translation for both IA-32 and x86-64 architectures. Before we proceed, however, it is important to note that because Intel has released several versions—as well as variations—of its architectures over the years, we cannot provide a complete description of the memory- management structure of all its chips. Nor canwe provide all of the CPU details, as that information is best left to books on computer architecture. Rather, we present the major memory-management concepts of these Intel CPUs.
 
-**9.6.1 IA-32 Architecture**
+### IA-32 Architecture
 
 Memory management in IA-32 systems is divided into two components— segmentation and paging—and works as follows: The CPU generates logical addresses, which are given to the segmentation unit. The segmentation unit produces a linear address for each logical address. The linear address is then given to the paging unit, which in turn generates the physical address in main memory. Thus, the segmentation and paging units form the equivalent of the memory-management unit (MMU). This scheme is shown in Figure 9.21.
 
-**9.6.1.1 IA-32 Segmentation**
+#### IA-32 Segmentation
 
 The IA-32 architecture allows a segment to be as large as 4 GB, and the max- imum number of segments per process is 16 K. The logical address space of a process is divided into two partitions. The first partition consists of up to 8 K segments that are private to that process. The second partition consists of up to 8 K segments that are shared among all the processes. Information about the first partition is kept in the **local descriptor table** (**LDT**); information about the second partition is kept in the **global descriptor table** (**GDT**). Each entry in the LDT and GDT consists of an 8-byte segment descriptorwith detailed information about a particular segment, including the base location and limit of that segment.
-
-CPU
-
-logical address segmentation
-
-unit
-
-linear address paging
-
-unit
-
-physical address physical
-
-memory
-
+![Alt text](image-22.png)
 **Figure 9.21** Logical to physical address translation in IA-32.  
-
-**380 Chapter 9 Main Memory**
-
-logical address selector
-
-descriptor table
-
-segment descriptor +
-
-32-bit linear address
-
-offset
+![Alt text](image-23.png)
 
 **Figure 9.22** IA-32 segmentation.
 
 The logical address is a pair (selector, offset), where the selector is a 16-bit number:
-
-_p_
-
-2
-
-_g_
-
-1
-
-_s_
-
-13
-
+![Alt text](image-24.png)
 Here, _s_ designates the segment number, _g_ indicates whether the segment is in the GDT or LDT, and _p_ deals with protection. The offset is a 32-bit number specifying the location of the byte within the segment in question.
 
 The machine has six segment registers, allowing six segments to be addressed at any one time by a process. It also has six 8-byte microprogram registers to hold the corresponding descriptors from either the LDT or the GDT. This cache lets the Pentium avoid having to read the descriptor from memory for every memory reference.
 
 The linear address on the IA-32 is 32 bits long and is formed as follows. The segment register points to the appropriate entry in the LDT or GDT. The base and limit information about the segment in question is used to generate a **linear address**. First, the limit is used to check for address validity. If the address is not valid, a memory fault is generated, resulting in a trap to the operating system. If it is valid, then the value of the offset is added to the value of the base, resulting in a 32-bit linear address. This is shown in Figure 9.22. In the following section, we discuss how the paging unit turns this linear address into a physical address.
 
-**9.6.1.2 IA-32 Paging**
+#### IA-32 Paging
 
 The IA-32 architecture allows a page size of either 4 KB or 4 MB. For 4-KB pages, IA-32 uses a two-level paging scheme in which the division of the 32-bit linear address is as follows:
-
-_p1 p2 d_
-
-page number page offset
-
-10 10 12  
-
-**9.6 Example: Intel 32- and 64-bit Architectures 381**
-
-page directory
-
-page directory
-
-CR3 register
-
-page
-
-directory
-
-page
-
-table
-
-4-KB
-
-page
-
-4-MB
-
-page
-
-page table
-
-offset
-
-offset
-
-(linear address)
-
-31 22 21 12 11 0
-
-2131 22 0
-
+![Alt text](image-25.png)
+![Alt text](image-26.png)
 **Figure 9.23** Paging in the IA-32 architecture.
 
 The address-translation scheme for this architecture is similar to the scheme shown in Figure 9.16. The IA-32 address translation is shown in more detail in Figure 9.23. The 10 high-order bits reference an entry in the outermost page table, which IA-32 terms the **page directory**. (The CR3 register points to the page directory for the current process.) The page directory entry points to an inner page table that is indexed by the contents of the innermost 10 bits in the linear address. Finally, the low-order bits 0–11 refer to the offset in the 4-KB page pointed to in the page table.
@@ -1300,73 +473,26 @@ To improve the efficiency of physical memory use, IA-32 page tables can be swapp
 As software developers began to discover the 4-GB memory limitations of 32-bit architectures, Intel adopted a **page address extension** (**PAE**), which allows 32-bit processors to access a physical address space larger than 4 GB. The fundamental difference introduced by PAE support was that paging went from a two-level scheme (as shown in Figure 9.23) to a three-level scheme, where the top two bits refer to a **page directory pointer table**. Figure 9.24 illustrates a PAE system with 4-KB pages. (PAE also supports 2-MB pages.)
 
 PAE also increased the page-directory and page-table entries from 32 to 64 bits in size, which allowed the base address of page tables and page frames to  
-
-**382 Chapter 9 Main Memory**
-
-31 30 29 21 20 12 11 0
-
-page table offsetpage directory
-
-4-KB
-
-page
-
-page
-
-table
-
-page directory
-
-pointer table
-
-CR3
-
-register page
-
-directory
-
+![Alt text](image-27.png)
 **Figure 9.24** Page address extensions.
 
 extend from 20 to 24 bits. Combined with the 12-bit offset, adding PAE support to IA-32 increased the address space to 36 bits, which supports up to 64 GB of physical memory. It is important to note that operating system support is required to use PAE. Both Linux and macOS support PAE. However, 32-bit versions of Windows desktop operating systems still provide support for only 4 GB of physical memory, even if PAE is enabled.
 
-**9.6.2 x86-64**
+### x86-64
 
 Intel has had an interesting history of developing 64-bit architectures. Its ini- tial entry was the IA-64 (later named **Itanium**) architecture, but that architec- ture was not widely adopted. Meanwhile, another chip manufacturer—AMD — began developing a 64-bit architecture known as x86-64 that was based on extending the existing IA-32 instruction set. The x86-64 supported much larger logical and physical address spaces, as well as several other architec- tural advances. Historically, AMD had often developed chips based on Intel’s architecture, but now the roles were reversed as Intel adopted AMD’s x86-64 architecture. In discussing this architecture, rather than using the commercial names **AMD64** and **Intel 64**, we will use the more general term **x86-64**.
 
 Support for a 64-bit address space yields an astonishing 264 bytes of addressable memory—a number greater than 16 quintillion (or 16 exabytes). However, even though 64-bit systems can potentially address this much mem- ory, in practice far fewer than 64 bits are used for address representation in current designs. The x86-64 architecture currently provides a 48-bit virtual address with support for page sizes of 4 KB, 2 MB, or 1 GB using four levels of paging hierarchy. The representation of the linear address appears in Figure 9.25. Because this addressing scheme can use PAE, virtual addresses are 48 bits in size but support 52-bit physical addresses (4,096 terabytes).
-
-unused
-
-page map
-
-level 4
-
-page directory
-
-pointer table
-
-page
-
-directory
-
-page
-
-table offset
-
-63 4748 39 38 30 29 21 20 12 11 0
-
+![Alt text](image-28.png)
 **Figure 9.25** x86-64 linear address.  
 
-**9.7 Example: ARMv8 Architecture 383**
-
-**9.7 Example: ARMv8 Architecture**
+## Example: ARMv8 Architecture
 
 Although Intel chips have dominated the personal computer market for more than 30 years, chips for mobile devices such as smartphones and tablet com- puters often instead run on ARM processors. Interestingly, whereas Intel both designs and manufactures chips, ARM only designs them. It then licenses its architectural designs to chip manufacturers. Apple has licensed the ARM design for its iPhone and iPadmobile devices, andmost Android-based smart- phones use ARM processors as well. In addition to mobile devices, ARM also provides architecture designs for real-time embedded systems. Because of the abundance of devices that run on the ARM architecture, over 100 billion ARM processors have been produced, making it the most widely used architecture when measured in the quantity of chips produced. In this section, we describe the 64-bit ARMv8 architecture.
 
 The ARMv8 has three different **translation granules**: 4 KB, 16 KB, and 64 KB. Each translation granule provides different page sizes, as well as larger sections of contiguous memory, known as **regions**. The page and region sizes for the different translation granules are shown below:
 
-Translation Granule Size Page Size Region Size 4 KB 4 KB 2 MB, 1 GB 16 KB 16 KB 32 MB 64 KB 64 KB 512 MB
-
+![Alt text](image-29.png)
 For 4-KB and 16-KB granules, up to four levels of paging may be used, with up to three levels of paging for 64-KB granules. Figure 9.26 illustrates the ARMv8 address structure for the 4-KB translation granule with up to four levels of paging. (Notice that although ARMv8 is a 64-bit architecture, only 48 bits are currently used.) The four-level hierarchical paging structure for the 4-KB translation granule is illustrated in Figure 9.27. (The TTBR register is the **translation table base register** and points to the level 0 table for the current thread.)
 
 If all four levels are used, the offset (bits 0–11 in Figure 9.26) refers to the offset within a 4-KB page. However, notice that the table entries for level 1 and
@@ -1375,59 +501,19 @@ If all four levels are used, the offset (bits 0–11 in Figure 9.26) refers to t
 
 History has taught us that even though memory capacities, CPU speeds, and similar computer capabilities seem large enough to satisfy demand for the foreseeable future, the growth of technology ultimately absorbs available capacities, andwe find ourselves in need of additional memory or processing power, often sooner thanwe think.Whatmight the future of technology bring that would make a 64-bit address space seem too small?  
 
-**384 Chapter 9 Main Memory**
-
-unused offset
-
-63 4748 39 38 30 29 21 20 12 11 0
-
-level 0 index
-
-level 1 index
-
-level 2 index
-
-level 3 index
-
 **Figure 9.26** ARM 4-KB translation granule.
 
 level 2 may refer either to another table or to a 1-GB region (level-1 table) or 2-MB region (level-2 table). As an example, if the level-1 table refers to a 1-GB region rather than a level-2 table, the low-order 30 bits (bits 0–29 in Figure 9.26) are used as an offset into this 1-GB region. Similarly, if the level-2 table refers to a 2-MB region rather than a level-3 table, the low-order 21 bits (bits 0–20 in Figure 9.26) refer to the offset within this 2-MB region.
 
 The ARM architecture also supports two levels of TLBs. At the inner level are two **micro TLBs**—a TLB for data and another for instructions. The micro TLB supports ASIDs as well. At the outer level is a single **main TLB**. Address translation begins at the micro-TLB level. In the case of a miss, the main TLB is then checked. If both TLBs yield misses, a page table walk must be performed in hardware.
 
-**9.8 Summary**
+## Summary
 
 • Memory is central to the operation of a modern computer system and consists of a large array of bytes, each with its own address.
 
 • One way to allocate an address space to each process is through the use of base and limit registers. The base register holds the smallest legal physical memory address, and the limit specifies the size of the range.
-
-level 0 index
-
-level 0 table
-
-TTBR register
-
-level 1 table
-
-level 2 table
-
-level 3 table
-
-level 1 index
-
-level 2 index
-
-level 3 index offset
-
-4-KB page
-
-1-GB region
-
-2-MB region
-
+![Alt text](image-30.png)
 **Figure 9.27** ARM four-level hierarchical paging.  
-
-**Practice Exercises 385**
 
 • Binding symbolic address references to actual physical addresses may occur during (1) compile, (2) load, or (3) execution time.
 
@@ -1456,8 +542,6 @@ level 3 index offset
 **9.2** Why are page sizes always powers of 2?
 
 **9.3** Consider a system in which a program can be separated into two parts: code and data. The CPU knows whether it wants an instruction (instruc- tion fetch) or data (data fetch or store). Therefore, two base–limit register pairs are provided: one for instructions and one for data. The instruction  
-
-**386 Chapter 9 Main Memory**
 
 base–limit register pair is automatically read-only, so programs can be shared among different users. Discuss the advantages and disadvan- tages of this scheme.
 
@@ -1503,8 +587,6 @@ a. A conventional, single-level page table
 
 b. An inverted page table  
 
-**Bibliography 387**
-
 **Further Reading**
 
 The concept of paging can be credited to the designers of the Atlas system, which has been described by \[Kilburn et al. (1961)\] and by \[Howarth et al. (1961)\].
@@ -1513,7 +595,7 @@ The concept of paging can be credited to the designers of the Atlas system, whic
 
 PAE support forWindows systems.is discussed in http://msdn.microsoft.co m/en-us/library/windows/hardware/gg487512.aspx An overview of the ARM architecture is provided in http://www.arm.com/products/processors/cortex- a/cortex-a9.php
 
-**Bibliography**
+## Bibliography
 
 **\[Fang et al. (2001)\]** Z. Fang, L. Zhang, J. B. Carter, W. C. Hsieh, and S. A. McKee, “Reevaluating Online Superpage Promotion with Hardware Support”, _Proceed- ings of the International Symposium on High-Performance Computer Architecture_, Volume 50, Number 5 (2001).
 
@@ -1526,8 +608,6 @@ PAE support forWindows systems.is discussed in http://msdn.microsoft.co m/en-us/
 **\[Kilburn et al. (1961)\]** T. Kilburn, D. J. Howarth, R. B. Payne, and F. H. Sumner, “The Manchester University Atlas Operating System, Part I: Internal Organiza- tion”, _Computer Journal_, Volume 4, Number 3 (1961), pages 222–225.  
 
 **Exercises**
-
-**Chapter 9 Exercises**
 
 **9.11** Explain the difference between internal and external fragmentation.
 
@@ -1712,10 +792,7 @@ If the user enters the C command, your program will compact the set of holes int
 There are several strategies for implementing compaction, one of which is suggested in Section 9.2.3. Be sure to update the beginning address of any processes that have been affected by compaction.
 
 **P-50**  
-
-_10_**CHAPTER**
-
-_Virtual Memory_
+# Virtual Memory
 
 In Chapter 9, we discussed various memory-management strategies used in computer systems. All these strategies have the same goal: to keep many processes in memory simultaneously to allow multiprogramming. However, they tend to require that an entire process be in memory before it can execute.
 
@@ -1735,15 +812,9 @@ Virtual memory is a technique that allows the execution of processes that are no
 
 • Design a virtual memory manager simulation in the C programming lan- guage.
 
-**10.1 Background**
+## Background
 
-The memory-management algorithms outlined in Chapter 9 are necessary because of one basic requirement: the instructions being executed must be in
-
-**389**  
-
-**390 Chapter 10 Virtual Memory**
-
-physical memory. The first approach to meeting this requirement is to place the entire logical address space in physical memory. Dynamic linking can help to ease this restriction, but it generally requires special precautions and extra work by the programmer.
+The memory-management algorithms outlined in Chapter 9 are necessary because of one basic requirement: the instructions being executed must be in physical memory. The first approach to meeting this requirement is to place the entire logical address space in physical memory. Dynamic linking can help to ease this restriction, but it generally requires special precautions and extra work by the programmer.
 
 The requirement that instructions must be in physical memory to be exe- cuted seems both necessary and reasonable; but it is also unfortunate, since it limits the size of a program to the size of physical memory. In fact, an exami- nation of real programs shows us that, in many cases, the entire program is not needed. For instance, consider the following:
 
@@ -1768,71 +839,15 @@ Thus, running a program that is not entirely in memorywould benefit both the sys
 **Virtual memory** involves the separation of logical memory as perceived by developers from physical memory. This separation allows an extremely large virtual memory to be provided for programmers when only a smaller physical memory is available (Figure 10.1). Virtual memory makes the task of programming much easier, because the programmer no longer needs to worry about the amount of physical memory available; she can concentrate instead on programming the problem that is to be solved.
 
 The **virtual address space** of a process refers to the logical (or virtual) view of how a process is stored in memory. Typically, this view is that a process begins at a certain logical address—say, address 0—and exists in contiguous memory, as shown in Figure 10.2. Recall from Chapter 9, though, that in fact physical memory is organized in page frames and that the physical page frames assigned to a process may not be contiguous. It is up to the memory-  
-
-**10.1 Background 391**
-
-virtual memory
-
-memory map
-
-physical memory
-
-backing store
-
-• • •
-
-page 0
-
-page 1
-
-page 2
-
-page _v_
-
+![Alt text](image-31.png)
 **Figure 10.1** Diagram showing virtual memory that is larger than physical memory.
 
 management unit (MMU) to map logical pages to physical page frames in memory.
 
 Note in Figure 10.2 that we allow the heap to grow upward in memory as it is used for dynamic memory allocation. Similarly, we allow for the stack to grow downward inmemory through successive function calls. The large blank space (or hole) between the heap and the stack is part of the virtual address space but will require actual physical pages only if the heap or stack grows. Virtual address spaces that include holes are known as **sparse** address spaces. Using a sparse address space is beneficial because the holes can be filled as the stack or heap segments grow or if we wish to dynamically link libraries (or possibly other shared objects) during program execution.
-
-text
-
-0
-
-max
-
-data
-
-heap
-
-stack
-
+![Alt text](image-32.png)
 **Figure 10.2** Virtual address space of a process in memory.  
-
-**392 Chapter 10 Virtual Memory**
-
-shared library
-
-stack
-
-shared pages
-
-text
-
-data
-
-heap
-
-text
-
-data
-
-heap
-
-shared library
-
-stack
-
+![Alt text](image-33.png)
 **Figure 10.3** Shared library using virtual memory.
 
 In addition to separating logical memory from physical memory, virtual memory allows files and memory to be shared by two or more processes through page sharing (Section 9.3.4). This leads to the following benefits:
@@ -1845,113 +860,19 @@ In addition to separating logical memory from physical memory, virtual memory al
 
 We further explore these—and other—benefits of virtual memory later in this chapter. First, though, we discuss implementing virtual memory through demand paging.
 
-**10.2 Demand Paging**
+## Demand Paging
 
 Consider how an executable programmight be loaded from secondary storage into memory. One option is to load the entire program in physical memory at program execution time. However, a problem with this approach is that  
-
-**10.2 Demand Paging 393**
 
 we may not initially **_need_** the entire program in memory. Suppose a program starts with a list of available options from which the user is to select. Loading the entire program into memory results in loading the executable code for **_all_** options, regardless of whether or not an option is ultimately selected by the user.
 
 An alternative strategy is to load pages only as they are needed. This tech- nique is known as **demand paging** and is commonly used in virtual memory systems. With demand-paged virtual memory, pages are loaded only when they are **_demanded_** during program execution. Pages that are never accessed are thus never loaded into physical memory. Ademand-paging system is simi- lar to a paging system with swapping (Section 9.5.2) where processes reside in secondary memory (usually an HDD or NVM device). Demand paging explains one of the primary benefits of virtual memory—by loading only the portions of programs that are needed, memory is used more efficiently.
 
-**10.2.1 Basic Concepts**
+### Basic Concepts
 
 The general concept behind demand paging, as mentioned, is to load a page in memory only when it is needed. As a result, while a process is executing, some pageswill be inmemory, and somewill be in secondary storage. Thus, we need some form of hardware support to distinguish between the two. The valid– invalid bit scheme described in Section 9.3.3 can be used for this purpose. This
-
-B
-
-D
-
-D E F
-
-H
-
-logical memory
-
-valid–invalid bitframe
-
-page table
-
-1 0 4
-
-62 3 4 5 9 6 7
-
-1
-
-0
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-i v
-
-v i i v i i
-
-physical memory
-
-backing store
-
-A
-
-A BC
-
-C
-
-F G HF
-
-1
-
-0
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-9
-
-8
-
-10
-
-11
-
-12
-
-13
-
-14
-
-15
-
-A
-
-C
-
-E
-
-G
-
+![Alt text](image-34.png)
 **Figure 10.4** Page table when some pages are not in main memory.  
-
-**394 Chapter 10 Virtual Memory**
 
 time, however, when the bit is set to “valid,” the associated page is both legal and in memory. If the bit is set to “invalid,” the page either is not valid (that is, not in the logical address space of the process) or is valid but is currently in secondary storage. The page-table entry for a page that is brought intomemory is set as usual, but the page-table entry for a page that is not currently in memory is simply marked invalid. This situation is depicted in Figure 10.4. (Notice that marking a page invalid will have no effect if the process never attempts to access that page.)
 
@@ -1962,44 +883,8 @@ But what happens if the process tries to access a page that was not brought into
 **2\.** If the reference was invalid, we terminate the process. If it was valid but we have not yet brought in that page, we now page it in.
 
 **3\.** We find a free frame (by taking one from the free-frame list, for example).
-
-load M
-
-reference trap
-
-i
-
-page is on backing store
-
-operating system
-
-restart instruction
-
-reset page table
-
-page table
-
-physical memory
-
-bring in missing page
-
-free frame
-
-backing store
-
-1
-
-2
-
-3
-
-6
-
-5 4
-
+![Alt text](image-35.png)
 **Figure 10.5** Steps in handling a page fault.  
-
-**10.2 Demand Paging 395**
 
 **4\.** We schedule a secondary storage operation to read the desired page into the newly allocated frame.
 
@@ -2041,21 +926,17 @@ This problem can be solved in two different ways. In one solution, the microcode
 
 This is by no means the only architectural problem resulting from adding paging to an existing architecture to allow demand paging, but it illustrates some of the difficulties involved. Paging is added between the CPU and the memory in a computer system. It should be entirely transparent to a process. Thus, people often assume that paging can be added to any system. Although this assumption is true for a non-demand-paging environment, where a page fault represents a fatal error, it is not true where a page fault means only that an additional page must be brought into memory and the process restarted.
 
-**10.2.2 Free-Frame List**
+### Free-Frame List
 
 When a page fault occurs, the operating system must bring the desired page from secondary storage into main memory. To resolve page faults, most oper- ating systems maintain a **free-frame list**, a pool of free frames for satisfying such requests (Figure 10.6). (Free frames must also be allocated when the stack or heap segments from a process expand.) Operating systems typically allo-
-
-head 7 97 126 7515 ...
-
+![Alt text](image-36.png)
 **Figure 10.6** List of free frames.  
-
-**10.2 Demand Paging 397**
 
 cate free frames using a technique known as **zero-fill-on-deman** . Zero-fill- on-demand frames are “zeroed-out” before being allocated, thus erasing their previous contents. (Consider the potential security implications of **_not_** clearing out the contents of a frame before reassigning it.)
 
 When a system starts up, all available memory is placed on the free-frame list. As free frames are requested (for example, through demand paging), the size of the free-frame list shrinks. At some point, the list either falls to zero or falls below a certain threshold, at which point it must be repopulated.We cover strategies for both of these situations in Section 10.4.
 
-**10.2.3 Performance of Demand Paging**
+### Performance of Demand Paging
 
 Demand paging can significantly affect the performance of a computer system. To see why, let’s compute the **effective access time** for a demand-paged mem- ory. Assume the memory-access time, denoted _ma,_ is 10 nanoseconds. As long as we have no page faults, the effective access time is equal to the memory access time. If, however, a page fault occurs, we must first read the relevant page from secondary storage and then access the desired word.
 
@@ -2093,8 +974,6 @@ c. Begin the transfer of the page to a free frame.
 
 **11\.** Wait for the CPU core to be allocated to this process again.  
 
-**398 Chapter 10 Virtual Memory**
-
 **12\.** Restore the registers, process state, and new page table, and then resume the interrupted instruction.
 
 Not all of these steps are necessary in every case. For example,we are assuming that, in step 6, the CPU is allocated to another process while the I/O occurs. This arrangement allows multiprogramming to maintain CPU utilization but requires additional time to resume the page-fault service routine when the I/O transfer is complete.
@@ -2121,7 +1000,6 @@ That is, to keep the slowdown due to paging at a reasonable level, we can allow 
 
 An additional aspect of demand paging is the handling and overall use of swap space. I/O to swap space is generally faster than that to the file system. It is faster because swap space is allocated inmuch larger blocks, and file lookups and indirect allocation methods are not used (Chapter 11). One option for the  
 
-**10.3 Copy-on-Write 399**
 
 system to gain better paging throughput is by copying an entire file image into the swap space at process startup and then performing demand paging from the swap space. The obvious disadvantage of this approach is the copying of the file image at program start-up. A second option—and one practiced by several operating systems, including Linux andWindows—is to demand-page from the file system initially but to write the pages to swap space as they are replaced. This approach will ensure that only needed pages are read from the file system but that all subsequent paging is done from swap space.
 
@@ -2129,55 +1007,25 @@ Some systems attempt to limit the amount of swap space used through demand pagin
 
 As described in Section 9.5.3, mobile operating systems typically do not support swapping. Instead, these systems demand-page from the file sys- tem and reclaim read-only pages (such as code) from applications if memory becomes constrained. Such data can be demand-paged from the file system if it is later needed. Under iOS, anonymous memory pages are never reclaimed from an application unless the application is terminated or explicitly releases the memory. In Section 10.7, we cover compressed memory, a commonly used alternative to swapping in mobile systems.
 
-**10.3 Copy-on-Write**
+## Copy-on-Write
 
 In Section 10.2, we illustrated how a process can start quickly by demand- paging in the page containing the first instruction. However, process creation using the fork() system call may initially bypass the need for demand paging by using a technique similar to page sharing (covered in Section 9.3.4). This technique provides rapid process creation and minimizes the number of new pages that must be allocated to the newly created process.
 
 Recall that the fork() system call creates a child process that is a duplicate of its parent. Traditionally, fork() worked by creating a copy of the parent’s address space for the child, duplicating the pages belonging to the parent. However, considering thatmany child processes invoke the exec() system call immediately after creation, the copying of the parent’s address space may be unnecessary. Instead, we can use a technique known as **copy-on-write**, which works by allowing the parent and child processes initially to share the same pages. These shared pages are marked as copy-on-write pages, meaning that if either process writes to a shared page, a copy of the shared page is created. Copy-on-write is illustrated in Figures 10.7 and 10.8, which show the contents of the physical memory before and after process 1 modifies page C.
 
 For example, assume that the child process attempts to modify a page containing portions of the stack, with the pages set to be copy-on-write. The operating system will obtain a frame from the free-frame list and create a copy  
-
-**400 Chapter 10 Virtual Memory**
-
-process1
-
-physical memory
-
-page A
-
-page B
-
-page C
-
-process2
-
+![Alt text](image-37.png)
 **Figure 10.7** Before process 1 modifies page C.
 
 of this page, mapping it to the address space of the child process. The child process will then modify its copied page and not the page belonging to the parent process. Obviously, when the copy-on-write technique is used, only the pages that are modified by either process are copied; all unmodified pages can be shared by the parent and child processes. Note, too, that only pages that can be modified need be marked as copy-on-write. Pages that cannot be modified (pages containing executable code) can be shared by the parent and child. Copy-on-write is a common technique used by several operating systems, including Windows, Linux, and macOS.
 
 Several versions of UNIX (including Linux, macOS, and BSD UNIX) provide a variation of the fork() system call—vfork() (for **virtual memory fork**)— that operates differently from fork() with copy-on-write. With vfork(), the parent process is suspended, and the child process uses the address space of the parent. Because vfork() does not use copy-on-write, if the child process changes any pages of the parent’s address space, the altered pages will be visible to the parent once it resumes. Therefore, vfork() must be used with caution to ensure that the child process does not modify the address space of the parent. vfork() is intended to be usedwhen the child process calls exec() immediately after creation. Because no copying of pages takes place, vfork()
-
-process 1
-
-physical memory
-
-page A
-
-page B
-
-page C
-
-copy of page C
-
-process 2
-
+![Alt text](image-38.png)
 **Figure 10.8** After process 1 modifies page C.  
-
-**10.4 Page Replacement 401**
 
 is an extremely efficient method of process creation and is sometimes used to implement UNIX command-line shell interfaces.
 
-**10.4 Page Replacement**
+## Page Replacement
 
 In our earlier discussion of the page-fault rate, we assumed that each page faults at most once, when it is first referenced. This representation is not strictly accurate, however. If a process of ten pages actually uses only half of them, then demand paging saves the I/O necessary to load the five pages that are never used. We could also increase our degree of multiprogramming by running twice as many processes. Thus, if we had forty frames, we could run eight processes, rather than the four that could run if each required ten frames (five of which were never used).
 
@@ -2191,12 +1039,10 @@ The operating system has several options at this point. It could terminate the p
 
 The operating system could instead use standard swapping and swap out a process, freeing all its frames and reducing the level of multiprogram- ming. However, as discussed in Section 9.5, standard swapping is no longer used by most operating systems due to the overhead of copying entire pro- cesses between memory and swap space. Most operating systems now com- bine swapping pageswith **page replacement**, a techniquewe describe in detail in the remainder of this section.
 
-**10.4.1 Basic Page Replacement**
+### Basic Page Replacement
 
 Page replacement takes the following approach. If no frame is free, we find one that is not currently being used and free it. We can free a frame by writing its  
-
-**402 Chapter 10 Virtual Memory**
-
+![Alt text](image-39.png)
 **Figure 10.9** Need for page replacement.
 
 contents to swap space and changing the page table (and all other tables) to indicate that the page is no longer in memory (Figure 10.10). We can now use the freed frame to hold the page for which the process faulted. We modify the page-fault service routine to include page replacement:
@@ -2218,45 +1064,7 @@ c. Write the victim frame to secondary storage (if necessary); change the page a
 Notice that, if no frames are free, **_two_** page transfers (one for the page-out and one for the page-in) are required. This situation effectively doubles the page-fault service time and increases the effective access time accordingly.
 
 We can reduce this overhead by using a **modify bit** (or **dirty bit**).When this scheme is used, each page or frame has a modify bit associated with it in the hardware. The modify bit for a page is set by the hardware whenever any byte in the page is written into, indicating that the page has been modified. When we select a page for replacement, we examine its modify bit. If the bit is set,  
-
-**10.4 Page Replacement 403**
-
-valid–invalid bitframe
-
-f
-
-page table
-
-victim
-
-backing store
-
-change to invalid
-
-page out victim page
-
-page in desired
-
-page
-
-reset page table for
-
-new page
-
-physical memory
-
-2
-
-4
-
-1
-
-3
-
-f 0 i
-
-v
-
+![Alt text](image-40.png)
 **Figure 10.10** Page replacement.
 
 we know that the page has been modified since it was read in from secondary storage. In this case, we must write the page to storage. If the modify bit is not set, however, the page has **_not_** beenmodified since it was read into memory. In this case, we need notwrite thememory page to storage: it is already there. This technique also applies to read-only pages (for example, pages of binary code). Such pages cannot be modified; thus, they may be discarded when desired. This scheme can significantly reduce the time required to service a page fault, since it reduces I/O time by one-half **_if_** the page has not been modified.
@@ -2264,8 +1072,6 @@ we know that the page has been modified since it was read in from secondary stor
 Page replacement is basic to demand paging. It completes the separation between logical memory and physical memory.With this mechanism, an enor- mous virtual memory can be provided for programmers on a smaller physical memory. With no demand paging, logical addresses are mapped into physical addresses, and the two sets of addresses can be different. All the pages of a process still must be in physical memory, however. With demand paging, the size of the logical address space is no longer constrained by physical memory. If we have a process of twenty pages, we can execute it in ten frames simply by using demand paging and using a replacement algorithm to find a free frame whenever necessary. If a page that has been modified is to be replaced, its contents are copied to secondary storage. A later reference to that page will cause a page fault. At that time, the page will be brought back into memory, perhaps replacing some other page in the process.
 
 Wemust solve twomajor problems to implement demandpaging:wemust develop a **frame-allocation algorithm** and a **page-replacement algorithm**. That is, if we have multiple processes in memory, we must decide how many frames to allocate to each process; and when page replacement is required, we must select the frames that are to be replaced. Designing appropriate algo- rithms to solve these problems is an important task, because secondary storage  
-
-**404 Chapter 10 Virtual Memory**
 
 I/O is so expensive. Even slight improvements in demand-paging methods yield large gains in system performance.
 
@@ -2291,49 +1097,10 @@ We next illustrate several page-replacement algorithms. In doing so, we use the 
 
 for a memory with three frames.
 
-**10.4.2 FIFO Page Replacement**
+### FIFO Page Replacement
 
 The simplest page-replacement algorithm is a first-in, first-out (FIFO) algo- rithm. A FIFO replacement algorithm associates with each page the time when that page was brought into memory. When a page must be replaced, the oldest page is chosen. Notice that it is not strictly necessary to record the time when a  
-
-**10.4 Page Replacement 405**
-
-n u
-
-m b
-
-e r
-
-o f
-
-p a
-
-g e
-
-f a
-
-u lt s
-
-16
-
-14
-
-12
-
-10
-
-8
-
-6
-
-4
-
-2
-
-1 2 3
-
-number of frames
-
-4 5 6
+![Alt text](image-41.png)
 
 **Figure 10.11** Graph of page faults versus number of frames.
 
@@ -2344,137 +1111,10 @@ For our example reference string, our three frames are initially empty. The firs
 The FIFO page-replacement algorithm is easy to understand and program. However, its performance is not always good. On the one hand, the page replaced may be an initialization module that was used a long time ago and is no longer needed. On the other hand, it could contain a heavily used variable that was initialized early and is in constant use.
 
 Notice that, even if we select for replacement a page that is in active use, everything still works correctly. After we replace an active page with a new
-
-7 7
-
-0
-
-7
-
-0
-
-1
-
-page frames
-
-reference string
-
-2
-
-0
-
-1
-
-2
-
-3
-
-1
-
-2
-
-3
-
-0
-
-4
-
-3
-
-0
-
-4
-
-2
-
-0
-
-4
-
-2
-
-3
-
-0
-
-2
-
-3
-
-7
-
-1
-
-2
-
-7
-
-0
-
-2
-
-7
-
-0
-
-1
-
-0
-
-1
-
-3
-
-0
-
-7 0 1 2 0 3 0 4 2 3 0 7 11 02 1 20 3
-
-1
-
-2
+![Alt text](image-42.png)
 
 **Figure 10.12** FIFO page-replacement algorithm.  
-
-**406 Chapter 10 Virtual Memory**
-
-n u
-
-m b
-
-e r
-
-o f
-
-p a
-
-g e
-
-f a
-
-u lt s
-
-16
-
-14
-
-12
-
-10
-
-8
-
-6
-
-4
-
-2
-
-1 2 3
-
-number of frames
-
-4 5 6 7
-
+![Alt text](image-43.png)
 **Figure 10.13** Page-fault curve for FIFO replacement on a reference string.
 
 one, a fault occurs almost immediately to retrieve the active page. Some other page must be replaced to bring the active page back into memory. Thus, a bad replacement choice increases the page-fault rate and slows process execution. It does not, however, cause incorrect execution.
@@ -2485,7 +1125,7 @@ To illustrate the problems that are possible with a FIFO page-replacement algori
 
 Figure 10.13 shows the curve of page faults for this reference string versus the number of available frames. Notice that the number of faults for four frames (ten) is **_greater_** than the number of faults for three frames (nine)! This most unexpected result is known as **Belady’s anomaly**: for some page-replacement algorithms, the page-fault rate may **_increase_** as the number of allocated frames increases. We would expect that giving more memory to a process would improve its performance. In some early research, investigators noticed that this assumption was not always true. Belady’s anomaly was discovered as a result.
 
-**10.4.3 Optimal Page Replacement**
+### Optimal Page Replacement
 
 One result of the discovery of Belady’s anomaly was the search for an **optimal page-replacement algorithm**—the algorithm that has the lowest page-fault rate of all algorithms and will never suffer from Belady’s anomaly. Such an algorithm does exist and has been called OPT or MIN. It is simply this:
 
@@ -2494,147 +1134,21 @@ Replace the page that will not be used for the longest period of time.
 Use of this page-replacement algorithm guarantees the lowest possible page- fault rate for a fixed number of frames.
 
 For example, on our sample reference string, the optimal page-replacement algorithmwould yield nine page faults, as shown in Figure 10.14. The first three references cause faults that fill the three empty frames. The reference to page 2 replaces page 7, because page 7 will not be used until reference 18, whereas  
-
-**10.4 Page Replacement 407**
-
-page frames
-
-reference string
-
-7 7
-
-0
-
-7
-
-0
-
-1
-
-2
-
-0
-
-1
-
-2
-
-0
-
-3
-
-2
-
-4
-
-3
-
-2
-
-0
-
-3
-
-7
-
-0
-
-1
-
-2
-
-0
-
-1
-
-7 0 1 2 0 3 0 4 2 3 0 7 11 02 1 20 3
-
+![Alt text](image-44.png)
 **Figure 10.14** Optimal page-replacement algorithm.
 
 page 0 will be used at 5, and page 1 at 14. The reference to page 3 replaces page 1, as page 1 will be the last of the three pages in memory to be referenced again. With only nine page faults, optimal replacement is much better than a FIFO algorithm, which results in fifteen faults. (If we ignore the first three, which all algorithms must suffer, then optimal replacement is twice as good as FIFO replacement.) In fact, no replacement algorithm can process this reference string in three frames with fewer than nine faults.
 
 Unfortunately, the optimal page-replacement algorithm is difficult to implement, because it requires future knowledge of the reference string. (We encountered a similar situation with the SJF CPU-scheduling algorithm in Section 5.3.2.) As a result, the optimal algorithm is usedmainly for comparison studies. For instance, it may be useful to know that, although a new algorithm is not optimal, it is within 12.3 percent of optimal at worst and within 4.7 percent on average.
 
-**10.4.4 LRU Page Replacement**
+### LRU Page Replacement
 
 If the optimal algorithm is not feasible, perhaps an approximation of the opti- mal algorithm is possible. The key distinction between the FIFO and OPT algo- rithms (other than looking backward versus forward in time) is that the FIFO algorithm uses the time when a page was brought into memory, whereas the OPT algorithm uses the timewhen a page is to be **_used._** If we use the recent past as an approximation of the near future, then we can replace the page that **_has not been used_** for the longest period of time. This approach is the **least recently used (LRU) algorithm**.
 
 LRU replacement associates with each page the time of that page’s last use. When a page must be replaced, LRU chooses the page that has not been used for the longest period of time. We can think of this strategy as the optimal page-replacement algorithm looking backward in time, rather than forward. (Strangely, if we let _SR_ be the reverse of a reference string _S,_ then the page-fault rate for the OPT algorithm on _S_ is the same as the page-fault rate for the OPT algorithm on _SR_. Similarly, the page-fault rate for the LRU algorithm on _S_ is the same as the page-fault rate for the LRU algorithm on _SR_.)
 
 The result of applying LRU replacement to our example reference string is shown in Figure 10.15. The LRU algorithm produces twelve faults. Notice that the first five faults are the same as those for optimal replacement. When the reference to page 4 occurs, however, LRU replacement sees that, of the three frames in memory, page 2 was used least recently. Thus, the LRU algorithm replaces page 2, not knowing that page 2 is about to be used.When it then faults  
-
-**408 Chapter 10 Virtual Memory**
-
-page frames
-
-reference string
-
-7 7
-
-0
-
-7
-
-0
-
-1
-
-2
-
-0
-
-1
-
-2
-
-0
-
-3
-
-4
-
-0
-
-3
-
-4
-
-0
-
-2
-
-4
-
-3
-
-2
-
-0
-
-3
-
-2
-
-1
-
-3
-
-2
-
-1
-
-0
-
-2
-
-1
-
-0
-
-7
-
-7 0 1 2 0 3 0 4 2 3 0 7 11 02 1 20 3
-
+![Alt text](image-45.png)
 **Figure 10.15** LRU page-replacement algorithm.
 
 for page 2, the LRU algorithm replaces page 3, since it is now the least recently used of the three pages in memory. Despite these problems, LRU replacement with twelve faults is much better than FIFO replacement with fifteen.
@@ -2646,74 +1160,34 @@ The LRU policy is often used as a page-replacement algorithm and is con- sidered
 • **Stack**. Another approach to implementing LRU replacement is to keep a stack of page numbers. Whenever a page is referenced, it is removed from the stack and put on the top. In this way, the most recently used page is always at the top of the stack, and the least recently used page is always at the bottom (Figure 10.16). Because entries must be removed from the middle of the stack, it is best to implement this approach by using a doubly linked list with a head pointer and a tail pointer. Removing a page and putting it on the top of the stack then requires changing six pointers at worst. Each update is a little more expensive, but there is no search for a replacement; the tail pointer points to the bottom of the stack, which is the LRU page. This approach is particularly appropriate for software or microcode implementations of LRU replacement.
 
 Like optimal replacement, LRU replacement does not suffer from Belady’s anomaly. Both belong to a class of page-replacement algorithms, called **stack algorithms**, that can never exhibit Belady’s anomaly. A stack algorithm is an algorithm for which it can be shown that the set of pages in memory for _n_ frames is always a **_subset_** of the set of pages that would be in memory with _n_  
-
-**10.4 Page Replacement 409**
-
-2
-
-1
-
-0
-
-4
-
-7
-
-stack before
-
-a
-
-7
-
-2
-
-1
-
-4
-
-0
-
-stack after
-
-b
-
-reference string
-
-4 7 0 7 1 0 1 2 1 2 27
-
-a b
-
-1
-
+![Alt text](image-46.png)
 **Figure 10.16** Use of a stack to record the most recent page references.
 
 \+ 1 frames. For LRU replacement, the set of pages in memory would be the _n_ most recently referenced pages. If the number of frames is increased, these _n_ pages will still be the most recently referenced and so will still be in memory.
 
 Note that neither implementation of LRU would be conceivable without hardware assistance beyond the standard TLB registers. The updating of the clock fields or stack must be done for **_every_** memory reference. If we were to use an interrupt for every reference to allow software to update such data structures, it would slow every memory reference by a factor of at least ten, hence slowing every process by a factor of ten. Few systems could tolerate that level of overhead for memory management.
 
-**10.4.5 LRU-Approximation Page Replacement**
+### LRU-Approximation Page Replacement
 
 Not many computer systems provide sufficient hardware support for true LRU page replacement. In fact, some systems provide no hardware support, and other page-replacement algorithms (such as a FIFO algorithm) must be used. Many systems provide some help, however, in the form of a **reference bit**. The reference bit for a page is set by the hardware whenever that page is referenced (either a read or a write to any byte in the page). Reference bits are associated with each entry in the page table.
 
 Initially, all bits are cleared (to 0) by the operating system. As a process executes, the bit associated with each page referenced is set (to 1) by the hardware. After some time,we can determinewhich pages have been used and which have not been used by examining the reference bits, although we do not know the **_order_** of use. This information is the basis formany page-replacement algorithms that approximate LRU replacement.
 
-**10.4.5.1 Additional-Reference-Bits Algorithm**
+#### Additional-Reference-Bits Algorithm
 
 We can gain additional ordering information by recording the reference bits at regular intervals. We can keep an 8-bit byte for each page in a table in memory. At regular intervals (say, every 100 milliseconds), a timer interrupt transfers control to the operating system. The operating system shifts the reference bit for each page into the high-order bit of its 8-bit byte, shifting the other bits right  
-
-**410 Chapter 10 Virtual Memory**
 
 by 1 bit and discarding the low-order bit. These 8-bit shift registers contain the history of page use for the last eight time periods. If the shift register contains 00000000, for example, then the page has not been used for eight time periods. A page that is used at least once in each period has a shift register value of 11111111. A page with a history register value of 11000100 has been used more recently than one with a value of 01110111. If we interpret these 8-bit bytes as unsigned integers, the page with the lowest number is the LRU page, and it can be replaced.Notice that the numbers are not guaranteed to be unique, however. We can either replace (swap out) all pages with the smallest value or use the FIFO method to choose among them.
 
 The number of bits of history included in the shift register can be varied, of course, and is selected (depending on the hardware available) to make the updating as fast as possible. In the extreme case, the number can be reduced to zero, leaving only the reference bit itself. This algorithm is called the **second- chance page-replacement algorithm**.
 
-**10.4.5.2 Second-Chance Algorithm**
+#### Second-Chance Algorithm
 
 The basic algorithm of second-chance replacement is a FIFO replacement algo- rithm. When a page has been selected, however, we inspect its reference bit. If the value is 0, we proceed to replace this page; but if the reference bit is set to 1, we give the page a second chance and move on to select the next FIFO page. When a page gets a second chance, its reference bit is cleared, and its arrival time is reset to the current time. Thus, a page that is given a second chance will not be replaced until all other pages have been replaced (or given second chances). In addition, if a page is used often enough to keep its reference bit set, it will never be replaced.
 
 One way to implement the second-chance algorithm (sometimes referred to as the **clock** algorithm) is as a circular queue. A pointer (that is, a hand on the clock) indicates which page is to be replaced next. When a frame is needed, the pointer advances until it finds a page with a 0 reference bit. As it advances, it clears the reference bits (Figure 10.17). Once a victim page is found, the page is replaced, and the new page is inserted in the circular queue in that position. Notice that, in the worst case, when all bits are set, the pointer cycles through the whole queue, giving each page a second chance. It clears all the reference bits before selecting the next page for replacement. Second-chance replacement degenerates to FIFO replacement if all bits are set.
 
-**10.4.5.3 Enhanced Second-Chance Algorithm**
+#### Enhanced Second-Chance Algorithm
 
 We can enhance the second-chance algorithm by considering the reference bit and the modify bit (described in Section 10.4.1) as an ordered pair. With these two bits, we have the following four possible classes:
 
@@ -2722,70 +1196,18 @@ We can enhance the second-chance algorithm by considering the reference bit and 
 **2\.** (0, 1) not recently used butmodified—not quite as good, because the page will need to be written out before replacement
 
 **3\.** (1, 0) recently used but clean—probably will be used again soon  
-
-**10.4 Page Replacement 411**
-
-circular queue of pages
-
-(a)
-
-next victim
-
-0
-
-reference bits
-
-pages
-
-0
-
-1
-
-1
-
-0
-
-1
-
-1
-
-……
-
-circular queue of pages
-
-(b)
-
-0
-
-reference bits
-
-pages
-
-0
-
-0
-
-0
-
-0
-
-1
-
-1
-
-…… **Figure 10.17** Second-chance (clock) page-replacement algorithm.
+![Alt text](image-47.png)
+**Figure 10.17** Second-chance (clock) page-replacement algorithm.
 
 **4\.** (1, 1) recently used andmodified—probablywill be used again soon, and the page will be need to be written out to secondary storage before it can be replaced
 
 Each page is in one of these four classes. When page replacement is called for, we use the same scheme as in the clock algorithm; but instead of examining whether the page to which we are pointing has the reference bit set to 1, we examine the class to which that page belongs. We replace the first page encountered in the lowest nonempty class. Notice that wemay have to scan the circular queue several times before we find a page to be replaced. The major difference between this algorithm and the simpler clock algorithm is that here we give preference to those pages that have been modified in order to reduce the number of I/Os required.
 
-**10.4.6 Counting-Based Page Replacement**
+### Counting-Based Page Replacement
 
 There are many other algorithms that can be used for page replacement. For example, we can keep a counter of the number of references that have been made to each page and develop the following two schemes.
 
 • The **least frequently used** (**LFU**) page-replacement algorithm requires that the pagewith the smallest count be replaced. The reason for this selection is that an actively used page should have a large reference count. A problem arises, however, when a page is used heavily during the initial phase of  
-
-**412 Chapter 10 Virtual Memory**
 
 a process but then is never used again. Since it was used heavily, it has a large count and remains in memory even though it is no longer needed. One solution is to shift the counts right by 1 bit at regular intervals, forming an exponentially decaying average usage count.
 
@@ -2793,7 +1215,7 @@ a process but then is never used again. Since it was used heavily, it has a larg
 
 As youmight expect, neither MFU nor LFU replacement is common. The imple- mentation of these algorithms is expensive, and they do not approximate OPT replacement well.
 
-**10.4.7 Page-Buffering Algorithms**
+### Page-Buffering Algorithms
 
 Other procedures are often used in addition to a specific page-replacement algorithm. For example, systems commonly keep a pool of free frames. When a page fault occurs, a victim frame is chosen as before. However, the desired page is read into a free frame from the pool before the victim iswritten out. This procedure allows the process to restart as soon as possible, without waiting for the victim page to bewritten out.When the victim is later written out, its frame is added to the free-frame pool.
 
@@ -2803,19 +1225,15 @@ Another modification is to keep a pool of free frames but to remember which page
 
 Some versions of the UNIX system use this method in conjunction with the second-chance algorithm. It can be a useful augmentation to any page- replacement algorithm, to reduce the penalty incurred if thewrong victimpage is selected. We describe these—and other—modifications in Section 10.5.3.
 
-**10.4.8 Applications and Page Replacement**
+### Applications and Page Replacement
 
 In certain cases, applications accessing data through the operating system’s vir- tual memory perform worse than if the operating system provided no buffer- ing at all. A typical example is a database, which provides its own memory management and I/O buffering. Applications like this understand their mem- ory use and storage use better than does an operating system that is implement- ing algorithms for general-purpose use. Furthermore, if the operating system is buffering I/O and the application is doing so as well, then twice the memory is being used for a set of I/O.
 
-In another example, data warehouses frequently performmassive sequen- tial storage reads, followed by computations and writes. The LRU algorithm  
-
-**10.5 Allocation of Frames 413**
-
-would be removing old pages and preserving new ones, while the applica- tion would more likely be reading older pages than newer ones (as it starts its sequential reads again). Here, MFU would actually be more efficient than LRU.
+In another example, data warehouses frequently performmassive sequen- tial storage reads, followed by computations and writes. The LRU algorithm would be removing old pages and preserving new ones, while the applica- tion would more likely be reading older pages than newer ones (as it starts its sequential reads again). Here, MFU would actually be more efficient than LRU.
 
 Because of such problems, some operating systems give special programs the ability to use a secondary storage partition as a large sequential array of logical blocks, without any file-system data structures. This array is some- times called the **raw disk**, and I/O to this array is termed raw I/O. Raw I/O bypasses all the file-system services, such as file I/O demand paging, file locking, prefetching, space allocation, file names, and directories. Note that although certain applications are more efficient when implementing their own special-purpose storage services on a raw partition, most applications perform better when they use the regular file-system services.
 
-**10.5 Allocation of Frames**
+## Allocation of Frames
 
 We turn next to the issue of allocation. How dowe allocate the fixed amount of free memory among the various processes? If we have 93 free frames and two processes, how many frames does each process get?
 
@@ -2823,13 +1241,11 @@ Consider a simple case of a system with 128 frames. The operating system may tak
 
 There are many variations on this simple strategy. We can require that the operating system allocate all its buffer and table space from the free-frame list. When this space is not in use by the operating system, it can be used to support user paging.We can try to keep three free frames reserved on the free-frame list at all times. Thus, when a page fault occurs, there is a free frame available to page into. While the page swap is taking place, a replacement can be selected, which is then written to the storage device as the user process continues to execute. Other variants are also possible, but the basic strategy is clear: the user process is allocated any free frame.
 
-**10.5.1 Minimum Number of Frames**
+### Minimum Number of Frames
 
 Our strategies for the allocation of frames are constrained in various ways. We cannot, for example, allocate more than the total number of available frames (unless there is page sharing). Wemust also allocate at least a minimum number of frames. Here, we look more closely at the latter requirement.
 
 One reason for allocating at least a minimum number of frames involves performance. Obviously, as the number of frames allocated to each process decreases, the page-fault rate increases, slowing process execution. In addi- tion, remember that, when a page fault occurs before an executing instruction is complete, the instruction must be restarted. Consequently, we must have enough frames to hold all the different pages that any single instruction can reference.  
-
-**414 Chapter 10 Virtual Memory**
 
 For example, consider a machine in which all memory-reference instruc- tionsmay reference only onememory address. In this case, we need at least one frame for the instruction and one frame for the memory reference. In addition, if one-level indirect addressing is allowed (for example, a load instruction on frame 16 can refer to an address on frame 0, which is an indirect reference to frame 23), then paging requires at least three frames per process. (Think about what might happen if a process had only two frames.)
 
@@ -2837,7 +1253,7 @@ The minimum number of frames is defined by the computer architecture. For exampl
 
 Whereas the minimum number of frames per process is defined by the architecture, the maximum number is defined by the amount of available physical memory. In between, we are still left with significant choice in frame allocation.
 
-**10.5.2 Allocation Algorithms**
+### Allocation Algorithms
 
 The easiest way to split _m_ frames among _n_ processes is to give everyone an equal share, _m_/_n_ frames (ignoring frames needed by the operating system for the moment). For instance, if there are 93 frames and 5 processes, each process will get 18 frames. The 3 leftover frames can be used as a free-frame buffer pool. This scheme is called **equal allocation**.
 
@@ -2845,9 +1261,7 @@ An alternative is to recognize that various processes will need differing amount
 
 To solve this problem, we can use **proportional allocation**, in which we allocate available memory to each process according to its size. Let the size of the virtual memory for process _pi_ be _si_, and define
 
-_S_ \= ∑
-
-_si_.
+_S_ \= ∑_si_.
 
 Then, if the total number of available frames is _m,_ we allocate _ai_ frames to process _pi_, where _ai_ is approximately
 
@@ -2857,8 +1271,6 @@ Of course, we must adjust each _ai_ to be an integer that is greater than the mi
 
 With proportional allocation, we would split 62 frames between two pro- cesses, one of 10 pages and one of 127 pages, by allocating 4 frames and 57 frames, respectively, since  
 
-**10.5 Allocation of Frames 415**
-
 10/137 × 62 ≈ 4 and 127/137 × 62 ≈ 57.
 
 In this way, both processes share the available frames according to their “needs,” rather than equally.
@@ -2867,15 +1279,13 @@ In both equal and proportional allocation, of course, the allocation may vary ac
 
 Notice that, with either equal or proportional allocation, a high-priority process is treated the same as a low-priority process. By its definition, however, we may want to give the high-priority process more memory to speed its execution, to the detriment of low-priority processes. One solution is to use a proportional allocation scheme wherein the ratio of frames depends not on the relative sizes of processes but rather on the priorities of processes or on a combination of size and priority.
 
-**10.5.3 Global versus Local Allocation**
+### Global versus Local Allocation
 
 Another important factor in the way frames are allocated to the various pro- cesses is page replacement. With multiple processes competing for frames, we can classify page-replacement algorithms into two broad categories: **global replacement** and **local replacement**. Global replacement allows a process to select a replacement frame from the set of all frames, even if that frame is currently allocated to some other process; that is, one process can take a frame from another. Local replacement requires that each process select from only its own set of allocated frames.
 
 For example, consider an allocation scheme wherein we allow high- priority processes to select frames from low-priority processes for replacement. A process can select a replacement from among its own frames or the frames of any lower-priority process. This approach allows a high-priority process to increase its frame allocation at the expense of a low-priority process. Whereas with a local replacement strategy, the number of frames allocated to a process does not change, with global replacement, a process may happen to select only frames allocated to other processes, thus increasing the number of frames allocated to it (assuming that other processes do not choose **_its_** frames for replacement).
 
 One problem with a global replacement algorithm is that the set of pages in memory for a process depends not only on the paging behavior of that pro- cess, but also on the paging behavior of other processes. Therefore, the same process may perform quite differently (for example, taking 0.5 seconds for one execution and 4.3 seconds for the next execution) because of totally external circumstances. Such is not the case with a local replacement algorithm. Under local replacement, the set of pages in memory for a process is affected by the paging behavior of only that process. Local replacement might hinder a pro- cess, however, by not making available to it other, less used pages of memory. Thus, global replacement generally results in greater system throughput. It is therefore the more commonly used method.  
-
-**416 Chapter 10 Virtual Memory**
 
 **_MAJOR ANDMINOR PAGE FAULTS_**
 
@@ -2892,33 +1302,7 @@ Here, it is interesting to note that, for most commands, the number of major pag
 Next, we focus on one possible strategy that we can use to implement a global page-replacement policy. With this approach, we satisfy all memory requests from the free-frame list, but rather than waiting for the list to drop to zero before we begin selecting pages for replacement, we trigger page replace- ment when the list falls below a certain threshold. This strategy attempts to ensure there is always sufficient free memory to satisfy new requests.
 
 Such a strategy is depicted in Figure 10.18. The strategy’s purpose is to keep the amount of free memory above a minimum threshold. When it drops  
-
-**10.5 Allocation of Frames 417**
-
-a c
-
-b d
-
-time
-
-maximum threshold
-
-minimum threshold
-
-kernel resumes reclaiming
-
-pages
-
-fr ee
-
-m em
-
-or y
-
-kernel suspends reclaiming
-
-pages
-
+![Alt text](image-48.png)
 **Figure 10.18** Reclaiming pages.
 
 below this threshold, a kernel routine is triggered that begins reclaiming pages from all processes in the system (typically excluding the kernel). Such kernel routines are often known as **reapers**, and they may apply any of the page- replacement algorithms covered in Section 10.4. When the amount of free memory reaches themaximum threshold, the reaper routine is suspended, only to resume once free memory again falls below the minimum threshold.
@@ -2927,33 +1311,15 @@ In Figure 10.18, we see that at point a the amount of free memory drops below th
 
 As mentioned above, the kernel reaper routine may adopt any page- replacement algorithm, but typically it uses some form of LRU approximation. Consider what may happen, though, if the reaper routine is unable to maintain the list of free frames below the minimum threshold. Under these circum-  
 
-**418 Chapter 10 Virtual Memory**
-
 stances, the reaper routine may begin to reclaim pages more aggressively. For example, perhaps it will suspend the second-chance algorithm and use pure FIFO. Another, more extreme, example occurs in Linux; when the amount of free memory falls to **_very_** low levels, a routine known as the **out-of-memory** (**OOM**) **killer** selects a process to terminate, thereby freeing its memory. How does Linux determine which process to terminate? Each process has what is known as an OOM score, with a higher score increasing the likelihood that the process could be terminated by the OOM killer routine. OOM scores are calcu- lated according to the percentage of memory a process is using—the higher the percentage, the higher the OOM score. (OOM scores can be viewed in the /proc file system, where the score for a process with pid 2500 can be viewed as /proc/2500/oom score.)
 
 In general, not only can reaper routines vary how aggressively they reclaim memory, but the values of the minimum and maximum thresholds can be varied as well. These values can be set to default values, but some systems may allow a system administrator to configure them based on the amount of physical memory in the system.
 
-**10.5.4 Non-Uniform Memory Access**
+### Non-Uniform Memory Access
 
 Thus far in our coverage of virtual memory, we have assumed that all main memory is created equal—or at least that it is accessed equally. On **non- uniform memory access** (**NUMA**) systems with multiple CPUs (Section 1.3.2), that is not the case. On these systems, a given CPU can access some sections of main memory faster than it can access others. These performance differences are caused by how CPUs and memory are interconnected in the system. Such a system is made up of multiple CPUs, each with its own local memory (Figure 10.19). The CPUs are organized using a shared system interconnect, and as you might expect, a CPU can access its local memory faster than memory local to another CPU. NUMA systems are without exception slower than systems in which all accesses to main memory are treated equally. However, as described in Section 1.3.2, NUMA systems can accommodate more CPUs and therefore achieve greater levels of throughput and parallelism.
-
-CPU0
-
-memory0
-
-CPU2 CPU3
-
-CPU1
-
-memory1
-
-memory2 memory3
-
-interconnect
-
+![Alt text](image-49.png)
 **Figure 10.19** NUMA multiprocessing architecture.  
-
-**10.6 Thrashing 419**
 
 Managing which page frames are stored at which locations can signifi- cantly affect performance in NUMA systems. If we treat memory as uniform in such a system, CPUs may wait significantly longer for memory access than if we modify memory allocation algorithms to take NUMA into account. We described some of these modifications in Section 5.5.4. Their goal is to have memory frames allocated “as close as possible” to the CPU onwhich the process is running. (The definition of **_close_** is “with minimum latency,” which typically means on the same system board as the CPU). Thus, when a process incurs a page fault, a NUMA-aware virtual memory system will allocate that process a frame as close as possible to the CPU on which the process is running.
 
@@ -2963,94 +1329,32 @@ The picture is more complicated once threads are added. For example, a process w
 
 As we discussed in Section 5.7.1, Linux manages this situation by having the kernel identify a hierarchy of scheduling domains. The Linux CFS scheduler does not allow threads to migrate across different domains and thus incur memory access penalties. Linux also has a separate free-frame list for each NUMAnode, thereby ensuring that a thread will be allocated memory from the node on which it is running. Solaris solves the problem similarly by creating **lgroups** (for “locality groups”) in the kernel. Each lgroup gathers together CPUs and memory, and each CPU in that group can access any memory in the group within a defined latency interval. In addition, there is a hierarchy of lgroups based on the amount of latency between the groups, similar to the hierarchy of scheduling domains in Linux. Solaris tries to schedule all threads of a process and allocate all memory of a process within an lgroup. If that is not possible, it picks nearby lgroups for the rest of the resources needed. This practiceminimizes overall memory latency andmaximizes CPU cache hit rates.
 
-**10.6 Thrashing**
+## Thrashing
 
 Consider what occurs if a process does not have “enough” frames—that is, it does not have the minimum number of frames it needs to support pages in the working set. The process will quickly page-fault. At this point, it must replace some page. However, since all its pages are in active use, it must replace a page that will be needed again right away. Consequently, it quickly faults again, and again, and again, replacing pages that it must bring back in immediately.
 
 This high paging activity is called **thrashing**. A process is thrashing if it is spending more time paging than executing. As you might expect, thrashing results in severe performance problems.
 
-**10.6.1 Cause of Thrashing**
+### Cause of Thrashing
 
-Consider the following scenario, which is based on the actual behavior of early paging systems. The operating systemmonitors CPU utilization. If CPU utiliza-  
-
-**420 Chapter 10 Virtual Memory**
-
-tion is too low, we increase the degree of multiprogramming by introducing a new process to the system. A global page-replacement algorithm is used; it replaces pages without regard to the process to which they belong. Now suppose that a process enters a new phase in its execution and needs more frames. It starts faulting and taking frames away from other processes. These processes need those pages, however, and so they also fault, taking frames from other processes. These faulting processes must use the paging device to swap pages in and out. As they queue up for the paging device, the ready queue empties. As processes wait for the paging device, CPU utilization decreases.
+Consider the following scenario, which is based on the actual behavior of early paging systems. The operating systemmonitors CPU utilization. If CPU utilization is too low, we increase the degree of multiprogramming by introducing a new process to the system. A global page-replacement algorithm is used; it replaces pages without regard to the process to which they belong. Now suppose that a process enters a new phase in its execution and needs more frames. It starts faulting and taking frames away from other processes. These processes need those pages, however, and so they also fault, taking frames from other processes. These faulting processes must use the paging device to swap pages in and out. As they queue up for the paging device, the ready queue empties. As processes wait for the paging device, CPU utilization decreases.
 
 The CPU scheduler sees the decreasing CPU utilization and **_increases_** the degree ofmultiprogramming as a result. The new process tries to get started by taking frames from running processes, causing more page faults and a longer queue for the paging device. As a result, CPU utilization drops even further, and the CPU scheduler tries to increase the degree of multiprogramming even more. Thrashing has occurred, and system throughput plunges. The page- fault rate increases tremendously. As a result, the effectivememory-access time increases. Nowork is getting done, because the processes are spending all their time paging.
 
 This phenomenon is illustrated in Figure 10.20, in which CPU utilization is plotted against the degree of multiprogramming. As the degree of multi- programming increases, CPU utilization also increases, although more slowly, until a maximum is reached. If the degree of multiprogramming is increased further, thrashing sets in, and CPU utilization drops sharply. At this point, to increase CPU utilization and stop thrashing, we must **_decrease_** the degree of multiprogramming.
 
 We can limit the effects of thrashing by using a **local replacement algo- rithm** (or **priority replacement algorithm**). Asmentioned earlier, local replace- ment requires that each process select from only its own set of allocated frames. Thus, if one process starts thrashing, it cannot steal frames from another pro- cess and cause the latter to thrash as well. However, the problem is not entirely solved. If processes are thrashing, they will be in the queue for the paging device most of the time. The average service time for a page fault will increase
-
-thrashing
-
-degree of multiprogramming
-
-CP U
-
-u til
-
-iz at
-
-io n
-
+![Alt text](image-50.png)
 **Figure 10.20** Thrashing.  
-
-**10.6 Thrashing 421**
 
 because of the longer average queue for the paging device. Thus, the effective access time will increase even for a process that is not thrashing.
 
 To prevent thrashing, we must provide a process with as many frames as it needs. But how do we know how many frames it “needs”? One strategy starts by looking at howmany frames a process is actually using. This approach defines the **locality model** of process execution.
 
 The locality model states that, as a process executes, it moves from locality to locality. A locality is a set of pages that are actively used together. A running program is generally composed of several different localities, which may over- lap. For example, when a function is called, it defines a new locality. In this
-
-18
-
-20
-
-22
-
-24
-
-26
-
-28
-
-30
-
-32
-
-34
-
-pa ge
-
-n um
-
-be rs
-
-execution time (a) (b)
-
+![Alt text](image-51.png)
 **Figure 10.21** Locality in a memory-reference pattern.  
-
-**422 Chapter 10 Virtual Memory**
-
-page reference table
-
-. . . 2 6 1 5 7 7 7 7 5 1 6 2 3 4 1 2 3 4 4 4 3 4 3 4 4 4 1 3 2 3 4 4 4 3 4 4 4 . . .
-
-Δ
-
-_t_ 1
-
-WS(_t_ 1 ) = {1,2,5,6,7}
-
-Δ
-
-_t_ 2
-
-WS(_t_ 2 ) = {3,4}
-
+![Alt text](image-52.png)
 **Figure 10.22** Working-set model.
 
 locality, memory references are made to the instructions of the function call, its local variables, and a subset of the global variables. When we exit the function, the process leaves this locality, since the local variables and instructions of the function are no longer in active use. We may return to this locality later.
@@ -3061,7 +1365,7 @@ Thus, we see that localities are defined by the program structure and its data s
 
 Suppose we allocate enough frames to a process to accommodate its cur- rent locality. It will fault for the pages in its locality until all these pages are in memory; then, it will not fault again until it changes localities. If we do not allocate enough frames to accommodate the size of the current locality, the process will thrash, since it cannot keep in memory all the pages that it is actively using.
 
-**10.6.2 Working-Set Model**
+### Working-Set Model
 
 The **working-set model** is based on the assumption of locality. This model uses a parameter,Δ, to define the **working-set window**. The idea is to examine the most recent Δ page references. The set of pages in the most recent Δ page references is the**working set** (Figure 10.22). If a page is in active use, it will be in the working set. If it is no longer being used, it will drop from the working set Δ time units after its last reference. Thus, the working set is an approximation of the program’s locality.
 
@@ -3071,11 +1375,7 @@ The accuracy of the working set depends on the selection of Δ. If Δ is too sma
 
 The most important property of the working set, then, is its size. If we compute the working-set size, _WSSi_, for each process in the system, we can then consider that  
 
-**10.6 Thrashing 423**
-
-_D_ \= ∑
-
-_WSSi_,
+_D_ \= ∑_WSSi_,
 
 where_D_ is the total demand for frames. Each process is actively using the pages in its working set. Thus, process _i_ needs _WSSi_ frames. If the total demand is greater than the total number of available frames (_D >m_), thrashing will occur, because some processes will not have enough frames.
 
@@ -3086,18 +1386,8 @@ This working-set strategy prevents thrashing while keeping the degree of multipr
 **_WORKING SETS AND PAGE-FAULT RATES_**
 
 There is a direct relationship between the working set of a process and its page-fault rate. Typically, as shown in Figure 10.22, the working set of a process changes over time as references to data and code sections move from one locality to another. Assuming there is sufficient memory to store the working set of a process (that is, the process is not thrashing), the page-fault rate of the process will transition between peaks and valleys over time. This general behavior is shown below:
-
-1
-
-0 time
-
-working set
-
-page fault rate
-
+![Alt text](image-53.png)
 Apeak in the page-fault rate occurs whenwe begin demand-paging a new locality. However, once the working set of this new locality is in memory, the page-fault rate falls. When the processmoves to a newworking set, the page- fault rate rises toward a peak once again, returning to a lower rate once the new working set is loaded into memory. The span of time between the start of one peak and the start of the next peak represents the transition from one working set to another.  
-
-**424 Chapter 10 Virtual Memory**
 
 working-set window is a moving window. At each memory reference, a new reference appears at one end, and the oldest reference drops off the other end. A page is in the working set if it is referenced anywhere in the working-set window.
 
@@ -3105,91 +1395,41 @@ We can approximate the working-set model with a fixed-interval timer interrupt a
 
 Note that this arrangement is not entirely accurate, because we cannot tell where, within an interval of 5,000, a reference occurred. We can reduce the uncertainty by increasing the number of history bits and the frequency of inter- rupts (for example, 10 bits and interrupts every 1,000 references). However, the cost to service these more frequent interrupts will be correspondingly higher.
 
-**10.6.3 Page-Fault Frequency**
+### Page-Fault Frequency
 
 The working-set model is successful, and knowledge of the working set can be useful for prepaging (Section 10.9.1), but it seems a clumsy way to control thrashing. A strategy that uses the **page-fault frequency** (**PFF**) takes a more direct approach.
 
 The specific problem is how to prevent thrashing. Thrashing has a high page-fault rate. Thus, we want to control the page-fault rate. When it is too high, we know that the process needs more frames. Conversely, if the page- fault rate is too low, then the process may have too many frames. We can establish upper and lower bounds on the desired page-fault rate (Figure 10.23). If the actual page-fault rate exceeds the upper limit, we allocate the process
-
-number of frames
-
-increase number of frames
-
-upper bound
-
-lower bound
-
-decrease number of frames
-
-p a g e -f
-
-a u lt r
-
-a te
-
+![Alt text](image-54.png)
 **Figure 10.23** Page-fault frequency.  
-
-**10.7 Memory Compression 425**
 
 another frame. If the page-fault rate falls below the lower limit, we remove a frame from the process. Thus, we can directly measure and control the page- fault rate to prevent thrashing.
 
 Aswith theworking-set strategy, wemay have to swap out a process. If the page-fault rate increases and no free frames are available, we must select some process and swap it out to backing store. The freed frames are then distributed to processes with high page-fault rates.
 
-**10.6.4 Current Practice**
+### Current Practice
 
 Practically speaking, thrashing and the resulting swapping have a disagreeably high impact on performance. The current best practice in implementing a computer system is to include enough physical memory, whenever possible, to avoid thrashing and swapping. From smartphones through large servers, providing enough memory to keep all working sets in memory concurrently, except under extreme conditions, provides the best user experience.
 
-**10.7 Memory Compression**
+## Memory Compression
 
 An alternative to paging is **memory compression**. Here, rather than paging out modified frames to swap space, we compress several frames into a single frame, enabling the system to reduce memory usage without resorting to swapping pages.
 
 In Figure 10.24, the free-frame list contains six frames. Assume that this number of free frames falls below a certain threshold that triggers page replace- ment. The replacement algorithm (say, an LRUapproximation algorithm) selects four frames—15, 3, 35, and 26—to place on the free-frame list. It first places these frames on amodified-frame list. Typically, the modified-frame list would next be written to swap space, making the frames available to the free-frame list. An alternative strategy is to compress a number of frames—say, three— and store their compressed versions in a single page frame.
 
 In Figure 10.25, frame 7 is removed from the free-frame list. Frames 15, 3, and 35 are compressed and stored in frame 7, which is then stored in the list of compressed frames. The frames 15, 3, and 35 can now be moved to the free-frame list. If one of the three compressed frames is later referenced, a page fault occurs, and the compressed frame is decompressed, restoring the three pages 15, 3, and 35 in memory.
-
-head 7
-
-head 3 35 2615
-
-2 9 21 27
-
-free-frame list
-
-modified frame list
-
-16
-
+![Alt text](image-55.png)
 **Figure 10.24** Free-frame list before compression.  
-
-**426 Chapter 10 Virtual Memory**
-
-3
-
-7
-
-35head 2 16 159 21 27
-
-head 26
-
-free-frame list
-
-modified frame list
-
-head
-
-compressed frame list
-
+![Alt text](image-56.png)
 **Figure 10.25** Free-frame list after compression
 
 As we have noted, mobile systems generally do not support either stan- dard swapping or swapping pages. Thus, memory compression is an integral part of the memory-management strategy for most mobile operating systems, including Android and iOS. In addition, both Windows 10 and macOS support memory compression. For Windows 10, Microsoft developed the **Universal Windows Platform** (**UWP**) architecture, which provides a common app plat- form for devices that run Windows 10, including mobile devices. UWP apps running on mobile devices are candidates for memory compression. macOS first supported memory compression with Version 10.9 of the operating sys- tem, first compressing LRU pages when free memory is short and then paging if that doesn’t solve the problem. Performance tests indicate that memory com- pression is faster than paging even to SSD secondary storage on laptop and desktop macOS systems.
 
 Although memory compression does require allocating free frames to hold the compressed pages, a significant memory saving can be realized, depending on the reductions achieved by the compression algorithm. (In the example above, the three frames were reduced to one-third of their original size.) As with any form of data compression, there is contention between the speed of the compression algorithm and the amount of reduction that can be achieved (known as the **compression ratio**). In general, higher compression ratios (greater reductions) can be achieved by slower, more computationally expensive algorithms. Most algorithms in use today balance these two factors, achieving relatively high compression ratios using fast algorithms. In addition, compression algorithms have improved by taking advantage of multiple com- puting cores and performing compression in parallel. For example,Microsoft’s Xpress and Apple’s WKdm compression algorithms are considered fast, and they report compressing pages to 30 to 50 percent of their original size.
 
-**10.8 Allocating Kernel Memory**
+## Allocating Kernel Memory
 
 When a process running in user mode requests additional memory, pages are allocated from the list of free page frames maintained by the kernel. This list is typically populated using a page-replacement algorithm such as those dis- cussed in Section 10.4 andmost likely contains free pages scattered throughout physical memory, as explained earlier. Remember, too, that if a user process requests a single byte of memory, internal fragmentation will result, as the process will be granted an entire page frame.  
-
-**10.8 Allocating Kernel Memory 427**
 
 Kernel memory is often allocated from a free-memory pool different from the list used to satisfy ordinary user-mode processes. There are two primary reasons for this:
 
@@ -3199,7 +1439,7 @@ Kernel memory is often allocated from a free-memory pool different from the list
 
 In the following sections,we examine two strategies formanaging freememory that is assigned to kernel processes: the “buddy system” and slab allocation.
 
-**10.8.1 Buddy System**
+### Buddy System
 
 The buddy system allocates memory from a fixed-size segment consisting of physically contiguous pages. Memory is allocated from this segment using a **power-of-2 allocator**, which satisfies requests in units sized as a power of 2 (4 KB, 8 KB, 16 KB, and so forth). A request in units not appropriately sized is rounded up to the next highest power of 2. For example, a request for 11 KB is satisfied with a 16-KB segment.
 
@@ -3209,55 +1449,15 @@ An advantage of the buddy system is how quickly adjacent buddies can be combined
 
 The obvious drawback to the buddy system is that rounding up to the next highest power of 2 is very likely to cause fragmentation within allocated seg- ments. For example, a 33-KB request can only be satisfiedwith a 64-KB segment. In fact, we cannot guarantee that less than 50 percent of the allocated unit will be wasted due to internal fragmentation. In the following section, we explore a memory allocation scheme where no space is lost due to fragmentation.
 
-**10.8.2 Slab Allocation**
+### Slab Allocation
 
 Asecond strategy for allocating kernel memory is known as **slab allocation**. A **slab** is made up of one or more physically contiguous pages. A **cache** consists  
-
-**428 Chapter 10 Virtual Memory**
-
-physically contiguous pages
-
-256 KB
-
-128 KB A
-
-L
-
-64 KB B
-
-R
-
-64 KB B
-
-L
-
-32 KB C
-
-L
-
-32 KB C
-
-R
-
-128 KB A
-
-R
-
+![Alt text](image-57.png)
 **Figure 10.26** Buddy system allocation.
 
 of one or more slabs. There is a single cache for each unique kernel data struc- ture—for example, a separate cache for the data structure representing process descriptors, a separate cache for file objects, a separate cache for semaphores, and so forth. Each cache is populated with **objects** that are instantiations of the kernel data structure the cache represents. For example, the cache represent- ing semaphores stores instances of semaphore objects, the cache representing process descriptors stores instances of process descriptor objects, and so forth. The relationship among slabs, caches, and objects is shown in Figure 10.27. The figure shows two kernel objects 3 KB in size and three objects 7 KB in size, each stored in a separate cache.
-
-3-KB objects
-
-7-KB objects
-
-kernel objects caches slabs
-
-physically contiguous pages
-
+![Alt text](image-58.png)
 **Figure 10.27** Slab allocation.  
-
-**10.8 Allocating Kernel Memory 429**
 
 The slab-allocation algorithm uses caches to store kernel objects. When a cache is created, a number of objects—which are initiallymarked as free—are allocated to the cache. The number of objects in the cache depends on the size of the associated slab. For example, a 12-KB slab (made up of three contiguous 4-KB pages) could store six 2-KB objects. Initially, all objects in the cache are marked as free. When a new object for a kernel data structure is needed, the allocator can assign any free object from the cache to satisfy the request. The object assigned from the cache is marked as used.
 
@@ -3280,20 +1480,17 @@ The slab allocator provides two main benefits:
 **2\.** Memory requests can be satisfied quickly. The slab allocation scheme is thus particularly effective for managing memory when objects are fre- quently allocated and deallocated, as is often the case with requests from the kernel. The act of allocating—and releasing—memory can be a time- consuming process. However, objects are created in advance and thus can be quickly allocated from the cache. Furthermore, when the kernel has finished with an object and releases it, it is marked as free and returned to its cache, thusmaking it immediately available for subsequent requests from the kernel.
 
 The slab allocator first appeared in the Solaris 2.4 kernel. Because of its general-purpose nature, this allocator is now also used for certain user-mode memory requests in Solaris. Linux originally used the buddy system; however, beginning with Version 2.2, the Linux kernel adopted the slab allocator. Linux  
-
-**430 Chapter 10 Virtual Memory**
-
 refers to its slab implementation as SLAB. Recent distributions of Linux include two other kernel memory allocators—the SLOB and SLUB allocators.
 
 The SLOB allocator is designed for systems with a limited amount of mem- ory, such as embedded systems. SLOB (which stands for “simple list of blocks”) maintains three lists of objects: **_small_** (for objects less than 256 bytes), **_medium_** (for objects less than 1,024 bytes), and **_large_** (for all other objects less than the size of a page). Memory requests are allocated from an object on the appropri- ate list using a first-fit policy.
 
 Beginning with Version 2.6.24, the SLUB allocator replaced SLAB as the default allocator for the Linux kernel. SLUB reduced much of the overhead required by the SLAB allocator. For instance, whereas SLAB stores certain meta- data with each slab, SLUB stores these data in the page structure the Linux kernel uses for each page. Additionally, SLUB does not include the per-CPU queues that the SLAB allocator maintains for objects in each cache. For systems with a large number of processors, the amount of memory allocated to these queues is significant. Thus, SLUB provides better performance as the number of processors on a system increases.
 
-**10.9 Other Considerations**
+## Other Considerations
 
 The major decisions that we make for a paging system are the selections of a replacement algorithm and an allocation policy, which we discussed earlier in this chapter. There are many other considerations as well, and we discuss several of them here.
 
-**10.9.1 Prepaging**
+### Prepaging
 
 An obvious property of pure demand paging is the large number of page faults that occur when a process is started. This situation results from trying to get the initial locality into memory. **Prepaging** is an attempt to prevent this high level of initial paging. The strategy is to bring some—or all—of the pages that will be needed into memory at one time.
 
@@ -3305,11 +1502,9 @@ Assume that _s_ pages are prepaged and a fraction α of these _s_ pages is actua
 
 Note also that prepaging an executable program may be difficult, as it may be unclear exactly what pages should be brought in. Prepaging a file may be more predictable, since files are often accessed sequentially. The Linux  
 
-**10.9 Other Considerations 431**
-
 readahead() system call prefetches the contents of a file into memory so that subsequent accesses to the file will take place in main memory.
 
-**10.9.2 Page Size**
+### Page Size
 
 The designers of an operating system for an existing machine seldom have a choice concerning the page size. However, when new machines are being designed, a decision regarding the best page size must be made. As you might expect, there is no single best page size. Rather, there is a set of factors that support various sizes. Page sizes are invariably powers of 2, generally ranging from 4,096 (212) to 4,194,304 (222) bytes.
 
@@ -3319,17 +1514,13 @@ Memory is better utilized with smaller pages, however. If a process is allocated
 
 Another problem is the time required to read or write a page. As you will see in Section 11.1, when the storage device is an HDD, I/O time is composed of seek, latency, and transfer times. Transfer time is proportional to the amount transferred (that is, the page size)—a fact that would seem to argue for a small page size. However, latency and seek time normally dwarf transfer time. At a transfer rate of 50 MB per second, it takes only 0.01 milliseconds to transfer 512 bytes. Latency time, though, is perhaps 3 milliseconds, and seek time 5 milliseconds. Of the total I/O time (8.01 milliseconds), therefore, only about 0.1 percent is attributable to the actual transfer. Doubling the page size increases I/O time to only 8.02 milliseconds. It takes 8.02 milliseconds to read a single page of 1,024 bytes but 16.02 milliseconds to read the same amount as two pages of 512 bytes each. Thus, a desire to minimize I/O time argues for a larger page size.
 
-With a smaller page size, though, total I/O should be reduced, since locality will be improved. A smaller page size allows each page to match program locality more accurately. For example, consider a process 200 KB in size, of which only half (100 KB) is actually used in an execution. If we have only one large page, we must bring in the entire page, a total of 200 KB transferred and allocated. If instead we had pages of only 1 byte, then we could bring in only the 100 KB that are actually used, resulting in only 100 KB transferred and allocated. With a smaller page size, then, we have better **resolution**, allowing us to isolate only the memory that is actually needed. With a larger page size, we must allocate and transfer not only what is needed but also anything else  
-
-**432 Chapter 10 Virtual Memory**
-
-that happens to be in the page, whether it is needed or not. Thus, a smaller page size should result in less I/O and less total allocated memory.
+With a smaller page size, though, total I/O should be reduced, since locality will be improved. A smaller page size allows each page to match program locality more accurately. For example, consider a process 200 KB in size, of which only half (100 KB) is actually used in an execution. If we have only one large page, we must bring in the entire page, a total of 200 KB transferred and allocated. If instead we had pages of only 1 byte, then we could bring in only the 100 KB that are actually used, resulting in only 100 KB transferred and allocated. With a smaller page size, then, we have better **resolution**, allowing us to isolate only the memory that is actually needed. With a larger page size, we must allocate and transfer not only what is needed but also anything else that happens to be in the page, whether it is needed or not. Thus, a smaller page size should result in less I/O and less total allocated memory.
 
 But did you notice that with a page size of 1 byte, we would have a page fault for **_each_** byte? A process of 200 KB that used only half of that memory would generate only one page fault with a page size of 200 KB but 102,400 page faults with a page size of 1 byte. Each page fault generates the large amount of overhead needed for processing the interrupt, saving registers, replacing a page, queuing for the paging device, and updating tables. To minimize the number of page faults, we need to have a large page size.
 
 Other factors must be considered as well (such as the relationship between page size and sector size on the paging device). The problem has no best answer. As we have seen, some factors (internal fragmentation, locality) argue for a small page size, whereas others (table size, I/O time) argue for a large page size. Nevertheless, the historical trend is toward larger page sizes, even for mobile systems. Indeed, the first edition of_Operating System Concepts_ (1983) used 4,096 bytes as the upper bound on page sizes, and this valuewas themost common page size in 1990. Modern systems may now use much larger page sizes, as you will see in the following section.
 
-**10.9.3 TLB Reach**
+### TLB Reach
 
 In Chapter 9, we introduced the **hit ratio** of the TLB. Recall that the hit ratio for the TLB refers to the percentage of virtual address translations that are resolved in the TLB rather than the page table. Clearly, the hit ratio is related to the number of entries in the TLB, and the way to increase the hit ratio is by increasing the number of entries. This, however, does not come cheaply, as the associative memory used to construct the TLB is both expensive and power hungry.
 
@@ -3338,8 +1529,6 @@ Related to the hit ratio is a similar metric: the **TLB reach**. The TLB reach r
 Another approach for increasing the TLB reach is to either increase the size of the page or provide multiple page sizes. If we increase the page size—say, from 4 KB to 16 KB—we quadruple the TLB reach. However, this may lead to an increase in fragmentation for some applications that do not require such a large page size. Alternatively, most architectures provide support for more than one page size, and an operating system can be configured to take advantage of this support. For example, the default page size on Linux systems is 4 KB; however, Linux also provides **huge pages**, a feature that designates a region of physical memory where larger pages (for example, 2 MB) may be used.
 
 Recall from Section 9.7 that the ARMv8 architecture provides support for pages and regions of different sizes. Additionally, each TLB entry in the ARMv8 contains a **contiguous bit**. If this bit is set for a particular TLB entry, that entry maps contiguous (adjacent) blocks of memory. Three possible arrangements of  
-
-**10.9 Other Considerations 433**
 
 contiguous blocks can be mapped in a single TLB entry, thereby increasing the TLB reach:
 
@@ -3351,7 +1540,7 @@ contiguous blocks can be mapped in a single TLB entry, thereby increasing the TL
 
 Providing support for multiple page sizes may require the operating sys- tem—rather than hardware—tomanage the TLB. For example, one of the fields in a TLB entry must indicate the size of the page frame corresponding to the entry—or, in the case of ARM architectures, must indicate that the entry refers to a contiguous block of memory. Managing the TLB in software and not hard- ware comes at a cost in performance. However, the increased hit ratio and TLB reach offset the performance costs.
 
-**10.9.4 Inverted Page Tables**
+### Inverted Page Tables
 
 Section 9.4.3 introduced the concept of the inverted page table. The purpose of this form of page management is to reduce the amount of physical memory needed to track virtual-to-physical address translations. We accomplish this savings by creating a table that has one entry per page of physical memory, indexed by the pair _<_process-id, page-number_\>_.
 
@@ -3359,43 +1548,37 @@ Because they keep information about which virtual memory page is stored in each 
 
 But do external page tables negate the utility of inverted page tables? Since these tables are referenced only when a page fault occurs, they do not need to be available quickly. Instead, they are themselves paged in and out of memory as necessary. Unfortunately, a page fault may now cause the virtual memory manager to generate another page fault as it pages in the external page table it needs to locate the virtual page on the backing store. This special case requires careful handling in the kernel and a delay in the page-lookup processing.
 
-**10.9.5 Program Structure**
+### Program Structure
 
 Demand paging is designed to be transparent to the user program. In many cases, the user is completely unaware of the paged nature of memory. In other cases, however, system performance can be improved if the user (or compiler) has an awareness of the underlying demand paging.
 
 Let’s look at a contrived but informative example. Assume that pages are 128 words in size. Consider a C program whose function is to initialize to 0 each element of a 128-by-128 array. The following code is typical:  
-
-**434 Chapter 10 Virtual Memory**
-
+```
 int i, j; int\[128\]\[128\] data;
 
 for (j = 0; j < 128; j++) for (i = 0; i < 128; i++)
 
 data\[i\]\[j\] = 0;
-
+```
 Notice that the array is stored row major; that is, the array is stored data\[0\]\[0\], data\[0\]\[1\], · · ·, data\[0\]\[127\], data\[1\]\[0\], data\[1\]\[1\], · · ·, data\[127\]\[127\]. For pages of 128 words, each row takes one page. Thus, the preceding code zeros one word in each page, then another word in each page, and so on. If the operating system allocates fewer than 128 frames to the entire program, then its execution will result in 128 × 128 = 16,384 page faults.
 
 In contrast, suppose we change the code to
-
+```
 int i, j; int\[128\]\[128\] data;
 
 for (i = 0; i < 128; i++) for (j = 0; j < 128; j++)
 
 data\[i\]\[j\] = 0;
-
+```
 This code zeros all the words on one page before starting the next page, reducing the number of page faults to 128.
 
 Careful selection of data structures and programming structures can increase locality and hence lower the page-fault rate and the number of pages in the working set. For example, a stack has good locality, since access is always made to the top. A hash table, in contrast, is designed to scatter references, producing bad locality. Of course, locality of reference is just one measure of the efficiency of the use of a data structure. Other heavily weighted factors include search speed, total number of memory references, and total number of pages touched.
 
 At a later stage, the compiler and loader can have a significant effect on paging. Separating code and data and generating reentrant code means that code pages can be read-only and hence will never be modified. Clean pages do not have to be paged out to be replaced. The loader can avoid placing routines across page boundaries, keeping each routine completely in one page. Routines that call each other many times can be packed into the same page. This packaging is a variant of the bin-packing problem of operations research: try to pack the variable-sized load segments into the fixed-sized pages so that interpage references areminimized. Such an approach is particularly useful for large page sizes.
 
-**10.9.6 I/O Interlock and Page Locking**
+### I/O Interlock and Page Locking
 
-When demand paging is used, we sometimes need to allow some of the pages to be **locked** in memory. One such situation occurs when I/O is done to or from user (virtual) memory. I/O is often implemented by a separate I/O processor. For example, a controller for a USB storage device is generally given the number  
-
-**10.9 Other Considerations 435**
-
-of bytes to transfer and a memory address for the buffer (Figure 10.28). When the transfer is complete, the CPU is interrupted.
+When demand paging is used, we sometimes need to allow some of the pages to be **locked** in memory. One such situation occurs when I/O is done to or from user (virtual) memory. I/O is often implemented by a separate I/O processor. For example, a controller for a USB storage device is generally given the number of bytes to transfer and a memory address for the buffer (Figure 10.28). When the transfer is complete, the CPU is interrupted.
 
 Wemust be sure the following sequence of events does not occur: Aprocess issues an I/O request and is put in a queue for that I/O device. Meanwhile, the CPU is given to other processes. These processes cause page faults, and one of them, using a global replacement algorithm, replaces the page containing the memory buffer for the waiting process. The pages are paged out. Some time later, when the I/O request advances to the head of the device queue, the I/O occurs to the specified address. However, this frame is now being used for a different page belonging to another process.
 
@@ -3404,15 +1587,9 @@ There are two common solutions to this problem. One solution is never to execute
 Another solution is to allow pages to be locked into memory. Here, a lock bit is associated with every frame. If the frame is locked, it cannot be selected for replacement. Under this approach, to write a block to disk, we lock into memory the pages containing the block. The system can then continue as usual. Locked pages cannot be replaced. When the I/O is complete, the pages are unlocked.
 
 Lock bits are used in various situations. Frequently, some or all of the operating-system kernel is locked into memory. Many operating systems can- not tolerate a page fault caused by the kernel or by a specific kernel module, including the one performing memory management. User processes may also need to lock pages into memory. A database process may want to manage a chunk of memory, for example, moving blocks between secondary storage and
-
-buffer
-
-disk drive
+![Alt text](image-59.png)
 
 **Figure 10.28** The reason why frames used for I/O must be in memory.  
-
-**436 Chapter 10 Virtual Memory**
-
 memory itself because it has the best knowledge of how it is going to use its data. Such **pinning** of pages in memory is fairly common, and most operating systems have a system call allowing an application to request that a region of its logical address space be pinned. Note that this feature could be abused and could cause stress on the memory-management algorithms. Therefore, an application frequently requires special privileges to make such a request.
 
 Another use for a lock bit involves normal page replacement. Consider the following sequence of events: A low-priority process faults. Selecting a replacement frame, the paging system reads the necessary page into memory. Ready to continue, the low-priority process enters the ready queue and waits for the CPU. Since it is a low-priority process, it may not be selected by the CPU scheduler for a time. While the low-priority process waits, a high-priority process faults. Looking for a replacement, the paging system sees a page that is in memory but has not been referenced or modified: it is the page that the low-priority process just brought in. This page looks like a perfect replacement. It is clean and will not need to be written out, and it apparently has not been used for a long time.
@@ -3421,43 +1598,24 @@ Whether the high-priority process should be able to replace the low- priority pr
 
 Using a lock bit can be dangerous: the lock bit may get turned on but never turned off. Should this situation occur (because of a bug in the operating system, for example), the locked frame becomes unusable. For instance, Solaris allows locking “hints,” but it is free to disregard these hints if the free-frame pool becomes too small or if an individual process requests that toomanypages be locked in memory.
 
-**10.10 Operating-System Examples**
+## Operating-System Examples
 
 In this section, we describe how Linux, Windows and Solaris manage virtual memory.
 
-**10.10.1 Linux**
+### Linux
 
 In Section 10.8.2, we discussed how Linux manages kernel memory using slab allocation. We now cover how Linux manages virtual memory. Linux uses demand paging, allocating pages from a list of free frames. In addition, it uses a global page-replacement policy similar to the LRU-approximation clock algo- rithm described in Section 10.4.5.2. To manage memory, Linux maintains two types of page lists: an active list and an inactive list. The active list contains the pages that are considered in use, while the inactive list con- tains pages that have not recently been referenced and are eligible to be reclaimed.  
 
-**10.10 Operating-System Examples 437**
-
-rear new page
-
-inactive\_list
-
-active\_list
-
-referenced
-
-referenced
-
-rear
-
-front
-
-front
-
+![Alt text](image-60.png)
 **Figure 10.29** The Linux active list and inactive list structures.
 
 Each page has an **_accessed_** bit that is set whenever the page is referenced. (The actual bits used to mark page access vary by architecture.) When a page is first allocated, its accessed bit is set, and it is added to the rear of the active list. Similarly, whenever a page in the active list is referenced, its accessed bit is set, and the page moves to the rear of the list. Periodically, the accessed bits for pages in the active list are reset. Over time, the least recently used page will be at the front of the active list. From there, it may migrate to the rear of the inactive list. If a page in the inactive list is referenced, it moves back to the rear of the active list. This pattern is illustrated in Figure 10.29.
 
 The two lists are kept in relative balance, andwhen the active list grows much larger than the inactive list, pages at the front of the active list move to the inactive list, where they become eligible for reclamation. The Linux kernel has a page-out daemon process kswapd that periodically awak- ens and checks the amount of free memory in the system. If free memory falls below a certain threshold, kswapd begins scanning pages in the inac- tive list and reclaiming them for the free list. Linux virtual memory man- agement is discussed in greater detail in Chapter 20.
 
-**10.10.2 Windows**
+### Windows
 
 Windows 10 supports 32- and 64-bit systems running on Intel (IA-32 and x86- 64) and ARM architectures. On 32-bit systems, the default virtual address space of a process is 2 GB, although it can be extended to 3 GB. 32-bit systems support 4 GB of physical memory. On 64-bit systems, Windows 10 has a 128-TB vir- tual address space and supports up to 24 TB of physical memory. (Versions of Windows Server support up to 128 TB of physicalmemory.)Windows 10 imple- ments most of the memory-management features described thus far, including shared libraries, demand paging, copy-on-write, paging, and memory com- pression.  
-
-**438 Chapter 10 Virtual Memory**
 
 Windows 10 implements virtual memory using demand paging with **clus- tering**, a strategy that recognizes locality of memory references and therefore handles page faults by bringing in not only the faulting page but also several pages immediately preceding and following the faulting page. The size of a cluster varies by page type. For a data page, a cluster contains three pages(the page before and the page after the faulting page); all other page faults have a cluster size of seven.
 
@@ -3467,11 +1625,9 @@ Windows uses the LRU-approximation clock algorithm, as described in Sec- tion 10
 
 When the amount of free memory falls below the threshold, the vir- tual memory manager uses a global replacement tactic known as **automatic working-set trimming** to restore the value to a level above the threshold. Automatic working-set trimming works by evaluating the number of pages allocated to processes. If a process has been allocated more pages than its working-set minimum, the virtual memory manager removes pages from the working set until either there is sufficient memory available or the process has reached its working-set minimum. Larger processes that have been idle are targeted before smaller, active processes. The trimming procedure continues until there is sufficient free memory, even if it is necessary to remove pages from a process already below its working set minimum. Windows performs working-set trimming on both user-mode and system processes.
 
-**10.10.3 Solaris**
+### Solaris
 
 In Solaris, when a thread incurs a page fault, the kernel assigns a page to the faulting thread from the list of free pages it maintains. Therefore, it is imperative that the kernel keep a sufficient amount of free memory available. Associated with this list of free pages is a parameter—lotsfree—that repre- sents a threshold to begin paging. The lotsfree parameter is typically set to 1∕64 the size of the physical memory. Four times per second, the kernel checks whether the amount of free memory is less than lotsfree. If the number of  
-
-**10.10 Operating-System Examples 439**
 
 free pages falls below lotsfree, a process known as a **pageout** starts up. The pageout process is similar to the second-chance algorithm described in Section 10.4.5.2, except that it uses two hands while scanning pages, rather than one.
 
@@ -3480,32 +1636,14 @@ The pageout process works as follows: The front hand of the clock scans all page
 The pageout algorithm uses several parameters to control the rate at which pages are scanned (known as the scanrate). The scanrate is expressed in pages per second and ranges from slowscan to fastscan. When free memory falls below lotsfree, scanning occurs at slowscan pages per second and progresses to fastscan, depending on the amount of free memory available. The default value of slowscan is 100 pages per second. Fastscan is typically set to the value (total physical pages)/2 pages per second, with a maximum of 8,192 pages per second. This is shown in Figure 10.30 (with fastscan set to the maximum).
 
 The distance (in pages) between the hands of the clock is determined by a system parameter, handspread. The amount of time between the front hand’s clearing a bit and the back hand’s investigating its value depends on the scanrate and the handspread. If scanrate is 100 pages per second and handspread is 1,024 pages, 10 seconds can pass between the time a bit is set by the front hand and the time it is checked by the back hand. However, because of the demands placed on thememory system, a scanrate of several thousand is not uncommon. This means that the amount of time between clearing and investigating a bit is often a few seconds.
-
-minfree
-
-s c a n r
-
-a te
-
-100 slowscan
-
-8192 fastscan
-
-desfree
-
-amount of free memory
-
-lotsfree
-
+![Alt text](image-61.png)
 **Figure 10.30** Solaris page scanner.  
-
-**440 Chapter 10 Virtual Memory**
 
 As mentioned above, the pageout process checks memory four times per second. However, if free memory falls below the value of desfree (the desired amount of free memory in the system), pageout will run a hundred times per second with the intention of keeping at least desfree free memory available (Figure 10.30). If the pageout process is unable to keep the amount of free memory at desfree for a 30-second average, the kernel begins swapping processes, thereby freeing all pages allocated to swapped processes. In general, the kernel looks for processes that have been idle for long periods of time. If the system is unable to maintain the amount of free memory at minfree, the pageout process is called for every request for a new page.
 
 The page-scanning algorithm skips pages belonging to libraries that are being shared by several processes, even if they are eligible to be claimed by the scanner. The algorithm also distinguishes between pages allocated to processes and pages allocated to regular data files. This is known as **priority paging** and is covered in Section 14.6.2.
 
-**10.11 Summary**
+## Summary
 
 • Virtual memory abstracts physical memory into an extremely large uni- form array of storage.
 
@@ -3524,8 +1662,6 @@ The page-scanning algorithm skips pages belonging to libraries that are being sh
 • Thrashing occurs when a system spendsmore time paging than executing.
 
 • A locality represents a set of pages that are actively used together. As a process executes, it moves from locality to locality. Aworking set is based on locality and is defined as the set of pages currently in use by a process.  
-
-**Practice Exercises 441**
 
 • Memory compression is a memory-management technique that com- presses a number of pages into a single page. Compressed memory is an alternative to paging and is used on mobile systems that do not support paging.
 
@@ -3561,48 +1697,13 @@ d. Second-chance replacement
 
 • Of the instructions that accessed another page, 80 percent accessed a page already in memory.  
 
-**442 Chapter 10 Virtual Memory**
 
 • When a new page was required, the replaced page was modified 50 percent of the time.
 
 Calculate the effective instruction time on this system, assuming that the system is running one process only and that the processor is idle during drum transfers.
 
 **10.5** Consider the page table for a system with 12-bit virtual and physical addresses and 256-byte pages.
-
-Page Page Frame
-
-0
-
-1
-
-2
-
-3
-
-4
-
-5
-
-–
-
-2
-
-C
-
-A
-
-–
-
-4
-
-6 3
-
-7 –
-
-8 B
-
-9 0
-
+![Alt text](image-62.png)
 The list of free page frames is_D_, _E_, _F_ (that is,_D_ is at the head of the list, _E_ is second, and _F_ is last). A dash for a page frame indicates that the page is not in memory.
 
 Convert the following virtual addresses to their equivalent physical addresses in hexadecimal. All numbers are given in hexadecimal.
@@ -3624,8 +1725,6 @@ int A\[\]\[\] = new int\[100\]\[100\];
 where A\[0\]\[0\] is at location 200 in a pagedmemory systemwith pages of size 200. A small process that manipulates the matrix resides in page 0 (locations 0 to 199). Thus, every instruction fetch will be from page 0. For three page frames, how many page faults are generated by the
 
 following array-initialization loops? Use LRU replacement, and assume  
-
-**Practice Exercises 443**
 
 that page frame 1 contains the process and the other two are initially empty.
 
@@ -3667,7 +1766,6 @@ Assuming demand paging with three frames, how many page faults would occur for t
 
 **10.12** Segmentation is similar to paging but uses variable-sized “pages.” Define two segment-replacement algorithms, one based on the FIFO page-replacement scheme and the other on the LRU page-replacement scheme. Remember that since segments are not the same size, the seg- ment that is chosen for replacement may be too small to leave enough  
 
-**444 Chapter 10 Virtual Memory**
 
 consecutive locations for the needed segment. Consider strategies for systemswhere segments cannot be relocated and strategies for systems where they can.
 
@@ -3718,11 +1816,7 @@ The working-set model was developed by \[Denning (1968)\]. The enhanced clock al
 • TLB hit with page fault
 
 **10.16** Asimplified view of thread states is **_ready_**, **_running_**, and **_blocked_**, where a thread is either ready and waiting to be scheduled, is running on the processor, or is blocked (for example, waiting for I/O).
-
-ready
-
-blocked running
-
+![Alt text](image-64.png)
 Assuming a thread is in the **_running_** state, answer the following ques- tions, and explain your answers:
 
 a. Will the thread change state if it incurs a page fault? If so, to what state will it change?
@@ -3744,45 +1838,7 @@ c. Assume that a process changes its locality and the size of the new working se
 **EX-35**  
 
 **Exercises**
-
-Page Page Frame
-
-0
-
-1
-
-2
-
-3
-
-4
-
-5
-
-0 x 4
-
-0 x B
-
-0 x A
-
-–
-
-–
-
-0 x 2
-
-6
-
-7
-
-–
-
-8 0 x C
-
-0 x 0
-
-9 0 x 1
-
+![Alt text](image-63.png)
 Convert the following virtual addresses to their equivalent physical addresses in hexadecimal. All numbers are given in hexadecimal. In the case of a page fault, you must use one of the free frames to update the page table and resolve the logical address to its corresponding physical address.
 
 • 0x2A1
@@ -3804,102 +1860,7 @@ Assume that the page to be replaced is modified 70 percent of the time. What is 
 **10.22** Consider the page table for a system with 16-bit virtual and physical addresses and 4,096-byte pages.
 
 **EX-36**  
-
-Page Page Frame Reference Bit
-
-0
-
-1
-
-2
-
-3
-
-4
-
-5
-
-9
-
-10
-
-15
-
-–
-
-6
-
-13
-
-6
-
-7
-
-8
-
-8 7
-
-5
-
-4
-
-1
-
-0
-
-2
-
-12
-
-9
-
-10
-
-11
-
-12
-
-13
-
-14
-
-15
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-–
-
-–
+![Alt text](image-65.png)
 
 The reference bit for a page is set to 1 when the page has been ref- erenced. Periodically, a thread zeroes out all values of the reference bit. A dash for a page frame indicates that the page is not in memory. The page-replacement algorithm is localized LRU, and all numbers are provided in decimal.
 
@@ -3997,40 +1958,7 @@ h. Increase the page size.
 
 **Exercises**
 
-18
-
-20
-
-22
-
-24
-
-26
-
-28
-
-30
-
-32
-
-34
-
-pa ge
-
-n um
-
-be rs
-
-m em
-
-or y
-
-ad dr
-
-es s
-
-execution time (X)
-
+![Alt text](image-66.png)
 What pages represent the locality at time (_X_)?
 
 **10.34** Suppose that your replacement policy (in a paged system) is to examine each page regularly and to discard that page if it has not been used since the last examination. What would you gain and what would you lose by using this policy rather than LRU or second-chance replacement?
@@ -4140,101 +2068,7 @@ Additionally, your program need only be concerned with reading logical addresses
 **Address Translation**
 
 Your programwill translate logical to physical addresses using a TLB and page table as outlined in Section 9.3. First, the page number is extracted from the logical address, and the TLB is consulted. In the case of a TLB hit, the frame number is obtained from the TLB. In the case of a TLB miss, the page table must be consulted. In the latter case, either the frame number is obtained from the page table, or a page fault occurs. A visual representation of the address- translation process is:
-
-page
-
-number
-
-0
-
-1
-
-2
-
-15
-
-0
-
-1
-
-2
-
-255
-
-TLB
-
-page
-
-table
-
-TLB hit
-
-TLB miss
-
-page 0
-
-page 255
-
-page 1
-
-page 2
-
-frame
-
-number
-
-.
-
-.
-
-.
-
-.
-
-.
-
-.
-
-.
-
-.
-
-0
-
-1
-
-2
-
-255
-
-physical
-
-memory
-
-frame 0
-
-frame 255
-
-frame 1
-
-frame 2
-
-.
-
-.
-
-.
-
-.
-
-page
-
-number offset
-
-frame
-
-number offset
-
+![Alt text](image-67.png)
 **Handling Page Faults**
 
 Your programwill implement demand paging as described in Section 10.2. The backing store is represented by the file BACKING STORE.bin, a binary file of size 65,536 bytes. When a page fault occurs, you will read in a 256-byte page from the file BACKING STORE and store it in an available page frame in physical memory. For example, if a logical address with page number 15 resulted in a page fault, your programwould read in page 15 from BACKING STORE (remem- ber that pages begin at 0 and are 256 bytes in size) and store it in a page frame in physical memory. Once this frame is stored (and the page table and TLB are updated), subsequent accesses to page 15 will be resolved by either the TLB or the page table.
