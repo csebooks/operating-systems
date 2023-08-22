@@ -18,8 +18,7 @@ Modern operating systems support processes having multiple _threads_ of control.
 One of the most important aspects of an operating system is how it schedules threads onto available processing cores. Several choices for designing CPU schedulers are available to programmers.  
 
 _3_**CHAPTER**
-
-_Processes_
+# Processes
 
 Early computers allowed only one program to be executed at a time. This pro- gram had complete control of the system and had access to all the system’s resources. In contrast, contemporary computer systems allow multiple pro- grams to be loaded into memory and executed concurrently. This evolution required firmer control and more compartmentalization of the various pro- grams; and these needs resulted in the notion of a **process**, which is a program in execution. A process is the unit of work in a modern computing system.
 
@@ -39,39 +38,21 @@ The more complex the operating system is, the more it is expected to do on behal
 
 • Design kernel modules that interact with the Linux operating system.
 
-**105**  
-
-**106 Chapter 3 Processes**
-
-**3.1 Process Concept**
+## Process Concept
 
 A question that arises in discussing operating systems involves what to call all the CPU activities. Early computers were batch systems that executed **jobs**, followed by the emergence of time-shared systems that ran **user programs**, or **tasks**. Even on a single-user system, a usermay be able to run several programs at one time: a word processor, a web browser, and an e-mail package. And even if a computer can execute only one program at a time, such as on an embedded device that does not support multitasking, the operating system may need to support its own internal programmed activities, such asmemorymanagement. Inmany respects, all these activities are similar, sowe call all of them**processes**.
 
 Although we personally prefer the more contemporary term **_process_**, the term **_job_** has historical significance, as much of operating system theory and terminologywas developedduring a timewhen themajor activity of operating systems was job processing. Therefore, in some appropriate instances we use **_job_**when describing the role of the operating system. As an example, it would be misleading to avoid the use of commonly accepted terms that include the word **_job_** (such as **_job scheduling_**) simply because **_process_** has superseded **_job._**
 
-**3.1.1 The Process**
+### The Process
 
 Informally, asmentioned earlier, a process is a program in execution. The status of the current activity of a process is represented by the value of the **program counter** and the contents of the processor’s registers. The memory layout of a process is typically divided into multiple sections, and is shown in Figure 3.1. These sections include:
 
 • **Text section**—the executable code
 
 • **Data section**—global variables
-
-text
-
-0
-
-max
-
-data
-
-heap
-
-stack
-
+![Alt text](image.png)
 **Figure 3.1** Layout of a process in memory.  
-
-**3.1 Process Concept 107**
 
 • **Heap section**—memory that is dynamically allocated during program run time
 
@@ -85,15 +66,13 @@ Although two processes may be associated with the same program, they are neverth
 
 Note that a process can itself be an execution environment for other code. The Java programming environment provides a good example. In most cir- cumstances, an executable Java program is executed within the Java virtual machine (JVM). The JVM executes as a process that interprets the loaded Java code and takes actions (via native machine instructions) on behalf of that code. For example, to run the compiled Java program Program.class, we would enter
 
-java Program
+**java Program**
 
 The command java runs the JVM as an ordinary process, which in turns executes the Java program Program in the virtual machine. The concept is the same as simulation, except that the code, instead of beingwritten for a different instruction set, is written in the Java language.
 
-**3.1.2 Process State**
+### Process State
 
 As a process executes, it changes **state**. The state of a process is defined in part by the current activity of that process. Aprocess may be in one of the following states:  
-
-**108 Chapter 3 Processes**
 
 **_MEMORY LAYOUT OF AC PROGRAM_**
 
@@ -102,7 +81,7 @@ The figure shown below illustrates the layout of a C program in memory, highligh
 • The global data section is divided into different sections for (a) initialized data and (b) uninitialized data.
 
 • Aseparate section is provided for the argc and argv parameters passed to the main() function.
-
+```
 #include <stdio.h> #include <stdlib.h>
 
 int x; int y = 15;
@@ -114,23 +93,8 @@ values = (int \*)malloc(sizeof(int)\*5);
 for(i = 0; i < 5; i++) values\[i\] = i;
 
 return 0; }
-
-argc, agrv
-
-uninitialized data
-
-high memory
-
-low memory
-
-initialized data
-
-stack
-
-heap
-
-text
-
+```
+![Alt text](image-1.png)
 The GNU size command can be used to determine the size (in bytes) of some of these sections. Assuming the name of the executable file of the above C program is memory, the following is the output generated by entering the command size memory:
 
 text data bss dec hex filename 1158 284 8 1450 5aa memory
@@ -144,20 +108,7 @@ The data field refers to uninitialized data, and bss refers to initialized data.
 • **Waiting**. The process is waiting for some event to occur (such as an I/O completion or reception of a signal).
 
 • **Ready**. The process is waiting to be assigned to a processor.  
-
-**3.1 Process Concept 109**
-
-new terminated
-
-runningready
-
-admitted interrupt
-
-scheduler dispatch I/O or event completion I/O or event wait
-
-exit
-
-waiting
+![Alt text](image-2.png)
 
 **Figure 3.2** Diagram of process state.
 
@@ -165,31 +116,16 @@ waiting
 
 These names are arbitrary, and they vary across operating systems. The states that they represent are found on all systems, however. Certain operating sys- tems also more finely delineate process states. It is important to realize that only one process can be _running_ on any processor core at any instant. Many processesmay be _ready_ and_waiting,_ however. The state diagram corresponding to these states is presented in Figure 3.2.
 
-**3.1.3 Process Control Block**
+### Process Control Block
 
 Each process is represented in the operating system by a **process control block** (**PCB**)—also called a **task control block**. A PCB is shown in Figure 3.3. It contains many pieces of information associated with a specific process, including these:
 
 • **Process state**. The state may be new, ready, running, waiting, halted, and so on.
 
 • **Program counter**. The counter indicates the address of the next instruction to be executed for this process.
-
-process state
-
-process number
-
-program counter
-
-memory limits
-
-list of open files
-
-registers
-
-**• • •**
+![Alt text](image-3.png)
 
 **Figure 3.3** Process control block (PCB).  
-
-**110 Chapter 3 Processes**
 
 • **CPU registers**. The registers vary in number and type, depending on the computer architecture. They include accumulators, index registers, stack pointers, and general-purpose registers, plus any condition-code informa- tion. Alongwith the program counter, this state informationmust be saved when an interrupt occurs, to allow the process to be continued correctly afterward when it is rescheduled to run.
 
@@ -203,15 +139,13 @@ registers
 
 In brief, the PCB simply serves as the repository for all the data needed to start, or restart, a process, along with some accounting data.
 
-**3.1.4 Threads**
+### Threads
 
 The processmodel discussed so far has implied that a process is a program that performs a single **thread** of execution. For example, when a process is running a word-processor program, a single thread of instructions is being executed. This single thread of control allows the process to perform only one task at a time. Thus, the user cannot simultaneously type in characters and run the spell checker. Most modern operating systems have extended the process concept to allow a process to have multiple threads of execution and thus to perform more than one task at a time. This feature is especially beneficial on multicore systems, where multiple threads can run in parallel. A multithreaded word processor could, for example, assign one thread to manage user input while another thread runs the spell checker. On systems that support threads, the PCB is expanded to include information for each thread. Other changes throughout the system are also needed to support threads. Chapter 4 explores threads in detail.
 
-**3.2 Process Scheduling**
+## Process Scheduling
 
 The objective ofmultiprogramming is to have someprocess running at all times so as to maximize CPU utilization. The objective of time sharing is to switch a CPU core among processes so frequently that users can interact with each program while it is running. To meet these objectives, the **process scheduler** selects an available process (possibly from a set of several available processes) for program execution on a core. Each CPU core can run one process at a time.  
-
-**3.2 Process Scheduling 111**
 
 **_PROCESS REPRESENTATION IN LINUX_**
 
@@ -220,60 +154,21 @@ The process control block in the Linux operating system is rep- resented by the 
 long state; /\* state of the process \*/ struct sched entity se; /\* scheduling information \*/ struct task struct \*parent; /\* this process’s parent \*/ struct list head children; /\* this process’s children \*/ struct files struct \*files; /\* list of open files \*/ struct mm struct \*mm; /\* address space \*/
 
 For example, the state of a process is represented by the field long state in this structure. Within the Linux kernel, all active processes are represented using a doubly linked list of task struct. The kernel maintains a pointer– current–to the process currently executing on the system, as shown below:
-
-struct task\_struct process information
-
-• • •
-
-struct task\_struct process information
-
-• • •
-
-current (currently executing proccess)
-
-struct task\_struct process information
-
-• • •
-
-• • •
+![Alt text](image-4.png)
 
 As an illustration of how the kernel might manipulate one of the fields in the task struct for a specified process, let’s assume the system would like to change the state of the process currently running to the value new state. If current is a pointer to the process currently executing, its state is changed with the following:
 
 current->state = new state;
 
 For a system with a single CPU core, there will never be more than one process running at a time, whereas a multicore system can run multiple processes at one time. If there are more processes than cores, excess processes will have  
-
-**112 Chapter 3 Processes**
-
-queue header PCB 7
-
-PCB3 PCB14 PCB6
-
-PCB 2
-
-head
-
-head
-
-ready queue
-
-wait queue
-
-tail registers registers
-
-tail
-
-**• • •**
-
-**• • •**
-
+![Alt text](image-5.png)
 **Figure 3.4** The ready queue and wait queues.
 
 to wait until a core is free and can be rescheduled. The number of processes currently in memory is known as the **degree of multiprogramming**.
 
 Balancing the objectives of multiprogramming and time sharing also requires taking the general behavior of a process into account. In general, most processes can be described as either I/O bound or CPU bound. An **I/O-bound process** is one that spends more of its time doing I/O than it spends doing computations. A **CPU-bound process**, in contrast, generates I/O requests infrequently, using more of its time doing computations.
 
-**3.2.1 Scheduling Queues**
+### Scheduling Queues
 
 As processes enter the system, they are put into a **ready queue**, where they are ready and waiting to execute on a CPU’s core This queue is generally stored as a linked list; a ready-queue header contains pointers to the first PCB in the list, and each PCB includes a pointer field that points to the next PCB in the ready queue.
 
@@ -282,27 +177,7 @@ The system also includes other queues. When a process is allocated a CPU core, i
 A common representation of process scheduling is a **queueing diagram**, such as that in Figure 3.5. Two types of queues are present: the ready queue and a set of wait queues. The circles represent the resources that serve the queues, and the arrows indicate the flow of processes in the system.
 
 A new process is initially put in the ready queue. It waits there until it is selected for execution, or **dispatched**. Once the process is allocated a CPU core and is executing, one of several events could occur:  
-
-**3.2 Process Scheduling 113**
-
-ready queue CPU
-
-I/O I/O wait queue I/O request
-
-time slice expired
-
-create child process
-
-child termination wait queue
-
-wait for an interrupt
-
-interrupt wait queue
-
-interrupt occurs
-
-child terminates
-
+![Alt text](image-6.png)
 **Figure 3.5** Queueing-diagram representation of process scheduling.
 
 • The process could issue an I/O request and then be placed in an I/O wait queue.
@@ -313,55 +188,21 @@ child terminates
 
 In the first two cases, the process eventually switches from thewaiting state to the ready state and is then put back in the ready queue. Aprocess continues this cycle until it terminates, at which time it is removed from all queues and has its PCB and resources deallocated.
 
-**3.2.2 CPU Scheduling**
+### CPU Scheduling
 
 Aprocess migrates among the ready queue and various wait queues through- out its lifetime. The role of the **CPU scheduler** is to select from among the processes that are in the ready queue and allocate a CPU core to one of them. The CPU scheduler must select a new process for the CPU frequently. An I/O-bound process may execute for only a few milliseconds before waiting for an I/O request.Although a CPU-bound processwill require a CPU core for longer dura- tions, the scheduler is unlikely to grant the core to a process for an extended period. Instead, it is likely designed to forcibly remove the CPU from a process and schedule another process to run. Therefore, the CPU scheduler executes at least once every 100 milliseconds, although typically much more frequently.
 
 Some operating systems have an intermediate form of scheduling, known as **swapping**, whose key idea is that sometimes it can be advantageous to remove a process from memory (and from active contention for the CPU) and thus reduce the degree of multiprogramming. Later, the process can be reintroduced into memory, and its execution can be continued where it left off. This scheme is known as **_swapping_** because a process can be “swapped out”  
 
-**114 Chapter 3 Processes**
+from memory to disk, where its current status is saved, and later “swapped in” from disk back to memory, where its status is restored. Swapping is typically only necessary when memory has been overcommitted and must be freed up. Swapping is discussed in Chapter 9.
 
-frommemory to disk, where its current status is saved, and later “swapped in” from disk back to memory, where its status is restored. Swapping is typically only necessary when memory has been overcommitted and must be freed up. Swapping is discussed in Chapter 9.
-
-**3.2.3 Context Switch**
+### Context Switch
 
 Asmentioned in Section 1.2.1, interrupts cause the operating system to change a CPU core from its current task and to run a kernel routine. Such operations happen frequently on general-purpose systems. When an interrupt occurs, the system needs to save the current **context** of the process running on the CPU core so that it can restore that context when its processing is done, essentially suspending the process and then resuming it. The context is represented in the PCB of the process. It includes the value of the CPU registers, the process state (see Figure 3.2), and memory-management information. Generically, we perform a **state save** of the current state of the CPU core, be it in kernel or user mode, and then a **state restore** to resume operations.
 
 Switching the CPU core to another process requires performing a state save of the current process and a state restore of a different process. This task is known as a **context switch** and is illustrated in Figure 3.6. When a context switch occurs, the kernel saves the context of the old process in its PCB and loads the saved context of the new process scheduled to run. Context- switch time is pure overhead, because the system does no useful work while switching. Switching speed varies frommachine tomachine, depending on the
-
-process _P_0 process _P_1
-
-save state into PCB0
-
-save state into PCB1
-
-reload state from PCB1
-
-reload state from PCB0
-
-operating system
-
-idle
-
-idle
-
-executingidle
-
-executing
-
-executing
-
-interrupt or system call
-
-interrupt or system call
-
-**• • •**
-
-**• • •**
-
+![Alt text](image-7.png)
 **Figure 3.6** Diagram showing context switch from process to process.  
-
-**3.2 Process Scheduling 115**
 
 **_MULTITASKING IN MOBILE SYSTEMS_**
 
@@ -373,41 +214,20 @@ memory speed, the number of registers that must be copied, and the existence of 
 
 Context-switch times are highly dependent on hardware support. For instance, some processors provide multiple sets of registers. A context switch here simply requires changing the pointer to the current register set. Of course, if there are more active processes than there are register sets, the system resorts to copying register data to and frommemory, as before. Also, themore complex the operating system, the greater the amount of work that must be done during a context switch. As we will see in Chapter 9, advanced memory-management techniques may require that extra data be switched with each context. For instance, the address space of the current process must be preserved as the space of the next task is prepared for use. How the address space is preserved, and what amount of work is needed to preserve it, depend on the memory- management method of the operating system.  
 
-**116 Chapter 3 Processes**
 
-**3.3 Operations on Processes**
+## Operations on Processes
 
 The processes in most systems can execute concurrently, and they may be cre- ated and deleted dynamically. Thus, these systems must provide a mechanism for process creation and termination. In this section, we explore the mecha- nisms involved in creating processes and illustrate process creation on UNIX and Windows systems.
 
-**3.3.1 Process Creation**
+### Process Creation
 
 During the course of execution, a processmay create several new processes. As mentioned earlier, the creating process is called a parent process, and the new processes are called the children of that process. Each of these new processes may in turn create other processes, forming a **tree** of processes.
 
 Most operating systems (including UNIX, Linux, and Windows) identify processes according to a unique **process identifie** (or **pid**), which is typically an integer number. The pid provides a unique value for each process in the system, and it can be used as an index to access various attributes of a process within the kernel.
 
 Figure 3.7 illustrates a typical process tree for the Linux operating system, showing the name of each process and its pid. (We use the term **_process_** rather loosely in this situation, as Linux prefers the term **_task_** instead.) The systemd process (which always has a pid of 1) serves as the root parent process for all user processes, and is the first user process created when the system boots. Once the system has booted, the systemd process creates processes which provide additional services such as a web or print server, an ssh server, and the like. In Figure 3.7, we see two children of systemd—logind and sshd. The logind process is responsible for managing clients that directly log onto the system. In this example, a client has logged on and is using the bash shell, which has been assigned pid 8416. Using the bash command-line interface, this user has created the process ps as well as the vim editor. The sshd process is responsible for managing clients that connect to the system by using ssh (which is short for **_secure shell_**).
-
-python pid = 2808
-
-logind pid = 8415
-
-systemd pid = 1
-
-bash pid = 8416
-
-ps pid = 9298
-
-vim pid = 9204
-
-sshd pid = 3028
-
-sshd pid = 3610
-
-tcsh pid = 4005
-
+![Alt text](image-8.png)
 **Figure 3.7** A tree of processes on a typical Linux system.  
-
-**3.3 Operations on Processes 117**
 
 **_THE init AND systemd PROCESSES_**
 
@@ -433,7 +253,6 @@ When a process creates a new process, two possibilities for execution exist:
 
 There are also two address-space possibilities for the new process:  
 
-**118 Chapter 3 Processes**
 
 **1\.** The child process is a duplicate of the parent process (it has the same program and data as the parent).
 
@@ -443,27 +262,8 @@ To illustrate these differences, let’s first consider the UNIX operating syste
 
 After a fork() system call, one of the two processes typically uses the exec() system call to replace the process’s memory space with a new pro- gram. The exec() system call loads a binary file into memory (destroying the memory image of the program containing the exec() system call) and starts
 
-#include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
-
-int main() _{_ pid t pid;
-
-/\* fork a child process \*/ pid = **fork**();
-
-if (pid < 0) _{_ /\* error occurred \*/ fprintf(stderr, "Fork Failed"); return 1;
-
-_}_ else if (pid == 0) _{_ /\* child process \*/
-
-**execlp**("/bin/ls","ls",NULL); _}_ else _{_ /\* parent process \*/
-
-/\* parent will wait for the child to complete \*/ **wait**(NULL); printf("Child Complete");
-
-_}_
-
-return 0; _}_
-
+![Alt text](image-9.png)
 **Figure 3.8** Creating a separate process using the UNIX fork() system call.  
-
-**3.3 Operations on Processes 119**
 
 its execution. In this manner, the two processes are able to communicate and then go their separate ways. The parent can then create more children; or, if it has nothing else to do while the child runs, it can issue a wait() system call to move itself off the ready queue until the termination of the child. Because the call to exec() overlays the process’s address space with a new program, exec() does not return control unless an error occurs.
 
@@ -476,38 +276,19 @@ As an alternative example, we next consider process creation in Windows. Process
 The C program shown in Figure 3.10 illustrates the CreateProcess() function, which creates a child process that loads the application mspaint.exe. We opt for many of the default values of the ten parameters passed to Cre- ateProcess(). Readers interested in pursuing the details of process creation and management in the Windows API are encouraged to consult the biblio- graphical notes at the end of this chapter.
 
 The two parameters passed to the CreateProcess() function are instances of the STARTUPINFO and PROCESS INFORMATION structures. STARTUPINFO specifies many properties of the new process, such as window
-
+![Alt text](image-10.png)
 **Figure 3.9** Process creation using the fork() system call.  
 
-**120 Chapter 3 Processes**
-
-#include _<_stdio.h_\>_ #include _<_windows.h_\>_
-
-int main(VOID) _{_ STARTUPINFO si; PROCESS INFORMATION pi;
-
-/\* allocate memory \*/ ZeroMemory(&si, sizeof(si)); si.cb = sizeof(si); ZeroMemory(&pi, sizeof(pi));
-
-/\* create child process \*/ if (!**CreateProcess**(NULL, /\* use command line \*/ "C:∖∖WINDOWS∖∖system32∖∖mspaint.exe", /\* command \*/ NULL, /\* don’t inherit process handle \*/ NULL, /\* don’t inherit thread handle \*/ FALSE, /\* disable handle inheritance \*/ 0, /\* no creation flags \*/ NULL, /\* use parent’s environment block \*/ NULL, /\* use parent’s existing directory \*/ &si, &pi))
-
-_{_ fprintf(stderr, "Create Process Failed"); return -1;
-
-_}_ /\* parent will wait for the child to complete \*/ **WaitForSingleObject**(pi.hProcess, INFINITE); printf("Child Complete");
-
-/\* close handles \*/ CloseHandle(pi.hProcess); CloseHandle(pi.hThread);
-
-_}_
-
+![Alt text](image-11.png)
 **Figure 3.10** Creating a separate process using the Windows API.
 
 size and appearance and handles to standard input and output files. The PROCESS INFORMATION structure contains a handle and the identifiers to the newly created process and its thread. We invoke the ZeroMemory() function to allocate memory for each of these structures before proceeding with CreateProcess().
 
 The first two parameters passed to CreateProcess() are the application name and command-line parameters. If the application name is NULL (as it is in this case), the command-line parameter specifies the application to load.  
 
-**3.3 Operations on Processes 121**
-
 In this instance, we are loading the Microsoft Windows mspaint.exe appli- cation. Beyond these two initial parameters, we use the default parameters for inheriting process and thread handles aswell as specifying that therewill be no creation flags.We also use the parent’s existing environment block and starting directory. Last, we provide two pointers to the STARTUPINFO and PROCESS - INFORMATION structures created at the beginning of the program. In Figure 3.8, the parent process waits for the child to complete by invoking the wait() system call. The equivalent of this in Windows is WaitForSingleObject(), which is passed a handle of the child process—pi.hProcess—and waits for this process to complete. Once the child process exits, control returns from the WaitForSingleObject() function in the parent process.
 
-**3.3.2 Process Termination**
+### Process Termination
 
 A process terminates when it finishes executing its final statement and asks the operating system to delete it by using the exit() system call. At that point, the process may return a status value (typically an integer) to its waiting parent process (via the wait() system call). All the resources of the process —including physical and virtual memory, open files, and I/O buffers—are deallocated and reclaimed by the operating system.
 
@@ -527,8 +308,6 @@ To illustrate process execution and termination, consider that, in Linux and UNI
 
 /\* exit with status 1 \*/ exit(1);  
 
-**122 Chapter 3 Processes**
-
 In fact, under normal termination, exit() will be called either directly (as shown above) or indirectly, as the C run-time library (which is added to UNIX executable files) will include a call to exit() by default.
 
 A parent process may wait for the termination of a child process by using the wait() system call. The wait() system call is passed a parameter that allows the parent to obtain the exit status of the child. This system call also returns the process identifier of the terminated child so that the parent can tell which of its children has terminated:
@@ -543,15 +322,13 @@ Now consider what would happen if a parent did not invoke wait() and instead ter
 
 Althoughmost Linux systems have replaced initwith systemd, the latter process can still serve the same role, although Linux also allows processes other than systemd to inherit orphan processes and manage their termination.
 
-**3.3.2.1 Android Process Hierarchy**
+#### Android Process Hierarchy
 
 Because of resource constraints such as limited memory, mobile operating systems may have to terminate existing processes to reclaim limited system resources. Rather than terminating an arbitrary process, Android has identified an **_importance hierarchy_** of processes, and when the system must terminate a process to make resources available for a new, or more important, process, it terminates processes in order of increasing importance. From most to least important, the hierarchy of process classifications is as follows:
 
 • **Foreground process**—The current process visible on the screen, represent- ing the application the user is currently interacting with
 
 • **Visible process**—A process that is not directly visible on the foreground but that is performing an activity that the foreground process is referring to (that is, a process performing an activity whose status is displayed on the foreground process)  
-
-**3.4 Interprocess Communication 123**
 
 • **Service process**—A process that is similar to a background process but is performing an activity that is apparent to the user (such as streaming music)
 
@@ -563,7 +340,7 @@ If system resources must be reclaimed, Android will first terminate empty proces
 
 Furthermore, Android development practices suggest following the guide- lines of the process life cycle. When these guidelines are followed, the state of a process will be saved prior to termination and resumed at its saved state if the user navigates back to the application.
 
-**3.4 Interprocess Communication**
+## Interprocess Communication
 
 Processes executing concurrently in the operating system may be either inde- pendent processes or cooperating processes. Aprocess is **_independent_** if it does not share data with any other processes executing in the system. A process is **_cooperating_** if it can affect or be affected by the other processes executing in the system. Clearly, any process that shares data with other processes is a cooperating process.
 
@@ -577,13 +354,11 @@ There are several reasons for providing an environment that allows process coope
 
 Cooperating processes require an **interprocess communication** (**IPC**) mechanism that will allow them to exchange data— that is, send data to and receive data from each other. There are two fundamental models of interprocess communication: **shared memory** and **message passing**. In the shared-memory model, a region of memory that is shared by the cooperating processes is established. Processes can then exchange information by reading and writing data to the shared region. In the message-passing model,  
 
-**124 Chapter 3 Processes**
-
 **_MULTIPROCESS ARCHITECTURE—CHROME BROWSER_**
 
 Many websites contain active content, such as JavaScript, Flash, and HTML5 to provide a rich and dynamic web-browsing experience. Unfortunately, these web applications may also contain software bugs, which can result in sluggish response times and can even cause the web browser to crash. This isn’t a big problem in aweb browser that displays content from only oneweb- site. But most contemporary web browsers provide tabbed browsing, which allows a single instance of aweb browser application to open severalwebsites at the same time, with each site in a separate tab. To switch between the dif- ferent sites, a user need only click on the appropriate tab. This arrangement is illustrated below:
-
-Aproblemwith this approach is that if aweb application in any tab crashes, the entire process—including all other tabs displaying additional websites— crashes as well.
+![Alt text](image-12.png)
+A problemwith this approach is that if aweb application in any tab crashes, the entire process—including all other tabs displaying additional websites— crashes as well.
 
 Google’s Chrome web browser was designed to address this issue by using a multiprocess architecture. Chrome identifies three different types of processes: browser, renderers, and plug-ins.
 
@@ -596,44 +371,17 @@ Google’s Chrome web browser was designed to address this issue by using a mult
 The advantage of the multiprocess approach is that websites run in iso- lation from one another. If one website crashes, only its renderer process is affected; all other processes remain unharmed. Furthermore, renderer pro- cesses run in a **sandbox**, which means that access to disk and network I/O is restricted, minimizing the effects of any security exploits.
 
 communication takes place by means of messages exchanged between the cooperating processes. The two communications models are contrasted in Figure 3.11.  
-
-**3.5 IPC in Shared-Memory Systems 125**
-
-process A
-
-message queue
-
-(a) (b)
-
-process B
-
-m0 m1 m2 ...m3 mn
-
-kernel
-
-shared memory
-
-kernel
-
-process
-
-process
-
-B
-
-A
-
+![Alt text](image-13.png)
 **Figure 3.11** Communications models. (a) Shared memory. (b) Message passing.
 
 Both of the models just mentioned are common in operating systems, and many systems implement both. Message passing is useful for exchanging smaller amounts of data, because no conflicts need be avoided. Message pass- ing is also easier to implement in a distributed system than shared memory. (Although there are systems that provide distributed shared memory, we do not consider them in this text.) Sharedmemory can be faster thanmessagepass- ing, since message-passing systems are typically implemented using system calls and thus require the more time-consuming task of kernel intervention. In shared-memory systems, system calls are required only to establish shared- memory regions. Once shared memory is established, all accesses are treated as routine memory accesses, and no assistance from the kernel is required.
 
 In Section 3.5 and Section 3.6 we explore shared-memory and message- passing systems in more detail.
 
-**3.5 IPC in Shared-Memory Systems**
+## IPC in Shared-Memory Systems
 
 Interprocess communication using shared memory requires communicating processes to establish a region of shared memory. Typically, a shared-memory region resides in the address space of the process creating the shared-memory segment. Other processes that wish to communicate using this shared-memory segment must attach it to their address space. Recall that, normally, the oper- ating system tries to prevent one process from accessing another process’s memory. Shared memory requires that two or more processes agree to remove this restriction. They can then exchange information by reading and writing data in the shared areas. The form of the data and the location are determined by these processes and are not under the operating system’s control. The pro- cesses are also responsible for ensuring that they are not writing to the same location simultaneously.  
 
-**126 Chapter 3 Processes**
 
 To illustrate the concept of cooperating processes, let’s consider the pro- ducer–consumer problem, which is a common paradigm for cooperating pro- cesses. A **producer** process produces information that is consumed by a **con- sumer** process. For example, a compiler may produce assembly code that is consumed by an assembler. The assembler, in turn, may produce object mod- ules that are consumed by the loader. The producer–consumer problem also provides a usefulmetaphor for the client–server paradigm.We generally think of a server as a producer and a client as a consumer. For example, a web server produces (that is, provides) web content such as HTML files and images, which are consumed (that is, read) by the client web browser requesting the resource.
 
@@ -643,13 +391,14 @@ Two types of buffers can be used. The **unbounded buffer** places no prac- tical
 
 Let’s look more closely at how the bounded buffer illustrates interprocess communication using shared memory. The following variables reside in a region of memory shared by the producer and consumer processes:
 
-#define BUFFER SIZE 10
+define BUFFER SIZE 10
 
 typedef struct _{_ . . .
 
 _}_ item;
 
-item buffer\[BUFFER SIZE\]; int in = 0; int out = 0;
+item buffer\[BUFFER SIZE\];
+ int in = 0; int out = 0;
 
 The shared buffer is implemented as a circular arraywith two logical pointers: in and out. The variable in points to the next free position in the buffer; out points to the first full position in the buffer. The buffer is empty when in == out; the buffer is full when ((in + 1) % BUFFER SIZE) == out.
 
@@ -657,39 +406,17 @@ The code for the producer process is shown in Figure 3.12, and the code for the 
 
 This scheme allows at most BUFFER SIZE − 1 items in the buffer at the same time. We leave it as an exercise for you to provide a solution in which BUFFER SIZE items can be in the buffer at the same time. In Section 3.7.1, we illustrate the POSIX API for shared memory.  
 
-**3.6 IPC in Message-Passing Systems 127**
 
-item next produced;
-
-while (true) _{_ /\* produce an item in next produced \*/
-
-while (((in + 1) % BUFFER SIZE) == out) ; /\* do nothing \*/
-
-buffer\[in\] = next produced; in = (in + 1) % BUFFER SIZE;
-
-_}_
-
+![Alt text](image-14.png)
 **Figure 3.12** The producer process using shared memory.
 
 One issue this illustration does not address concerns the situation in which both the producer process and the consumer process attempt to access the shared buffer concurrently. In Chapter 6 and Chapter 7, we discuss how syn- chronization among cooperating processes can be implemented effectively in a shared-memory environment.
 
-**3.6 IPC in Message-Passing Systems**
+## IPC in Message-Passing Systems
 
 In Section 3.5, we showed how cooperating processes can communicate in a shared-memory environment. The scheme requires that these processes share a region of memory and that the code for accessing andmanipulating the shared memory be written explicitly by the application programmer. Another way to achieve the same effect is for the operating system to provide the means for cooperating processes to communicate with each other via a message-passing facility.
-
-item next consumed;
-
-while (true) _{_ while (in == out)
-
-; /\* do nothing \*/
-
-next consumed = buffer\[out\]; out = (out + 1) % BUFFER SIZE;
-
-/\* consume the item in next consumed \*/ _}_
-
+![Alt text](image-15.png)
 **Figure 3.13** The consumer process using shared memory.  
-
-**128 Chapter 3 Processes**
 
 Message passingprovides amechanism to allowprocesses to communicate and to synchronize their actions without sharing the same address space. It is particularly useful in a distributed environment, where the communicating processes may reside on different computers connected by a network. For example, an Internet chat program could be designed so that chat participants communicate with one another by exchanging messages.
 
@@ -711,7 +438,7 @@ If processes_P_ and_Q_want to communicate, theymust sendmessages to and receive 
 
 We look at issues related to each of these features next.
 
-**3.6.1 Naming**
+### Naming
 
 Processes that want to communicate must have a way to refer to each other. They can use either direct or indirect communication.
 
@@ -724,8 +451,6 @@ Under **direct communication**, each process that wants to communicate must expl
 A communication link in this scheme has the following properties:
 
 • A link is established automatically between every pair of processes that want to communicate. The processes need to know only each other’s identity to communicate.  
-
-**3.6 IPC in Message-Passing Systems 129**
 
 • A link is associated with exactly two processes.
 
@@ -757,7 +482,6 @@ Now suppose that processes _P_1, _P_2, and _P_3 all share mailbox _A_. Process _
 
 • Allow a link to be associated with two processes at most.  
 
-**130 Chapter 3 Processes**
 
 • Allow at most one process at a time to execute a receive() operation.
 
@@ -775,7 +499,7 @@ In contrast, a mailbox that is owned by the operating system has an exis- tence 
 
 The process that creates a new mailbox is that mailbox’s owner by default. Initially, the owner is the only process that can receive messages through this mailbox. However, the ownership and receiving privilege may be passed to other processes through appropriate system calls. Of course, this provision could result in multiple receivers for each mailbox.
 
-**3.6.2 Synchronization**
+### Synchronization
 
 Communication between processes takes place through calls to send() and receive() primitives. There are different design options for implementing each primitive. Message passing may be either **blocking** or **nonblocking**— also known as **synchronous** and **asynchronous**. (Throughout this text, youwill encounter the concepts of synchronous and asynchronous behavior in relation to various operating-system algorithms.)
 
@@ -787,35 +511,20 @@ Communication between processes takes place through calls to send() and receive(
 
 • **Nonblocking receive**. The receiver retrieves either a valid message or a null.  
 
-**3.6 IPC in Message-Passing Systems 131**
-
-message next produced;
-
-while (true) _{_ /\* produce an item in next produced \*/
-
-send(next produced); _}_
-
+![Alt text](image-16.png)
 **Figure 3.14** The producer process using message passing.
 
 Different combinations of send() and receive() are possible. When both send() and receive() are blocking, we have a **rendezvous** between the sender and the receiver. The solution to the producer–consumer problem becomes trivial when we use blocking send() and receive() statements. The producer merely invokes the blocking send() call and waits until the message is delivered to either the receiver or the mailbox. Likewise, when the consumer invokes receive(), it blocks until a message is available. This is illustrated in Figures 3.14 and 3.15.
 
-**3.6.3 Buffering**
+### Buffering
 
 Whether communication is direct or indirect, messages exchanged by commu- nicating processes reside in a temporary queue. Basically, such queues can be implemented in three ways:
 
 • **Zero capacity**. The queue has a maximum length of zero; thus, the link cannot have any messages waiting in it. In this case, the sender must block until the recipient receives the message.
 
 • **Bounded capacity**. The queue has finite length _n;_ thus, at most _n_messages can reside in it. If the queue is not full when a new message is sent, the message is placed in the queue (either the message is copied or a pointer to the message is kept), and the sender can continue execution without
-
-message next consumed;
-
-while (true) _{_ receive(next consumed);
-
-/\* consume the item in next consumed \*/ _}_
-
+![Alt text](image-17.png)
 **Figure 3.15** The consumer process using message passing.  
-
-**132 Chapter 3 Processes**
 
 waiting. The link’s capacity is finite, however. If the link is full, the sender must block until space is available in the queue.
 
@@ -823,11 +532,11 @@ waiting. The link’s capacity is finite, however. If the link is full, the send
 
 The zero-capacity case is sometimes referred to as a message system with no buffering. The other cases are referred to as systems with automatic buffering.
 
-**3.7 Examples of IPC Systems**
+## Examples of IPC Systems
 
 In this section, we explore four different IPC systems. We first cover the POSIX API for shared memory and then discuss message passing in the Mach oper- ating system. Next, we present Windows IPC, which interestingly uses shared memory as a mechanism for providing certain types of message passing. We conclude with pipes, one of the earliest IPC mechanisms on UNIX systems.
 
-**3.7.1 POSIX Shared Memory**
+### POSIX Shared Memory
 
 Several IPC mechanisms are available for POSIX systems, including shared memory and message passing. Here, we explore the POSIX API for shared memory.
 
@@ -847,59 +556,16 @@ the shared-memory object. It also returns a pointer to the memory-mapped file th
 
 The programs shown in Figure 3.16 and Figure 3.17 use the producer– consumer model in implementing shared memory. The producer establishes a shared-memory object and writes to shared memory, and the consumer reads from shared memory.  
 
-**3.7 Examples of IPC Systems 133**
-
-#include _<_stdio.h_\>_ #include _<_stdlib.h_\>_ #include _<_string.h_\>_ #include _<_fcntl.h_\>_ #include _<_sys/shm.h_\>_ #include _<_sys/stat.h_\>_
-
-#include _<_sys/mman.h_\>_
-
-int main() _{_ /\* the size (in bytes) of shared memory object \*/ const int SIZE = 4096; /\* name of the shared memory object \*/ const char \*name = "OS"; /\* strings written to shared memory \*/ const char \*message 0 = "Hello"; const char \*message 1 = "World!";
-
-/\* shared memory file descriptor \*/ int fd; /\* pointer to shared memory obect \*/ char \*ptr;
-
-/\* create the shared memory object \*/ fd = **shm open**(name,O CREAT | O RDWR,0666);
-
-/\* configure the size of the shared memory object \*/ **ftruncate**(fd, SIZE);
-
-/\* memory map the shared memory object \*/ ptr = (char \*)
-
-**mmap**(0, SIZE, PROT READ | PROT WRITE, MAP SHARED, fd, 0);
-
-/\* write to the shared memory object \*/ sprintf(ptr,"%s",message 0); ptr += strlen(message 0); sprintf(ptr,"%s",message 1); ptr += strlen(message 1);
-
-return 0; _}_
-
+![Alt text](image-18.png)
 **Figure 3.16** Producer process illustrating POSIX shared-memory API.  
 
-**134 Chapter 3 Processes**
-
 The producer, shown in Figure 3.16, creates a shared-memory object named OS and writes the infamous string "Hello World!" to shared memory. The program memory-maps a shared-memory object of the specified size and allows writing to the object. The flag MAP SHARED specifies that changes to the shared-memory object will be visible to all processes sharing the object. Notice that we write to the shared-memory object by calling the sprintf() function and writing the formatted string to the pointer ptr. After each write, we must increment the pointer by the number of bytes written.
-
-#include _<_stdio.h_\>_ #include _<_stdlib.h_\>_ #include _<_fcntl.h_\>_ #include _<_sys/shm.h_\>_ #include _<_sys/stat.h_\>_
-
-#include _<_sys/mman.h_\>_
-
-int main() _{_ /\* the size (in bytes) of shared memory object \*/ const int SIZE = 4096; /\* name of the shared memory object \*/ const char \*name = "OS"; /\* shared memory file descriptor \*/ int fd; /\* pointer to shared memory obect \*/ char \*ptr;
-
-/\* open the shared memory object \*/ fd = **shm open**(name, O RDONLY, 0666);
-
-/\* memory map the shared memory object \*/ ptr = (char \*)
-
-**mmap**(0, SIZE, PROT READ | PROT WRITE, MAP SHARED, fd, 0);
-
-/\* read from the shared memory object \*/ printf("%s",(char \*)ptr);
-
-/\* remove the shared memory object \*/ **shm unlink**(name);
-
-return 0; _}_
-
+![Alt text](image-19.png)
 **Figure 3.17** Consumer process illustrating POSIX shared-memory API.  
-
-**3.7 Examples of IPC Systems 135**
 
 The consumer process, shown in Figure 3.17, reads and outputs the con- tents of the shared memory. The consumer also invokes the shm unlink() function, which removes the shared-memory segment after the consumer has accessed it.We provide further exercises using the POSIX shared-memoryAPI in the programming exercises at the end of this chapter. Additionally, we provide more detailed coverage of memory mapping in Section 13.5.
 
-**3.7.2 Mach Message Passing**
+### Mach Message Passing
 
 As an example of message passing, we next consider the Mach operating system.Mach was especially designed for distributed systems, but was shown to be suitable for desktop and mobile systems as well, as evidenced by its inclusion in the macOS and iOS operating systems, as discussed in Chapter 2.
 
@@ -909,11 +575,7 @@ Associated with each port is a collection of **port rights** that identify the c
 
 When a task is created, two special ports—the **_Task Self_** port and the **_Notify_** port—are also created. The kernel has receive rights to the Task Self port, which allows a task to send messages to the kernel. The kernel can send notification of event occurrences to a task’s Notify port (to which, of course, the task has receive rights).
 
-The mach port allocate() function call creates a new port and allocates space for its queue of messages. It also identifies the rights for the port. Each port right represents a **_name_** for that port, and a port can only be accessed via  
-
-**136 Chapter 3 Processes**
-
-a right. Port names are simple integer values and behave much like UNIX file descriptors. The following example illustrates creating a port using this API:
+The mach port allocate() function call creates a new port and allocates space for its queue of messages. It also identifies the rights for the port. Each port right represents a **_name_** for that port, and a port can only be accessed via a right. Port names are simple integer values and behave much like UNIX file descriptors. The following example illustrates creating a port using this API:
 
 mach port t port; // the name of the port right
 
@@ -934,44 +596,10 @@ Messages may be either **_simple_** or **_complex_**. A simple message contains 
 The function mach msg() is the standard API for both sending and receiving messages. The value of one of the function’s parameters—either MACH SEND MSG or MACH RCV MSG—indicates if it is a send or receive operation. We now illustrate how it is used when a client task sends a simple message to a server task. Assume there are two ports—client and server—associated with the client and server tasks, respectively. The code in Figure 3.18 shows the client task constructing a header and sending a message to the server, as well as the server task receiving the message sent from the client.
 
 The mach msg() function call is invoked by user programs for performing message passing. mach msg() then invokes the function mach msg trap(), which is a system call to the Mach kernel. Within the kernel, mach msg trap() next calls the function mach msg overwrite trap(), which then handles the actual passing of the message.  
-
-**3.7 Examples of IPC Systems 137**
-
-#include<mach/mach.h>
-
-struct message _{_ mach msg header t header; int data;
-
-_}_;
-
-mach port t client; mach port t server;
-
-/\* **Client Code** \*/
-
-struct message message;
-
-// construct the header message.header.msgh size = sizeof(message); message.header.msgh remote port = server; message.header.msgh local port = client;
-
-// send the message **mach msg**(&message.header, // message header
-
-MACH SEND MSG, // sending a message sizeof(message), // size of message sent 0, // maximum size of received message - unnecessary MACH PORT NULL, // name of receive port - unnecessary MACH MSG TIMEOUT NONE, // no time outs MACH PORT NULL // no notify port
-
-);
-
-/\* **Server Code** \*/
-
-struct message message;
-
-// receive the message **mach msg**(&message.header, // message header
-
-MACH RCV MSG, // sending a message 0, // size of message sent sizeof(message), // maximum size of received message server, // name of receive port MACH MSG TIMEOUT NONE, // no time outs MACH PORT NULL // no notify port
-
-);
-
+![Alt text](image-20.png)
 **Figure 3.18** Example program illustrating message passing in Mach.
 
 The send and receive operations themselves are flexible. For instance,when a message is sent to a port, its queue may be full. If the queue is not full, the message is copied to the queue, and the sending task continues. If the  
-
-**138 Chapter 3 Processes**
 
 port’s queue is full, the sender has several options (specified via parameters to mach msg():
 
@@ -987,43 +615,14 @@ The final option is meant for server tasks. After finishing a request, a server 
 
 The major problem with message systems has generally been poor perfor- mance caused by copying of messages from the sender’s port to the receiver’s port. The Mach message system attempts to avoid copy operations by using virtual-memory-management techniques (Chapter 10). Essentially,Machmaps the address space containing the sender’s message into the receiver’s address space. Therefore, the message itself is never actually copied, as both the sender and receiver access the same memory. This message-management technique provides a large performance boost but works only for intrasystem messages.
 
-**3.7.3 Windows**
+### Windows
 
 The Windows operating system is an example of modern design that employs modularity to increase functionality and decrease the time needed to imple- ment new features. Windows provides support for multiple operating envi- ronments, or **_subsystems._** Application programs communicate with these sub- systems via a message-passingmechanism. Thus, application programs can be considered clients of a subsystem server.
 
 The message-passing facility in Windows is called the **advanced local pro- cedure call** (**ALPC**) facility. It is used for communication between two processes on the same machine. It is similar to the standard remote procedure call (RPC) mechanism that is widely used, but it is optimized for and specific toWindows. (Remote procedure calls are covered in detail in Section 3.8.2.) LikeMach,Win- dows uses a port object to establish and maintain a connection between two processes. Windows uses two types of ports: **connection ports** and **communi- cation ports**.
 
 Server processes publish connection-port objects that are visible to all pro- cesses. When a client wants services from a subsystem, it opens a handle to the server’s connection-port object and sends a connection request to that port. The server then creates a channel and returns a handle to the client. The chan- nel consists of a pair of private communication ports: one for client–server messages, the other for server–client messages. Additionally, communication channels support a callback mechanism that allows the client and server to accept requests when they would normally be expecting a reply.  
-
-**3.7 Examples of IPC Systems 139**
-
-Connection
-
-Port
-
-Connection
-
-request Handle
-
-Handle
-
-Handle
-
-Client
-
-Communication Port
-
-Server
-
-Communication Port
-
-Shared
-
-Section Object
-
-(> 256 bytes)
-
-ServerClient
+![Alt text](image-21.png)
 
 **Figure 3.19** Advanced local procedure calls in Windows.
 
@@ -1039,11 +638,9 @@ The client has to decide when it sets up the channel whether it will need to sen
 
 It is important to note that the ALPC facility in Windows is not part of the Windows API and hence is not visible to the application programmer. Rather, applications using the Windows API invoke standard remote procedure calls. When the RPC is being invoked on a process on the same system, the RPC is handled indirectly through an ALPC procedure call. Additionally, many kernel services use ALPC to communicate with client processes.
 
-**3.7.4 Pipes**
+### Pipes
 
 A **pipe** acts as a conduit allowing two processes to communicate. Pipes were one of the first IPC mechanisms in early UNIX systems. They typically pro- vide one of the simpler ways for processes to communicate with one another, although they also have some limitations. In implementing a pipe, four issues must be considered:  
-
-**140 Chapter 3 Processes**
 
 **1\.** Does the pipe allow bidirectional communication, or is communication unidirectional?
 
@@ -1055,7 +652,7 @@ A **pipe** acts as a conduit allowing two processes to communicate. Pipes were o
 
 In the following sections, we explore two common types of pipes used on both UNIX and Windows systems: ordinary pipes and named pipes.
 
-**3.7.4.1 Ordinary Pipes**
+#### Ordinary Pipes
 
 Ordinary pipes allow two processes to communicate in standard producer– consumer fashion: the producer writes to one end of the pipe (the **write end**) and the consumer reads from the other end (the **read end**). As a result, ordinary pipes are unidirectional, allowing only one-way communication. If two-way communication is required, two pipes must be used, with each pipe sending data in a different direction. We next illustrate constructing ordinary pipes on both UNIX and Windows systems. In both program examples, one process writes the message Greetings to the pipe, while the other process reads this message from the pipe.
 
@@ -1066,29 +663,9 @@ pipe(int fd\[\])
 This function creates a pipe that is accessed through the int fd\[\] file descrip- tors: fd\[0\] is the read end of the pipe, and fd\[1\] is the write end. UNIX treats a pipe as a special type of file. Thus, pipes can be accessed using ordinary read() and write() system calls.
 
 An ordinary pipe cannot be accessed from outside the process that created it. Typically, a parent process creates a pipe and uses it to communicate with a child process that it creates via fork(). Recall from Section 3.3.1 that a child process inherits open files from its parent. Since a pipe is a special type of file, the child inherits the pipe from its parent process. Figure 3.20 illustrates
-
-Parent Child
-
-fd \[0\] fd \[1\]
-
-fd \[0\] fd \[1\]
-
-pipe
-
+![Alt text](image-22.png)
 **Figure 3.20** File descriptors for an ordinary pipe.  
-
-**3.7 Examples of IPC Systems 141**
-
-#include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_string.h_\>_ #include _<_unistd.h_\>_
-
-#define BUFFER SIZE 25 #define READ END 0 #define WRITE END 1
-
-int main(void) _{_
-
-char write msg\[BUFFER SIZE\] = "Greetings"; char read msg\[BUFFER SIZE\]; int fd\[2\]; pid t pid;
-
-/\* Program continues in Figure 3.22 \*/
-
+![Alt text](image-23.png)
 **Figure 3.21** Ordinary pipe in UNIX.
 
 the relationship of the file descriptors in the fd array to the parent and child processes. As this illustrates, any writes by the parent to its write end of the pipe—fd\[1\]—can be read by the child from its read end—fd\[0\]—of the pipe.
@@ -1098,128 +675,36 @@ In the UNIX program shown in Figure 3.21, the parent process creates a pipe and 
 Ordinary pipes on Windows systems are termed **anonymous pipes**, and they behave similarly to their UNIX counterparts: they are unidirectional and employ parent–child relationships between the communicating processes. In addition, reading and writing to the pipe can be accomplished with the ordi- nary ReadFile() and WriteFile() functions. The Windows API for creating pipes is the CreatePipe() function, which is passed four parameters. The parameters provide separate handles for (1) reading and (2) writing to the pipe, as well as (3) an instance of the STARTUPINFO structure, which is used to specify that the child process is to inherit the handles of the pipe. Furthermore, (4) the size of the pipe (in bytes) may be specified.
 
 Figure 3.23 illustrates a parent process creating an anonymous pipe for communicating with its child. Unlike UNIX systems, in which a child pro- cess automatically inherits a pipe created by its parent, Windows requires the programmer to specify which attributes the child process will inherit. This is  
-
-**142 Chapter 3 Processes**
-
-/\* create the pipe \*/ if (**pipe**(fd) == -1) _{_
-
-fprintf(stderr,"Pipe failed"); return 1;
-
-_}_
-
-/\* fork a child process \*/ pid = fork();
-
-if (pid _<_ 0) _{_ /\* error occurred \*/ fprintf(stderr, "Fork Failed"); return 1;
-
-_}_
-
-if (pid _\>_ 0) _{_ /\* parent process \*/ /\* close the unused end of the pipe \*/ close(fd\[READ END\]);
-
-/\* write to the pipe \*/ write(fd\[WRITE END\], write msg, strlen(write msg)+1);
-
-/\* close the write end of the pipe \*/ close(fd\[WRITE END\]);
-
-_}_ else _{_ /\* child process \*/
-
-/\* close the unused end of the pipe \*/ close(fd\[WRITE END\]);
-
-/\* read from the pipe \*/ read(fd\[READ END\], read msg, BUFFER SIZE); printf("read %s",read msg);
-
-/\* close the read end of the pipe \*/ close(fd\[READ END\]);
-
-_}_
-
-return 0; _}_
-
+![Alt text](image-24.png)
 **Figure 3.22** Figure 3.21, continued.
 
 accomplished by first initializing the SECURITY ATTRIBUTES structure to allow handles to be inherited and then redirecting the child process’s handles for standard input or standard output to the read or write handle of the pipe. Since the child will be reading from the pipe, the parent must redirect the child’s standard input to the read handle of the pipe. Furthermore, as the pipes are half duplex, it is necessary to prohibit the child from inheriting the write end of the  
-
-**3.7 Examples of IPC Systems 143**
-
-#include _<_stdio.h_\>_ #include _<_stdlib.h_\>_ #include _<_windows.h_\>_
-
-#define BUFFER SIZE 25
-
-int main(VOID) _{_
-
-HANDLE ReadHandle, WriteHandle; STARTUPINFO si; PROCESS INFORMATION pi; char message\[BUFFER SIZE\] = "Greetings"; DWORD written;
-
-/\* Program continues in Figure 3.24 \*/
-
+![Alt text](image-25.png)
 **Figure 3.23** Windows anonymous pipe—parent process.
 
 pipe. The program to create the child process is similar to the program in Figure 3.10, except that the fifth parameter is set to TRUE, indicating that the child process is to inherit designated handles from its parent. Before writing to the pipe, the parent first closes its unused read end of the pipe. The child process that reads from the pipe is shown in Figure 3.25. Before reading from the pipe, this programobtains the readhandle to the pipe by invoking GetStdHandle().
 
 Note that ordinary pipes require a parent–child relationship between the communicating processes on both UNIX and Windows systems. This means that these pipes can be used only for communication between processes on the same machine.
 
-**3.7.4.2 Named Pipes**
+#### Named Pipes
 
 Ordinary pipes provide a simple mechanism for allowing a pair of processes to communicate. However, ordinary pipes exist only while the processes are communicating with one another. On both UNIX and Windows systems, once the processes have finished communicating and have terminated, the ordinary pipe ceases to exist.
 
 Named pipes provide a much more powerful communication tool. Com- munication can be bidirectional, and no parent–child relationship is required. Once a named pipe is established, several processes can use it for communi- cation. In fact, in a typical scenario, a named pipe has several writers. Addi- tionally, named pipes continue to exist after communicating processes have finished. Both UNIX andWindows systems support named pipes, although the details of implementation differ greatly. Next, we explore named pipes in each of these systems.
 
 Named pipes are referred to as FIFOs in UNIX systems. Once created, they appear as typical files in the file system. A FIFO is created with the mkfifo() system call and manipulated with the ordinary open(), read(), write(), and close() system calls. It will continue to exist until it is explicitly deleted  
-
-**144 Chapter 3 Processes**
-
-/\* set up security attributes allowing pipes to be inherited \*/ SECURITY ATTRIBUTES sa = _{_sizeof(SECURITY ATTRIBUTES),NULL,TRUE_}_; /\* allocate memory \*/ ZeroMemory(&pi, sizeof(pi));
-
-/\* create the pipe \*/ if (!**CreatePipe**(&ReadHandle, &WriteHandle, &sa, 0)) _{_
-
-fprintf(stderr, "Create Pipe Failed"); return 1;
-
-_}_
-
-/\* establish the START INFO structure for the child process \*/ GetStartupInfo(&si); si.hStdOutput = GetStdHandle(STD OUTPUT HANDLE);
-
-/\* redirect standard input to the read end of the pipe \*/ si.hStdInput = ReadHandle; si.dwFlags = STARTF USESTDHANDLES;
-
-/\* don’t allow the child to inherit the write end of pipe \*/ SetHandleInformation(WriteHandle, HANDLE FLAG INHERIT, 0);
-
-/\* create the child process \*/ CreateProcess(NULL, "child.exe", NULL, NULL, TRUE, /\* inherit handles \*/ 0, NULL, NULL, &si, &pi);
-
-/\* close the unused end of the pipe \*/ CloseHandle(ReadHandle);
-
-/\* the parent writes to the pipe \*/ if (!WriteFile(WriteHandle, message,BUFFER SIZE,&written,NULL))
-
-fprintf(stderr, "Error writing to pipe.");
-
-/\* close the write end of the pipe \*/ CloseHandle(WriteHandle);
-
-/\* wait for the child to exit \*/ WaitForSingleObject(pi.hProcess, INFINITE); CloseHandle(pi.hProcess); CloseHandle(pi.hThread); return 0; _}_
-
+![Alt text](image-26.png)
 **Figure 3.24** Figure 3.23, continued.  
-
-**3.8 Communication in Client–Server Systems 145**
-
-#include _<_stdio.h_\>_ #include _<_windows.h_\>_
-
-#define BUFFER SIZE 25
-
-int main(VOID) _{_ HANDLE Readhandle; CHAR buffer\[BUFFER SIZE\]; DWORD read;
-
-/\* get the read handle of the pipe \*/ ReadHandle = GetStdHandle(STD INPUT HANDLE);
-
-/\* the child reads from the pipe \*/ if (ReadFile(ReadHandle, buffer, BUFFER SIZE, &read, NULL))
-
-printf("child read %s",buffer); else
-
-fprintf(stderr, "Error reading from pipe");
-
-return 0; _}_
-
+![Alt text](image-27.png)
 **Figure 3.25** Windows anonymous pipes—child process.
 
 from the file system. Although FIFOs allow bidirectional communication, only half-duplex transmission is permitted. If data must travel in both directions, two FIFOs are typically used. Additionally, the communicating processes must reside on the same machine. If intermachine communication is required, sock- ets (Section 3.8.1) must be used.
 
 Named pipes onWindows systems provide a richer communicationmech- anism than their UNIX counterparts. Full-duplex communication is allowed, and the communicating processes may reside on either the same or different machines. Additionally, only byte-oriented data may be transmitted across a UNIX FIFO, whereas Windows systems allow either byte- or message-oriented data. Named pipes are created with the CreateNamedPipe() function, and a client can connect to a named pipe using ConnectNamedPipe(). Communi- cation over the named pipe can be accomplished using the ReadFile() and WriteFile() functions.
 
-**3.8 Communication in Client–Server Systems**
+## Communication in Client–Server Systems
 
 In Section 3.4, we described how processes can communicate using shared memory and message passing. These techniques can be used for communica- tion in client–server systems (Section 1.10.3) as well. In this section, we explore two other strategies for communication in client–server systems: sockets and  
-
-**146 Chapter 3 Processes**
 
 **_PIPES IN PRACTICE_**
 
@@ -1235,22 +720,12 @@ dir | more
 
 remote procedure calls (RPCs). As we shall see in our coverage of RPCs, not only are they useful for client–server computing, but Android also uses remote procedures as a form of IPC between processes running on the same system.
 
-**3.8.1 Sockets**
+### Sockets
 
 A**socket** is defined as an endpoint for communication. Apair of processes com- municating over a network employs a pair of sockets—one for each process. A socket is identified by an IP address concatenated with a port number. In general, sockets use a client–server architecture. The serverwaits for incoming client requests by listening to a specified port. Once a request is received, the server accepts a connection from the client socket to complete the connection. Servers implementing specific services (such as SSH, FTP, and HTTP) listen to **_well-known_** ports (an SSH server listens to port 22; an FTP server listens to port 21; and a web, or HTTP, server listens to port 80). All ports below 1024 are considered**_well known_** and are used to implement standard services.
 
 When a client process initiates a request for a connection, it is assigned a port by its host computer. This port has some arbitrary number greater than 1024. For example, if a client on host X with IP address 146.86.5.20 wishes to establish a connection with a web server (which is listening on port 80) at  
-
-**3.8 Communication in Client–Server Systems 147**
-
-socket (146.86.5.20:1625)
-
-host _X_ (146.86.5.20)
-
-socket (161.25.19.8:80)
-
-web server (161.25.19.8)
-
+![Alt text](image-28.png)
 **Figure 3.26** Communication using sockets.
 
 address 161.25.19.8, host X may be assigned port 1625. The connection will consist of a pair of sockets: (146.86.5.20:1625) on host X and (161.25.19.8:80) on the web server. This situation is illustrated in Figure 3.26. The packets traveling between the hosts are delivered to the appropriate process based on the destination port number.
@@ -1266,74 +741,22 @@ Our example describes a date server that uses connection-oriented TCP sockets. T
 The date server is shown in Figure 3.27. The server creates a ServerSocket that specifies that it will listen to port 6013. The server then begins listening to the port with the accept() method. The server blocks on the accept() methodwaiting for a client to request a connection. When a connection request is received, accept() returns a socket that the server can use to communicate with the client.
 
 The details of how the server communicates with the socket are as follows. The server first establishes a PrintWriter object that it will use to communi- cate with the client. A PrintWriter object allows the server to write to the socket using the routine print() and println() methods for output. The  
-
-**148 Chapter 3 Processes**
-
-import java.net.\*; import java.io.\*;
-
-public class DateServer _{_
-
-public static void main(String\[\] args) _{_ try _{_
-
-ServerSocket sock = new **ServerSocket**(6013);
-
-/\* now listen for connections \*/ while (true) _{_
-
-Socket client = sock.**accept**();
-
-PrintWriter pout = new PrintWriter(client.getOutputStream(), true);
-
-/\* write the Date to the socket \*/ pout.println(new java.util.Date().toString());
-
-/\* close the socket and resume \*/ /\* listening for connections \*/ client.close();
-
-_} }_ catch (IOException ioe) _{_
-
-System.err.println(ioe); _}_
-
-_} }_
+![Alt text](image-29.png)
 
 **Figure 3.27** Date server.
 
 server process sends the date to the client, calling themethod println(). Once it has written the date to the socket, the server closes the socket to the client and resumes listening for more requests.
 
 A client communicates with the server by creating a socket and connecting to the port on which the server is listening. We implement such a client in the Java program shown in Figure 3.28. The client creates a Socket and requests a connection with the server at IP address 127.0.0.1 on port 6013. Once the connection is made, the client can read from the socket using normal stream I/O statements. After it has received the date from the server, the client closes the socket and exits. The IP address 127.0.0.1 is a special IP address known as the **loopback**.When a computer refers to IP address 127.0.0.1, it is referring to itself. This mechanism allows a client and server on the same host to communicate using the TCP/IP protocol. The IP address 127.0.0.1 could be replaced with the IP address of another host running the date server. In addition to an IP address, an actual host name, such as www.westminstercollege.edu, can be used as well.  
-
-**3.8 Communication in Client–Server Systems 149**
-
-import java.net.\*; import java.io.\*;
-
-public class DateClient _{_
-
-public static void main(String\[\] args) _{_ try _{_
-
-/\* make connection to server socket \*/ Socket sock = new **Socket**("127.0.0.1",6013);
-
-InputStream in = sock.getInputStream(); BufferedReader bin = new
-
-BufferedReader(new InputStreamReader(in));
-
-/\* read the date from the socket \*/ String line; while ( (line = bin.readLine()) != null)
-
-System.out.println(line);
-
-/\* close the socket connection\*/ sock.close();
-
-_}_ catch (IOException ioe) _{_
-
-System.err.println(ioe); _}_
-
-_} }_
+![Alt text](image-30.png)
 
 **Figure 3.28** Date client.
 
 Communication using sockets—although common and efficient—is con- sidered a low-level form of communication between distributed processes. One reason is that sockets allow only an unstructured stream of bytes to be exchanged between the communicating threads. It is the responsibility of the client or server application to impose a structure on the data. In the next sub- section, we look a higher-level method of communication: remote procedure calls (RPCs).
 
-**3.8.2 Remote Procedure Calls**
+### Remote Procedure Calls
 
 One of the most common forms of remote service is the RPC paradigm, which was designed as a way to abstract the procedure-call mechanism for use between systemswith network connections. It is similar inmany respects to the IPC mechanism described in Section 3.4, and it is usually built on top of such a system. Here, however, because we are dealing with an environment in which the processes are executing on separate systems, wemust use a message-based communication scheme to provide remote service.  
-
-**150 Chapter 3 Processes**
 
 In contrast to IPC messages, the messages exchanged in RPC communi- cation are well structured and are thus no longer just packets of data. Each message is addressed to an RPC daemon listening to a port on the remote sys- tem, and each contains an identifier specifying the function to execute and the parameters to pass to that function. The function is then executed as requested, and any output is sent back to the requester in a separate message.
 
@@ -1345,11 +768,7 @@ Parameter marshaling addresses the issue concerning differences in data represen
 
 Another important issue involves the semantics of a call. Whereas local procedure calls fail only under extreme circumstances, RPCs can fail, or be duplicated and executed more than once, as a result of common network errors. One way to address this problem is for the operating system to ensure that messages are acted on **_exactly once,_** rather than **_at most once._** Most local procedure calls have the “exactly once” functionality, but it is more difficult to implement.
 
-First, consider “atmost once.”This semantic can be implemented by attach- ing a timestamp to each message. The server must keep a history of all the timestamps of messages it has already processed or a history large enough  
-
-**3.8 Communication in Client–Server Systems 151**
-
-to ensure that repeated messages are detected. Incoming messages that have a timestamp already in the history are ignored. The client can then send a message one or more times and be assured that it only executes once.
+First, consider “atmost once.”This semantic can be implemented by attach- ing a timestamp to each message. The server must keep a history of all the timestamps of messages it has already processed or a history large enough to ensure that repeated messages are detected. Incoming messages that have a timestamp already in the history are ignored. The client can then send a message one or more times and be assured that it only executes once.
 
 For “exactly once,” we need to remove the risk that the server will never receive the request. To accomplish this, the servermust implement the “at most once” protocol described above but must also acknowledge to the client that the RPC call was received and executed. These ACK messages are common throughout networking. The client must resend each RPC call periodically until it receives the ACK for that call.
 
@@ -1359,53 +778,12 @@ Two approaches are common. First, the binding informationmay be prede- termined,
 
 The RPC scheme is useful in implementing a distributed file system (Chap- ter 19). Such a system can be implemented as a set of RPC daemons and clients. The messages are addressed to the distributed file system port on a server on which a file operation is to take place. The message contains the disk operation to be performed. The disk operation might be read(), write(), rename(), delete(), or status(), corresponding to the usual file-related system calls. The return message contains any data resulting from that call, which is exe- cuted by the DFS daemon on behalf of the client. For instance, a message might contain a request to transfer a whole file to a client or be limited to a simple block request. In the latter case, several requests may be needed if a whole file is to be transferred.
 
-**3.8.2.1 Android RPC**
+#### Android RPC
 
 Although RPCs are typically associated with client-server computing in a dis- tributed system, they can also be used as a form of IPC between processes running on the same system. The Android operating system has a rich set of IPC mechanisms contained in its **binder** framework, including RPCs that allow one process to request services from another process.
 
 Android defines an **application component** as a basic building block that provides utility to an Android application, and an app may combine multiple application components to provide functionality to an app. One such applica-  
-
-**152 Chapter 3 Processes**
-
-client
-
-user calls kernel to send RPC message to procedure _X_
-
-matchmaker receives message, looks up answer
-
-matchmaker replies to client with port _P_
-
-daemon listening to port _P_ receives message
-
-daemon processes request and processes send output
-
-kernel sends message to matchmaker to find port number
-
-From: client To: server
-
-Port: matchmaker Re: address for RPC _X_
-
-From: client To: server
-
-Port: port _P_ <contents>
-
-From: RPC Port: _P_
-
-To: client Port: kernel <output>
-
-From: server To: client
-
-Port: kernel Re: RPC _X_
-
-Port: _P_
-
-kernel places port _P_ in user RPC message
-
-kernel sends RPC
-
-kernel receives reply, passes it to user
-
-messages server
+![Alt text](image-31.png)
 
 **Figure 3.29** Execution of a remote procedure call (RPC).
 
@@ -1413,11 +791,7 @@ tion component is a **service**, which has no user interface but instead runs in
 
 A bound service must extend the Android class Service and must imple- ment the method onBind(), which is invoked when a client calls bindSer- vice(). In the case of message passing, the onBind() method returns a Mes- senger service, which is used for sending messages from the client to the service. The Messenger service is only one-way; if the servicemust send a reply back to the client, the client must also provide a Messenger service, which is contained in the replyTo field of the Message object sent to the service. The service can then send messages back to the client.
 
-To provide RPCs, the onBind() method must return an interface repre- senting the methods in the remote object that clients use to interact with the  
-
-**3.9 Summary 153**
-
-service. This interface is written in regular Java syntax and uses the Android Interface Definition Language—AIDL—to create stub files, which serve as the client interface to remote services.
+To provide RPCs, the onBind() method must return an interface repre- senting the methods in the remote object that clients use to interact with the service. This interface is written in regular Java syntax and uses the Android Interface Definition Language—AIDL—to create stub files, which serve as the client interface to remote services.
 
 Here, we briefly outline the process required to provide a generic remote service named remoteMethod() using AIDL and the binder service. The inter- face for the remote service appears as follows:
 
@@ -1435,7 +809,7 @@ service.remoteMethod(3, 0.14);
 
 Internally, the Android binder framework handles parameter marshaling, transferring marshaled parameters between processes, and invoking the nec- essary implementation of the service, as well as sending any return values back to the client process.
 
-**3.9 Summary**
+## Summary
 
 • Aprocess is a program in execution, and the status of the current activity of a process is represented by the program counter, as well as other registers.
 
@@ -1448,8 +822,6 @@ Internally, the Android binder framework handles parameter marshaling, transferr
 • The role of the process scheduler is to select an available process to run on a CPU.
 
 • An operating system performs a context switch when it switches from running one process to running another.  
-
-**154 Chapter 3 Processes**
 
 • The fork() and CreateProcess() system calls are used to create pro- cesses on UNIX and Windows systems, respectively.
 
@@ -1478,23 +850,7 @@ Internally, the Android binder framework handles parameter marshaling, transferr
 **3.4** Some computer systems provide multiple register sets. Describe what happens when a context switch occurs if the new context is already  
 
 **Practice Exercises 155**
-
-#include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
-
-int value = 5;
-
-int main() _{_ pid t pid;
-
-pid = fork();
-
-if (pid == 0) _{_ /\* child process \*/ value += 15; return 0;
-
-_}_ else if (pid > 0) _{_ /\* parent process \*/
-
-wait(NULL); printf("PARENT: value = %d",value); /\* LINE A \*/ return 0;
-
-_} }_
-
+![Alt text](image-32.png)
 **Figure 3.30** What output will be at Line A?
 
 loaded into one of the register sets. What happens if the new context is in memory rather than in a register set and all the register sets are in use?
@@ -1511,20 +867,7 @@ c. Shared memory segments
 
 **3.7** Assume that a distributed system is susceptible to server failure. What mechanismswould be required to guarantee the “exactly once” semantic for execution of RPCs?  
 
-**156 Chapter 3 Processes**
-
-#include _<_stdio.h_\>_ #include _<_unistd.h_\>_
-
-int main() _{_
-
-/\* fork a child process \*/ fork();
-
-/\* fork another child process \*/ fork();
-
-/\* and fork another \*/ fork();
-
-return 0; _}_
-
+![Alt text](image-33.png)
 **Figure 3.31** How many processes are created?
 
 **Further Reading**
@@ -1542,8 +885,6 @@ Guidelines forAndroiddevelopment can be found at https://developer.and roid.com/
 **\[Harold (2005)\]** E. R. Harold, _Java Network Programming,_ Third Edition, O’Reilly & Associates (2005).
 
 **\[Hart (2005)\]** J. M. Hart,_Windows System Programming,_ Third Edition, Addison- Wesley (2005).  
-
-**Bibliography 157**
 
 **\[Holland and Seltzer (2011)\]** D.Holland andM. Seltzer, “MulticoreOSes: Look- ing Forward from 1991, er, 2011”,_Proceedings of the 13th USENIX conference onHot topics in operating systems_ (2011), pages 33–33.
 
@@ -1576,7 +917,7 @@ Guidelines forAndroiddevelopment can be found at https://developer.and roid.com/
 **3.15** Consider the RPC mechanism. Describe the undesirable consequences that could arise from not enforcing either the “at most once” or “exactly once” semantic. Describe possible uses for a mechanism that has neither of these guarantees.
 
 **3.16** Using the program shown in Figure 3.35, explain what the output will be at lines X and Y.
-
+```
 #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
 
 int main() _{_
@@ -1586,7 +927,7 @@ int i;
 for (i = 0; i < 4; i++) fork();
 
 return 0; _}_
-
+```
 **Figure 3.21** How many processes are created?
 
 **EX-4**  
@@ -1600,7 +941,7 @@ b. Automatic and explicit buffering
 c. Send by copy and send by reference
 
 d. Fixed-sized and variable-sized messages
-
+```
 #include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
 
 int main() _{_ pid t pid;
@@ -1620,13 +961,13 @@ _}_ else _{_ /\* parent process \*/
 _}_
 
 return 0; _}_
-
+```
 **Figure 3.22** When will LINE J be reached?
 
 **EX-5**  
 
 **Exercises**
-
+```
 #include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
 
 int main() _{_ pid t pid, pid1;
@@ -1646,11 +987,11 @@ pid1 = getpid(); printf("parent: pid = %d",pid); /\* C \*/ printf("parent: pid1 
 _}_
 
 return 0; _}_
-
+```
 **Figure 3.23** What are the pid values?
 
 **EX-6**  
-
+```
 #include _<_sys/types.h_\>_ #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
 
 #define SIZE 5
@@ -1672,7 +1013,7 @@ wait(NULL); for (i = 0; i < SIZE; i++)
 printf("PARENT: %d ",nums\[i\]); /\* LINE Y \*/ _}_
 
 return 0; _}_
-
+```
 **Figure 3.24** What output will be at Line X and Line Y?
 
 **EX-7**  
@@ -1722,9 +1063,9 @@ For IPC between the child and parent processes, the contents of the shared memor
 **3.20** An operating system’s **pid manager** is responsible formanaging process identifiers. When a process is first created, it is assigned a unique pid by the pid manager. The pid is returned to the pid manager when the process completes execution, and the manager may later reassign this pid. Process identifiers are discussed more fully in Section 3.3.1. What is most important here is to recognize that process identifiers must be unique; no two active processes can have the same pid.
 
 Use the following constants to identify the range of possible pid values:
-
+```
 #define MIN PID 300 #define MAX PID 5000
-
+```
 You may use any data structure of your choice to represent the avail- ability of process identifiers. One strategy is to adopt what Linux has done and use a bitmap in which a value of 0 at position _i_ indicates that
 
 **P-9**  
@@ -1828,7 +1169,7 @@ the parent and child processes will run concurrently. The separate child process
 user’s command is executed using one of the system calls in the exec() family (as described in Section 3.3.1).
 
 AC program that provides the general operations of a command-line shell is supplied in Figure 3.36. The main() function presents the prompt osh-> and outlines the steps to be taken after input from the user has been read. The main() function continually loops as long as should run equals 1; when the user enters exit at the prompt, your program will set should run to 0 and terminate.
-
+```
 #include _<_stdio.h_\>_ #include _<_unistd.h_\>_
 
 #define MAX LINE 80 /\* The maximum length command \*/
@@ -1842,7 +1183,7 @@ while (should run) _{_ printf("osh>"); fflush(stdout);
 _}_
 
 return 0; _}_
-
+```
 **Figure 3.36** Outline of simple shell.
 
 **P-13**  
@@ -1982,7 +1323,7 @@ In the Linux kernel, the for each process() macro easily allows iteration over a
 **P-17**  
 
 **Programming Projects**
-
+```
 #include <linux/sched.h>
 
 struct task struct \*task;
@@ -1990,7 +1331,7 @@ struct task struct \*task;
 for each process(task) _{_ /\* on each iteration task points to the next task \*/
 
 _}_
-
+```
 The various fields in task struct can then be displayed as the program loops through the for each process()macro.
 
 **Assignment**
@@ -2138,13 +1479,13 @@ Parameters may be passed to kernel modules when they are loaded. For exam- ple, 
 sudo insmod collatz.ko start=15
 
 Within the kernelmodule,we declare start as a parameter using the following code:
-
+```
 #include<linux/moduleparam.h>
 
 static int start = 25;
 
 module param(start, int, 0);
-
+```
 The module param() macro is used to establish variables as parameters to kernel modules. module param() is provided three arguments: (1) the name of the parameter, (2) its type, and (3) file permissions. Since we are not using a file system for accessing the parameter, we are not concerned with permissions and use a default value of 0. Note that the name of the parameter used with the insmod commandmustmatch the name of the associated kernel parameter. Finally, if we do not provide a value to the module parameter during loading with insmod, the default value (which in this case is 25) is used.
 
 **Part II—Assignment**
@@ -2157,7 +1498,7 @@ In the module exit point, delete the contents of the list and return the free me
 
 _4_**CHAPTER**
 
-_Threads & Concurrency_
+# Threads & Concurrency
 
 The process model introduced in Chapter 3 assumed that a process was an executing programwith a single thread of control. Virtually all modern operat- ing systems, however, provide features enabling a process to contain multiple threads of control. Identifying opportunities for parallelism through the use of threads is becoming increasingly important for modernmulticore systems that provide multiple CPUs.
 
@@ -2175,15 +1516,11 @@ In this chapter, we introduce many concepts, as well as challenges, associ- ated
 
 • Design multithreaded applications using the Pthreads, Java, and Windows threading APIs.
 
-**159**  
-
-**160 Chapter 4 Threads & Concurrency**
-
-**4.1 Overview**
+## Overview
 
 A thread is a basic unit of CPU utilization; it comprises a thread ID, a program counter (PC), a register set, and a stack. It shares with other threads belonging to the same process its code section, data section, and other operating-system resources, such as open files and signals. A traditional process has a single thread of control. If a process has multiple threads of control, it can perform more than one task at a time. Figure 4.1 illustrates the difference between a traditional **single-threaded** process and a **multithreaded** process.
 
-**4.1.1 Motivation**
+### Motivation
 
 Most software applications that run on modern computers and mobile devices are multithreaded. An application typically is implemented as a separate pro- cess with several threads of control. Below we highlight a few examples of multithreaded applications:
 
@@ -2192,34 +1529,8 @@ Most software applications that run on modern computers and mobile devices are m
 • Awebbrowsermight have one thread display images or textwhile another thread retrieves data from the network.
 
 • A word processor may have a thread for displaying graphics, another thread for responding to keystrokes from the user, and a third thread for performing spelling and grammar checking in the background.
-
-thread
-
-multithreaded process single-threaded process
-
-registers
-
-kk
-
-stack
-
-k
-
-filesdatacodefilesdatacode
-
-thread
-
-PC registers registers
-
-stacstacstac
-
-registers
-
-PC PC PC
-
+![Alt text](image-34.png)
 **Figure 4.1** Single-threaded and multithreaded processes.  
-
-**4.1 Overview 161**
 
 Applications can also be designed to leverage processing capabilities on mul- ticore systems. Such applications can perform several CPU-intensive tasks in parallel across the multiple computing cores.
 
@@ -2231,23 +1542,10 @@ Most operating system kernels are also typically multithreaded. As an example, d
 
 Many applications can also take advantage of multiple threads, including basic sorting, trees, and graph algorithms. In addition, programmerswhomust solve contemporary CPU-intensive problems in data mining, graphics, and artificial intelligence can leverage the power of modern multicore systems by designing solutions that run in parallel.
 
-**client**
-
-(1) request (2) create new
-
-thread to service the request
-
-(3) resume listening for additional
-
-client requests
-
-**server thread**
-
+![Alt text](image-35.png)
 **Figure 4.2** Multithreaded server architecture.  
 
-**162 Chapter 4 Threads & Concurrency**
-
-**4.1.2 Benefits**
+### Benefits
 
 The benefits of multithreaded programming can be broken down into four major categories:
 
@@ -2259,25 +1557,17 @@ The benefits of multithreaded programming can be broken down into four major cat
 
 **4\. Scalability.** The benefits of multithreading can be even greater in a mul- tiprocessor architecture, where threads may be running in parallel on different processing cores. A single-threaded process can run on only one processor, regardless how many are available. We explore this issue further in the following section.
 
-**4.2 Multicore Programming**
+## Multicore Programming
 
 Earlier in the history of computer design, in response to the need for more computing performance, single-CPU systems evolved into multi-CPU systems. A later, yet similar, trend in system design is to place multiple computing cores on a single processing chip where each core appears as a separate CPU to the operating system (Section 1.3.2). We refer to such systems as **multicore**, and multithreaded programming provides a mechanism for more efficient use of these multiple computing cores and improved concurrency. Consider an application with four threads. On a system with a single computing core, concurrency merelymeans that the execution of the threads will be interleaved over time (Figure 4.3), because the processing core is capable of executing only one thread at a time. On a system with multiple cores, however, concurrency  
-
-**4.2 Multicore Programming 163**
-
-single core
-
-time
-
-T ...1 T2 T2T3 T3T4 T4T1 T1
-
+![Alt text](image-36.png)
 **Figure 4.3** Concurrent execution on a single-core system.
 
 means that some threads can run in parallel, because the system can assign a separate thread to each core (Figure 4.4).
 
 Notice the distinction between **_concurrency_** and **_parallelism_** in this discus- sion. Aconcurrent system supportsmore than one task by allowing all the tasks tomake progress. In contrast, a parallel system can performmore than one task simultaneously. Thus, it is possible to have concurrency without parallelism. Before the advent of multiprocessor and multicore architectures, most com- puter systems had only a single processor, and CPU schedulers were designed to provide the illusion of parallelism by rapidly switching between processes, thereby allowing each process to make progress. Such processes were running concurrently, but not in parallel.
 
-**4.2.1 Programming Challenges**
+### Programming Challenges
 
 The trend toward multicore systems continues to place pressure on system designers and application programmers to make better use of the multiple computing cores. Designers of operating systems must write scheduling algo- rithms that usemultiple processing cores to allow the parallel execution shown in Figure 4.4. For application programmers, the challenge is to modify existing programs as well as design new programs that are multithreaded.
 
@@ -2286,28 +1576,8 @@ In general, five areas present challenges in programming for multicore systems:
 **1\. Identifying tasks**. This involves examining applications to find areas that can be divided into separate, concurrent tasks. Ideally, tasks are independent of one another and thus can run in parallel on individual cores.
 
 **2\. Balance**. While identifying tasks that can run in parallel, programmers must also ensure that the tasks perform equal work of equal value. In some instances, a certain task may not contribute as much value to the overall process as other tasks. Using a separate execution core to run that task may not be worth the cost.
-
-core 2
-
-core 1
-
-time
-
-T ...
-
-...
-
-1T1T1
-
-T2T2T2
-
-T3T3
-
-T4T4
-
+![Alt text](image-37.png)
 **Figure 4.4** Parallel execution on a multicore system.  
-
-**164 Chapter 4 Threads & Concurrency**
 
 **_AMDAHL’S LAW_**
 
@@ -2318,137 +1588,58 @@ _speedup_ ≤ 1
 _S_ \+ (1−_S_) _N_
 
 As an example, assume we have an application that is 75 percent parallel and 25 percent serial. If we run this application on a system with two processing cores, we can get a speedup of 1.6 times. If we add two additional cores (for a total of four), the speedup is 2.28 times. Below is a graph illustrating Amdahl’s Law in several different scenarios.
-
-0
-
-2
-
-4
-
-6
-
-8
-
-10
-
-12
-
-14
-
-16
-
-0 2 4 6 8 10 12 14 16
-
-S pe
-
-ed up
-
-Number of Processing Cores
-
-Ideal Speedup S = 0.05 S = 0.10 S = 0.50
-
+![Alt text](image-38.png)
 One interesting fact about Amdahl’s Law is that as _N_ approaches infinity, the speedup converges to 1∕_S_. For example, if 50 percent of an application is performed serially, the maximum speedup is 2.0 times, regardless of the number of processing coreswe add. This is the fundamental principle behind Amdahl’s Law: the serial portion of an application can have a dispropor- tionate effect on the performance we gain by adding additional computing cores.
 
 **3\. Data splitting**. Just as applications are divided into separate tasks, the data accessed and manipulated by the tasks must be divided to run on separate cores.
 
 **4\. Data dependency**. The data accessed by the tasks must be examined for dependencies between two or more tasks. When one task depends on data from another, programmers must ensure that the execution of the tasks is synchronized to accommodate the data dependency. We examine such strategies in Chapter 6.  
-
-**4.2 Multicore Programming 165**
-
-core 0
-
-data
-
-data
-
-data parallelism
-
-task parallelism
-
-core 1 core 2 core 3
-
-core 0 core 1 core 2 core 3
-
+![Alt text](image-39.png)
 **Figure 4.5** Data and task parallelism.
 
 **5\. Testing and debugging**. When a program is running in parallel on multi- ple cores,many different execution paths are possible. Testing and debug- ging such concurrent programs is inherently more difficult than testing and debugging single-threaded applications.
 
 Because of these challenges,many software developers argue that the advent of multicore systems will require an entirely new approach to designing software systems in the future. (Similarly,many computer science educators believe that software development must be taught with increased emphasis on parallel programming.)
 
-**4.2.2 Types of Parallelism**
+### Types of Parallelism
 
 In general, there are two types of parallelism: data parallelism and task par- allelism. **Data parallelism** focuses on distributing subsets of the same data across multiple computing cores and performing the same operation on each core. Consider, for example, summing the contents of an array of size _N_. On a single-core system, one thread would simply sum the elements \[0\] . . . \[_N_ − 1\]. On a dual-core system, however, thread _A_, running on core 0, could sum the elements \[0\] . . . \[_N_∕2 − 1\] while thread _B_, running on core 1, could sum the elements \[_N_∕2\] . . . \[_N_ − 1\]. The two threads would be running in parallel on separate computing cores.
 
 **Task parallelism** involves distributing not data but tasks (threads) across multiple computing cores. Each thread is performing a unique operation. Dif- ferent threads may be operating on the same data, or theymay be operating on different data. Consider again our example above. In contrast to that situation, an example of task parallelism might involve two threads, each performing a unique statistical operation on the array of elements. The threads again are operating in parallel on separate computing cores, but each is performing a unique operation.
 
 Fundamentally, then, data parallelism involves the distribution of data across multiple cores, and task parallelism involves the distribution of tasks across multiple cores, as shown in Figure 4.5. However, data and task paral-  
-
-**166 Chapter 4 Threads & Concurrency**
-
-user threads user space
-
-kernel threads
-
-kernel space
+![Alt text](image-40.png)
 
 **Figure 4.6** User and kernel threads.
 
 lelism are not mutually exclusive, and an application may in fact use a hybrid of these two strategies.
 
-**4.3 Multithreading Models**
+## Multithreading Models
 
 Our discussion so far has treated threads in a generic sense. However, support for threads may be provided either at the user level, for **user threads**, or by the kernel, for **kernel threads**. User threads are supported above the kernel and are managed without kernel support, whereas kernel threads are supported and managed directly by the operating system. Virtually all contemporary operating systems—including Windows, Linux, and macOS— support kernel threads.
 
 Ultimately, a relationship must exist between user threads and kernel threads, as illustrated in Figure 4.6. In this section, we look at three common ways of establishing such a relationship: the many-to-one model, the one-to- one model, and the many-to-many model.
 
-**4.3.1 Many-to-One Model**
+### Many-to-One Model
 
 The many-to-one model (Figure 4.7) maps many user-level threads to one kernel thread. Thread management is done by the thread library in user space, so it is efficient (we discuss thread libraries in Section 4.4). However, the entire process will block if a thread makes a blocking system call. Also, because only
-
-user threads user space
-
-kernel threads
-
-kernel space
-
+![Alt text](image-41.png)
 **Figure 4.7** Many-to-one model.  
-
-**4.3 Multithreading Models 167**
-
-user threads user space
-
-kernel threads
-
-kernel space
-
+![Alt text](image-42.png)
 **Figure 4.8** One-to-one model.
 
 one thread can access the kernel at a time, multiple threads are unable to run in parallel on multicore systems. **Green threads**—a thread library available for Solaris systems and adopted in early versions of Java—used the many-to- one model. However, very few systems continue to use the model because of its inability to take advantage of multiple processing cores, which have now become standard on most computer systems.
 
-**4.3.2 One-to-One Model**
+### One-to-One Model
 
 The one-to-one model (Figure 4.8) maps each user thread to a kernel thread. It provides more concurrency than the many-to-one model by allowing another thread to run when a thread makes a blocking system call. It also allows mul- tiple threads to run in parallel on multiprocessors. The only drawback to this model is that creating a user thread requires creating the corresponding kernel thread, and a large number of kernel threads may burden the performance of a system. Linux, along with the family of Windows operating systems, imple- ment the one-to-one model.
 
-**4.3.3 Many-to-Many Model**
+### Many-to-Many Model
 
 The many-to-many model (Figure 4.9) multiplexes many user-level threads to a smaller or equal number of kernel threads. The number of kernel threads may be specific to either a particular application or a particular machine (an application may be allocated more kernel threads on a system with eight processing cores than a system with four cores).
-
-user threads user space
-
-kernel threads
-
-kernel space
-
+![Alt text](image-43.png)
 **Figure 4.9** Many-to-many model.  
-
-**168 Chapter 4 Threads & Concurrency**
-
-user threads user space
-
-kernel threads
-
-kernel space
-
+![Alt text](image-44.png)
 **Figure 4.10** Two-level model.
 
 Let’s consider the effect of this design on concurrency. Whereas the many- to-one model allows the developer to create as many user threads as she wishes, it does not result in parallelism, because the kernel can schedule only one kernel thread at a time. The one-to-one model allows greater concurrency, but the developer has to be careful not to create too many threads within an application. (In fact, on some systems, she may be limited in the number of threads she can create.) The many-to-many model suffers from neither of these shortcomings: developers can create as many user threads as necessary, and the corresponding kernel threads can run in parallel on a multiprocessor. Also, when a thread performs a blocking system call, the kernel can schedule another thread for execution.
@@ -2457,15 +1648,13 @@ One variation on the many-to-many model still multiplexes many user- level threa
 
 Although the many-to-many model appears to be the most flexible of the models discussed, in practice it is difficult to implement. In addition, with an increasing number of processing cores appearing on most systems, limiting the number of kernel threads has become less important. As a result, most operating systems now use the one-to-one model. However, as we shall see in Section 4.5, some contemporary concurrency libraries have developers identify tasks that are then mapped to threads using the many-to-many model.
 
-**4.4 Thread Libraries**
+## Thread Libraries
 
 A **thread library** provides the programmer with an API for creating and man- aging threads. There are two primary ways of implementing a thread library. The first approach is to provide a library entirely in user space with no kernel support. All code and data structures for the library exist in user space. This means that invoking a function in the library results in a local function call in user space and not a system call.
 
 The second approach is to implement a kernel-level library supported directly by the operating system. In this case, code and data structures for the library exist in kernel space. Invoking a function in the API for the library typically results in a system call to the kernel.  
 
-**4.4 Thread Libraries 169**
-
-Threemain thread libraries are in use today: POSIX Pthreads,Windows, and Java. Pthreads, the threads extension of the POSIX standard, may be provided as either a user-level or a kernel-level library. The Windows thread library is a kernel-level library available on Windows systems. The Java thread API allows threads to be created andmanaged directly in Java programs. However, because inmost instances the JVM is running on top of a host operating system, the Java thread API is generally implemented using a thread library available on the host system. Thismeans that onWindows systems, Java threads are typ- ically implemented using the Windows API; UNIX, Linux, and macOS systems typically use Pthreads.
+Three main thread libraries are in use today: POSIX Pthreads,Windows, and Java. Pthreads, the threads extension of the POSIX standard, may be provided as either a user-level or a kernel-level library. The Windows thread library is a kernel-level library available on Windows systems. The Java thread API allows threads to be created andmanaged directly in Java programs. However, because inmost instances the JVM is running on top of a host operating system, the Java thread API is generally implemented using a thread library available on the host system. Thismeans that onWindows systems, Java threads are typ- ically implemented using the Windows API; UNIX, Linux, and macOS systems typically use Pthreads.
 
 For POSIX and Windows threading, any data declared globally—that is, declared outside of any function—are shared among all threads belonging to the same process. Because Java has no equivalent notion of global data, access to shared data must be explicitly arranged between threads.
 
@@ -2481,48 +1670,17 @@ Before we proceed with our examples of thread creation, we introduce two general
 
 Synchronous threading occurs when the parent thread creates one or more children and thenmustwait for all of its children to terminate before it resumes. Here, the threads created by the parent perform work concurrently, but the parent cannot continue until this work has been completed. Once each thread has finished itswork, it terminates and joinswith its parent. Only after all of the children have joined can the parent resume execution. Typically, synchronous threading involves significant data sharing among threads. For example, the parent thread may combine the results calculated by its various children. All of the following examples use synchronous threading.
 
-**4.4.1 Pthreads**
+### Pthreads
 
 **Pthreads** refers to the POSIX standard (IEEE 1003.1c) defining an API for thread creation and synchronization. This is a **_specification_** for thread behavior, not an **_implementation_**. Operating-systemdesignersmay implement the specification  
 
-**170 Chapter 4 Threads & Concurrency**
-
-#include _<_pthread.h_\>_ #include _<_stdio.h_\>_
-
-#include _<_stdlib.h_\>_
-
-int sum; /\* this data is shared by the thread(s) \*/ void \*runner(void \*param); /\* threads call this function \*/
-
-int main(int argc, char \*argv\[\]) _{_
-
-pthread t tid; /\* the thread identifier \*/ pthread attr t attr; /\* set of thread attributes \*/
-
-/\* set the default attributes of the thread \*/ **pthread attr init**(&attr); /\* create the thread \*/ **pthread create**(&tid, &attr, runner, argv\[1\]); /\* wait for the thread to exit \*/ **pthread join**(tid,NULL);
-
-printf("sum = %d∖n",sum); _}_
-
-/\* The thread will execute in this function \*/ void \*runner(void \*param) _{_
-
-int i, upper = atoi(param); sum = 0;
-
-for (i = 1; i <= upper; i++) sum += i;
-
-**pthread exit**(0); _}_
-
+![Alt text](image-45.png)
 **Figure 4.11** Multithreaded C program using the Pthreads API.
 
 in any way they wish. Numerous systems implement the Pthreads specifica- tion; most are UNIX-type systems, including Linux and macOS. AlthoughWin- dows doesn’t support Pthreads natively, some third-party implementations for Windows are available.
 
 The C program shown in Figure 4.11 demonstrates the basic Pthreads API for constructing a multithreaded program that calculates the summation of a non-negative integer in a separate thread. In a Pthreads program, separate threads begin execution in a specified function. In Figure 4.11, this is the run- ner() function. When this program begins, a single thread of control begins in  
-
-**4.4 Thread Libraries 171**
-
-#define NUM THREADS 10
-
-/\* an array of threads to be joined upon \*/ pthread t workers\[NUM THREADS\];
-
-for (int i = 0; i < NUM THREADS; i++) **pthread join**(workers\[i\], NULL);
-
+![Alt text](image-46.png)
 **Figure 4.12** Pthread code for joining ten threads.
 
 main(). After some initialization, main() creates a second thread that begins control in the runner() function. Both threads share the global data sum.
@@ -2533,41 +1691,14 @@ At this point, the program has two threads: the initial (or parent) thread in ma
 
 This example program creates only a single thread. With the growing dominance of multicore systems, writing programs containing several threads has become increasingly common. A simple method for waiting on several threads using the pthread join() function is to enclose the operation within a simple for loop. For example, you can join on ten threads using the Pthread code shown in Figure 4.12.
 
-**4.4.2 Windows Threads**
+### Windows Threads
 
 The technique for creating threads using theWindows thread library is similar to the Pthreads technique in several ways. We illustrate the Windows thread API in the C program shown in Figure 4.13. Notice that we must include the windows.h header file when using the Windows API.  
 
-**172 Chapter 4 Threads & Concurrency**
-
-#include _<_windows.h_\>_ #include _<_stdio.h_\>_ DWORD Sum; /\* data is shared by the thread(s) \*/
-
-/\* The thread will execute in this function \*/ DWORD WINAPI Summation(LPVOID Param) _{_
-
-DWORD Upper = \*(DWORD\*)Param; for (DWORD i = 1; i <= Upper; i++)
-
-Sum += i; return 0;
-
-_}_
-
-int main(int argc, char \*argv\[\]) _{_
-
-DWORD ThreadId; HANDLE ThreadHandle; int Param;
-
-Param = atoi(argv\[1\]); /\* create the thread \*/ ThreadHandle = **CreateThread**(
-
-NULL, /\* default security attributes \*/ 0, /\* default stack size \*/ Summation, /\* thread function \*/ &Param, /\* parameter to thread function \*/ 0, /\* default creation flags \*/ &ThreadId); /\* returns the thread identifier \*/
-
-/\* now wait for the thread to finish \*/ **WaitForSingleObject**(ThreadHandle,INFINITE);
-
-/\* close the thread handle \*/ CloseHandle(ThreadHandle);
-
-printf("sum = %d∖n",Sum); _}_
-
+![Alt text](image-47.png)
 **Figure 4.13** Multithreaded C program using the Windows API.
 
 Just as in the Pthreads version shown in Figure 4.11, data shared by the separate threads—in this case, Sum—are declared globally (the DWORD data type is an unsigned 32-bit integer). We also define the Summation() function that is to be performed in a separate thread. This function is passed a pointer to a void, which Windows defines as LPVOID. The thread performing this function sets the global data Sum to the value of the summation from 0 to the parameter passed to Summation().  
-
-**4.4 Thread Libraries 173**
 
 Threads are created in the Windows API using the CreateThread() func- tion, and—just as in Pthreads—a set of attributes for the thread is passed to this function. These attributes include security information, the size of the stack, and a flag that can be set to indicate if the thread is to start in a suspended state. In this program, we use the default values for these attributes. (The default values do not initially set the thread to a suspended state and instead make it eligible to be run by the CPU scheduler.) Once the summation thread is created, the parent must wait for it to complete before outputting the value of Sum, as the value is set by the summation thread. Recall that the Pthread program (Figure 4.11) had the parent thread wait for the summation thread using the pthread join() statement. We perform the equivalent of this in the Windows API using the WaitForSingleObject() function, which causes the creating thread to block until the summation thread has exited.
 
@@ -2585,7 +1716,7 @@ For example, if THandles is an array of thread HANDLE objects of size N, the par
 
 WaitForMultipleObjects(N, THandles, TRUE, INFINITE);
 
-**4.4.3 Java Threads**
+### Java Threads
 
 Threads are the fundamental model of program execution in a Java program, and the Java language and its API provide a rich set of features for the creation and management of threads. All Java programs comprise at least a single thread of control—even a simple Java program consisting of only a main() method runs as a single thread in the JVM. Java threads are available on any system that provides a JVM including Windows, Linux, and macOS. The Java thread API is available for Android applications as well.
 
@@ -2596,8 +1727,6 @@ class Task implements Runnable _{_
 public void **run**() _{_ System.out.println("I am a thread.");
 
 _} }_  
-
-**174 Chapter 4 Threads & Concurrency**
 
 **_LAMBDAEXPRESSIONS IN JAVA_**
 
@@ -2629,9 +1758,8 @@ _}_ catch (InterruptedException ie) _{ }_
 
 If the parent must wait for several threads to finish, the join()method can be enclosed in a for loop similar to that shown for Pthreads in Figure 4.12.  
 
-**4.4 Thread Libraries 175**
 
-**4.4.3.1 Java Executor Framework**
+#### Java Executor Framework
 
 Java has supported thread creation using the approachwe have described thus far since its origins. However, beginning with Version 1.5 and its API, Java introduced several new concurrency features that provide developers with much greater control over thread creation and communication. These tools are available in the java.util.concurrent package.
 
@@ -2652,48 +1780,14 @@ Data sharing between threads belonging to the same process occurs easily in Wind
 The Summation class implements the Callable interface, which specifies the method V call()—it is the code in this call() method that is executed in a separate thread. To execute this code, we create a newSingleThreadEx- ecutor object (provided as a static method in the Executors class), which is of type ExecutorService, and pass it a Callable task using its submit() method. (The primary difference between the execute() and submit()meth- ods is that the former returns no result, whereas the latter returns a result as a Future.) Once we submit the callable task to the thread, we wait for its result by calling the get()method of the Future object it returns.
 
 It is quite easy to notice at first that this model of thread creation appears more complicated than simply creating a thread and joining on its termination. However, incurring this modest degree of complication confers benefits. Aswe have seen, using Callable and Future allows for threads to return results.  
-
-**176 Chapter 4 Threads & Concurrency**
-
-import java.util.concurrent.\*;
-
-class Summation implements Callable<Integer> _{_
-
-private int upper; public Summation(int upper) _{_
-
-this.upper = upper; _}_
-
-/\* The thread will execute in this method \*/ public Integer **call**() _{_
-
-int sum = 0; for (int i = 1; i <= upper; i++)
-
-sum += i;
-
-return new Integer(sum); _}_
-
-_}_
-
-public class Driver _{_ public static void main(String\[\] args) _{_
-
-int upper = Integer.parseInt(args\[0\]);
-
-ExecutorService pool = **Executors.newSingleThreadExecutor**(); Future<Integer> result = pool.**submit**(new Summation(upper));
-
-try _{_ System.out.println("sum = " + result.**get**());
-
-_}_ catch (InterruptedException | ExecutionException ie) _{ } }_
-
-_}_
-
+![Alt text](image-48.png)
 **Figure 4.14** Illustration of Java Executor framework API.
 
 Additionally, this approach separates the creation of threads from the results they produce: rather than waiting for a thread to terminate before retrieving results, the parent instead onlywaits for the results to become available. Finally, as we shall see in Section 4.5.1, this framework can be combined with other features to create robust tools for managing a large number of threads.
 
-**4.5 Implicit Threading**
+## Implicit Threading
 
 With the continued growth of multicore processing, applications contain- ing hundreds—or even thousands—of threads are looming on the horizon. Designing such applications is not a trivial undertaking: programmers must  
-
-**4.5 Implicit Threading 177**
 
 **_THE JVM AND THE HOST OPERATING SYSTEM_**
 
@@ -2703,11 +1797,9 @@ address not only the challenges outlined in Section 4.2 but additional difficul-
 
 One way to address these difficulties and better support the design of con- current and parallel applications is to transfer the creation and management of threading from application developers to compilers and run-time libraries. This strategy, termed **implicit threading**, is an increasingly popular trend. In this section, we explore four alternative approaches to designing applications that can take advantage of multicore processors through implicit threading. As we shall see, these strategies generally require application developers to identify **_tasks_**—not threads—that can run in parallel. A task is usually writ- ten as a function, which the run-time library then maps to a separate thread, typically using the many-to-many model (Section 4.3.3). The advantage of this approach is that developers only need to identify parallel tasks, and the libraries determine the specific details of thread creation and management.
 
-**4.5.1 Thread Pools**
+### Thread Pools
 
 In Section 4.1, we described a multithreaded web server. In this situation, whenever the server receives a request, it creates a separate thread to service the request.Whereas creating a separate thread is certainly superior to creating a separate process, a multithreaded server nonetheless has potential problems. The first issue concerns the amount of time required to create the thread, together with the fact that the thread will be discarded once it has completed its work. The second issue is more troublesome. If we allow each concurrent request to be serviced in a new thread, we have not placed a bound on the number of threads concurrently active in the system. Unlimited threads could exhaust system resources, such as CPU time or memory. One solution to this problem is to use a **thread pool**.  
-
-**178 Chapter 4 Threads & Concurrency**
 
 **_ANDROID THREAD POOLS_**
 
@@ -2731,7 +1823,6 @@ DWORD WINAPI PoolFunction(PVOID Param) _{_ /\* this function runs as a separate 
 
 _}_  
 
-**4.5 Implicit Threading 179**
 
 A pointer to PoolFunction() is passed to one of the functions in the thread pool API, and a thread from the pool executes this function. One such member in the thread pool API is the QueueUserWorkItem() function, which is passed three parameters:
 
@@ -2749,7 +1840,7 @@ This causes a thread from the thread pool to invoke PoolFunction() on behalf of 
 
 Other members in the Windows thread pool API include utilities that invoke functions at periodic intervals or when an asynchronous I/O request completes.
 
-**4.5.1.1 Java Thread Pools**
+#### Java Thread Pools
 
 The java.util.concurrent package includes an API for several varieties of thread-pool architectures. Here, we focus on the following three models:
 
@@ -2770,57 +1861,21 @@ A thread pool is created using one of the factorymethods in the Executors class:
 • static ExecutorService newCachedThreadPool()
 
 Each of these factorymethods creates and returns an object instance that imple- ments the ExecutorService interface. ExecutorService extends the Execu-  
-
-**180 Chapter 4 Threads & Concurrency**
-
-import java.util.concurrent.\*;
-
-public class ThreadPoolExample _{_ public static void main(String\[\] args) _{_
-
-int numTasks = Integer.parseInt(args\[0\].trim());
-
-/\* Create the thread pool \*/ ExecutorService pool = **Executors.newCachedThreadPool()**;
-
-/\* Run each task using a thread in the pool \*/ for (int i = 0; i < numTasks; i++)
-
-pool.**execute**(new Task());
-
-/\* Shut down the pool once all threads have completed \*/ pool.**shutdown()**;
-
-_}_
-
+![Alt text](image-49.png)
 **Figure 4.15** Creating a thread pool in Java.
 
 tor interface, allowing us to invoke the execute() method on this object. In addition, ExecutorService provides methods for managing termination of the thread pool.
 
 The example shown in Figure 4.15 creates a cached threadpool and submits tasks to be executedby a thread in the pool using the execute()method.When the shutdown()method is invoked, the thread pool rejects additional tasks and shuts down once all existing tasks have completed execution.
 
-**4.5.2 Fork Join**
+### Fork Join
 
 The strategy for thread creation covered in Section 4.4 is often known as the **fork-join** model. Recall that with this method, the main parent thread creates (**_forks_**) one or more child threads and then waits for the children to terminate and **_join_** with it, at which point it can retrieve and combine their results. This synchronous model is often characterized as explicit thread creation, but it is also an excellent candidate for implicit threading. In the latter situation, threads are not constructed directly during the fork stage; rather, parallel tasks are designated. This model is illustrated in Figure 4.16. A library manages the number of threads that are created and is also responsible for assigning tasks to threads. In some ways, this fork-join model is a synchronous version of thread pools in which a library determines the actual number of threads to create— for example, by using the heuristics described in Section 4.5.1.
 
-**4.5.2.1 Fork Join in Java**
+#### Fork Join in Java
 
 Java introduced a fork-join library in Version 1.7 of the API that is designed to be used with recursive divide-and-conquer algorithms such as Quicksort andMergesort.When implementingdivide-and-conquer algorithms using this  
-
-**4.5 Implicit Threading 181**
-
-task
-
-task
-
-fork
-
-fork
-
-main thread
-
-join
-
-join
-
-main thread
-
+![Alt text](image-50.png)
 **Figure 4.16** Fork-join parallelism.
 
 library, separate tasks are forked during the divide step and assigned smaller subsets of the original problem. Algorithms must be designed so that these separate tasks can execute concurrently. At some point, the size of the problem assigned to a task is small enough that it can be solved directly and requires creating no additional tasks. The general recursive algorithm behind Java’s fork-join model is shown below:
@@ -2846,43 +1901,7 @@ SumTask task = new SumTask(0, SIZE - 1, array); int sum = pool.invoke(task);
 Upon completion, the initial call to invoke() returns the summation of array. The class SumTask—shown in Figure 4.18—implements a divide-and-
 
 conquer algorithm that sums the contents of the array using fork-join. New tasks are created using the fork()method, and the compute()method speci- fies the computation that is performed by each task. The method compute() is invoked until it can directly calculate the sum of the subset it is assigned. The  
-
-**182 Chapter 4 Threads & Concurrency**
-
-task
-
-fork
-
-fork
-
-join
-
-join
-
-task
-
-task
-
-taskfork
-
-fork
-
-join
-
-join
-
-task
-
-task
-
-taskfork
-
-fork
-
-join
-
-join
-
+![Alt text](image-51.png)
 **Figure 4.17** Fork-join in Java.
 
 call to join() blocks until the task completes, upon which join() returns the results calculated in compute().
@@ -2892,59 +1911,17 @@ Notice that SumTask in Figure 4.18 extends RecursiveTask. The Java fork- join st
 An important issue to consider is determining when the problem is “small enough” to be solved directly and no longer requires creating additional tasks. In SumTask, this occurs when the number of elements being summed is less than the value THRESHOLD, which in Figure 4.18we have arbitrarily set to 1,000. In practice, determiningwhen a problem can be solved directly requires careful timing trials, as the value can vary according to implementation.
 
 What is interesting in Java’s fork-join model is the management of tasks wherein the library constructs a pool of worker threads and balances the load of tasks among the available workers. In some situations, there are thousands of tasks, yet only a handful of threads performing the work (for example, a separate thread for each CPU). Additionally, each thread in a ForkJoinPool maintains a queue of tasks that it has forked, and if a thread’s queue is empty, it can steal a task from another thread’s queue using a**_work stealing_** algorithm, thus balancing the workload of tasks among all threads.  
-
-**4.5 Implicit Threading 183**
-
-import java.util.concurrent.\*;
-
-public class SumTask extends RecursiveTask<Integer> _{_
-
-static final int THRESHOLD = 1000;
-
-private int begin; private int end; private int\[\] array;
-
-public SumTask(int begin, int end, int\[\] array) _{_ this.begin = begin; this.end = end; this.array = array;
-
-_}_
-
-protected Integer **compute()** _{_ if (end - begin < THRESHOLD) _{_
-
-int sum = 0; for (int i = begin; i <= end; i++)
-
-sum += array\[i\];
-
-return sum; _}_ else _{_
-
-int mid = (begin + end) / 2;
-
-SumTask leftTask = new SumTask(begin, mid, array); SumTask rightTask = new SumTask(mid + 1, end, array);
-
-leftTask.**fork**(); rightTask.**fork**();
-
-return rightTask.**join**() + leftTask.**join**(); _}_
-
-_} }_
-
+![Alt text](image-52.png)
 **Figure 4.18** Fork-join calculation using the Java API.
 
-**4.5.3 OpenMP**
+### OpenMP
 
 OpenMP is a set of compiler directives as well as an API for programswritten in C, C++, or FORTRAN that provides support for parallel programming in shared- memory environments. OpenMP identifies **parallel regions** as blocks of code that may run in parallel. Application developers insert compiler directives into their code at parallel regions, and these directives instruct the OpenMP run-  
-
-**184 Chapter 4 Threads & Concurrency**
-
-ForkJoinTask <V> _<abstract>_
-
-RecursiveTask <V> _<abstract>_
-
-RecursiveAction _<abstract>_
-
-V compute() void compute()
-
+![Alt text](image-53.png)
 **Figure 4.19** UML class diagram for Java’s fork-join.
 
 time library to execute the region in parallel. The following C program illus- trates a compiler directive above the parallel region containing the printf() statement:
-
+```
 #include _<_omp.h_\>_ #include _<_stdio.h_\>_
 
 int main(int argc, char \*argv\[\]) _{_
@@ -2958,30 +1935,25 @@ printf("I am a parallel region."); _}_
 /\* sequential code \*/
 
 return 0; _}_
-
+```
 When OpenMP encounters the directive
-
+```
 #pragma omp parallel
-
+```
 it creates as many threads as there are processing cores in the system. Thus, for a dual-core system, two threads are created; for a quad-core system, four are created; and so forth. All the threads then simultaneously execute the parallel region. As each thread exits the parallel region, it is terminated.
 
 OpenMP provides several additional directives for running code regions in parallel, including parallelizing loops. For example, assume we have two arrays, a and b, of size N. We wish to sum their contents and place the results  
 
-**4.5 Implicit Threading 185**
-
 in array c. We can have this task run in parallel by using the following code segment, which contains the compiler directive for parallelizing for loops:
 
-#pragma omp parallel for for (i = 0; i < N; i++) _{_
+pragma omp parallel for for (i = 0; i < N; i++) _{_
+c[i] = a[i] + b[i]; _}_
 
-c\[i\] = a\[i\] + b\[i\]; _}_
-
-OpenMP divides the work contained in the for loop among the threads it has created in response to the directive
-
-#pragma omp parallel for
+OpenMP divides the work contained in the for loop among the threads it has created in response to the directive pragma omp parallel for
 
 In addition to providing directives for parallelization, OpenMP allows developers to choose among several levels of parallelism. For example, they can set the number of threads manually. It also allows developers to identify whether data are shared between threads or are private to a thread. OpenMP is available on several open-source and commercial compilers for Linux, Win- dows, and macOS systems. We encourage readers interested in learning more about OpenMP to consult the bibliography at the end of the chapter.
 
-**4.5.4 Grand Central Dispatch**
+### Grand Central Dispatch
 
 Grand Central Dispatch (GCD) is a technology developed by Apple for its macOS and iOS operating systems. It is a combination of a run-time library, an API, and language extensions that allow developers to identify sections of code (**_tasks_**) to run in parallel. Like OpenMP, GCD manages most of the details of threading.
 
@@ -2993,11 +1965,7 @@ Tasks placed on a concurrent queue are also removed in FIFO order, but several t
 
 • QOS CLASS USER INTERACTIVE—The **user-interactive** class represents tasks that interact with the user, such as the user interface and event handling, to ensure a responsive user interface. Completing a task belonging to this class should require only a small amount of work.
 
-• QOS CLASS USER INITIATED—The **user-initiated** class is similar to the user-interactive class in that tasks are associated with a responsive user interface; however, user-initiated tasks may require longer processing  
-
-**186 Chapter 4 Threads & Concurrency**
-
-times. Opening a file or a URL is a user-initiated task, for example. Tasks belonging to this class must be completed for the user to continue inter- acting with the system, but they do not need to be serviced as quickly as tasks in the user-interactive queue.
+• QOS CLASS USER INITIATED—The **user-initiated** class is similar to the user-interactive class in that tasks are associated with a responsive user interface; however, user-initiated tasks may require longer processing times. Opening a file or a URL is a user-initiated task, for example. Tasks belonging to this class must be completed for the user to continue inter- acting with the system, but they do not need to be serviced as quickly as tasks in the user-interactive queue.
 
 • QOS CLASS UTILITY —The **utility** class represents tasks that require a longer time to complete but do not demand immediate results. This class includes work such as importing data.
 
@@ -3019,13 +1987,9 @@ dispatch async(queue,_{_ print("I am a closure.") _}_)
 
 Internally, GCD’s thread pool is composed of POSIX threads. GCD actively manages the pool, allowing the number of threads to grow and shrink accord- ing to application demand and system capacity. GCD is implemented by the libdispatch library, which Apple has released under the Apache Commons license. It has since been ported to the FreeBSD operating system.
 
-**4.5.5 Intel Thread Building Blocks**
+### Intel Thread Building Blocks
 
-Intel threading building blocks (TBB) is a template library that supports design- ing parallel applications in C++. As this is a library, it requires no special compiler or language support. Developers specify tasks that can run in par-  
-
-**4.5 Implicit Threading 187**
-
-allel, and the TBB task scheduler maps these tasks onto underlying threads. Furthermore, the task scheduler provides load balancing and is cache aware, meaning that it will give precedence to tasks that likely have their data stored in cache memory and thus will execute more quickly. TBB provides a rich set of features, including templates for parallel loop structures, atomic operations, and mutual exclusion locking. In addition, it provides concurrent data struc- tures, including a hash map, queue, and vector, which can serve as equivalent thread-safe versions of the C++ standard template library data structures.
+Intel threading building blocks (TBB) is a template library that supports design- ing parallel applications in C++. As this is a library, it requires no special compiler or language support. Developers specify tasks that can run in parallel, and the TBB task scheduler maps these tasks onto underlying threads. Furthermore, the task scheduler provides load balancing and is cache aware, meaning that it will give precedence to tasks that likely have their data stored in cache memory and thus will execute more quickly. TBB provides a rich set of features, including templates for parallel loop structures, atomic operations, and mutual exclusion locking. In addition, it provides concurrent data struc- tures, including a hash map, queue, and vector, which can serve as equivalent thread-safe versions of the C++ standard template library data structures.
 
 Let’s use parallel for loops as an example. Initially, assume there is a func- tion named apply(float value) that performs an operation on the parameter value. If we had an array v of size n containing float values, we could use the following serial for loop to pass each value in v to the apply() function:
 
@@ -3047,17 +2011,13 @@ parallel for (size t(0), n, \[=\](size t i) _{_apply(v\[i\]);_}_);
 
 The first two parameters specify that the iteration space is from 0 to _n_−1 (which corresponds to the number of elements in the array v). The second parameter is a C++ lambda function that requires a bit of explanation. The expression \[=\](size t i) is the parameter i, which assumes each of the values over the iteration space (in this case from 0 to �� − 1). Each value of i is used to identify which array element in v is to be passed as a parameter to the apply(v\[i\]) function.
 
-The TBB library will divide the loop iterations into separate “chunks” and create a number of tasks that operate on those chunks. (The parallel for function allows developers to manually specify the size of the chunks if they wish to.) TBB will also create a number of threads and assign tasks to available threads. This is quite similar to the fork-join library in Java. The advantage of this approach is that it requires only that developers identify what operations can run in parallel (by specifying a parallel for loop), and the library man-  
+The TBB library will divide the loop iterations into separate “chunks” and create a number of tasks that operate on those chunks. (The parallel for function allows developers to manually specify the size of the chunks if they wish to.) TBB will also create a number of threads and assign tasks to available threads. This is quite similar to the fork-join library in Java. The advantage of this approach is that it requires only that developers identify what operations can run in parallel (by specifying a parallel for loop), and the library manages the details involved in dividing the work into separate tasks that run in parallel. Intel TBB has both commercial and open-source versions that run on Windows, Linux, and macOS. Refer to the bibliography for further details on how to develop parallel applications using TBB.
 
-**188 Chapter 4 Threads & Concurrency**
-
-ages the details involved in dividing the work into separate tasks that run in parallel. Intel TBB has both commercial and open-source versions that run on Windows, Linux, and macOS. Refer to the bibliography for further details on how to develop parallel applications using TBB.
-
-**4.6 Threading Issues**
+## Threading Issues
 
 In this section, we discuss some of the issues to consider in designing multi- threaded programs.
 
-**4.6.1 The fork() and exec() System Calls**
+### The fork() and exec() System Calls
 
 In Chapter 3, we described how the fork() system call is used to create a separate, duplicate process. The semantics of the fork() and exec() system calls change in a multithreaded program.
 
@@ -3067,7 +2027,7 @@ The exec() system call typically works in the same way as described in Chapter 3
 
 Which of the two versions of fork() to use depends on the application. If exec() is called immediately after forking, then duplicating all threads is unnecessary, as the program specified in the parameters to exec()will replace the process. In this instance, duplicating only the calling thread is appropri- ate. If, however, the separate process does not call exec() after forking, the separate process should duplicate all threads.
 
-**4.6.2 Signal Handling**
+### Signal Handling
 
 A **signal** is used in UNIX systems to notify a process that a particular event has occurred. A signal may be received either synchronously or asynchronously, depending on the source of and the reason for the event being signaled. All signals, whether synchronous or asynchronous, follow the same pattern:
 
@@ -3080,9 +2040,6 @@ A **signal** is used in UNIX systems to notify a process that a particular event
 Examples of synchronous signals include illegal memory access and divi- sion by 0. If a running program performs either of these actions, a signal is gen- erated. Synchronous signals are delivered to the same process that performed the operation that caused the signal (that is the reason they are considered synchronous).
 
 When a signal is generated by an event external to a running process, that process receives the signal asynchronously. Examples of such signals include terminating a process with specific keystrokes (such as _<_control_\><_C_\>_) and  
-
-**4.6 Threading Issues 189**
-
 having a timer expire. Typically, an asynchronous signal is sent to another process.
 
 A signal may be **_handled_** by one of two possible handlers:
@@ -3115,13 +2072,10 @@ This function specifies the process (pid) towhich a particular signal (signal) i
 
 pthread kill(pthread t tid, int signal)
 
-Although Windows does not explicitly provide support for signals, it allows us to emulate them using **asynchronous procedure calls** (**APCs**). The APC facility enables a user thread to specify a function that is to be called when the user thread receives notification of a particular event. As indicated  
-
-**190 Chapter 4 Threads & Concurrency**
-
+Although Windows does not explicitly provide support for signals, it allows us to emulate them using **asynchronous procedure calls** (**APCs**). The APC facility enables a user thread to specify a function that is to be called when the user thread receives notification of a particular event. As indicated 
 by its name, an APC is roughly equivalent to an asynchronous signal in UNIX. However, whereas UNIX must contend with how to deal with signals in a mul- tithreaded environment, the APC facility is more straightforward, since an APC is delivered to a particular thread rather than a process.
 
-**4.6.3 Thread Cancellation**
+### Thread Cancellation
 
 **Thread cancellation** involves terminating a thread before it has completed. For example, if multiple threads are concurrently searching through a database and one thread returns the result, the remaining threads might be canceled. Another situation might occur when a user presses a button on a web browser that stops a web page from loading any further. Often, a web page loads using several threads—each image is loaded in a separate thread. When a user presses the stop button on the browser, all threads loading the page are canceled.
 
@@ -3146,8 +2100,6 @@ pthread t tid;
 /\* cancel the thread \*/ **pthread cancel**(tid);
 
 /\* wait for the thread to terminate \*/ pthread join(tid,NULL);  
-
-**4.6 Threading Issues 191**
 
 Invoking pthread cancel()indicates only a request to cancel the target thread, however; actual cancellation depends on how the target thread is set up to handle the request. When the target thread is finally canceled, the call to pthread join() in the canceling thread returns. Pthreads supports three cancellation modes. Each mode is defined as a state and a type, as illustrated in the table below. A threadmay set its cancellation state and type using an API.
 
@@ -3179,8 +2131,6 @@ Because of the issues described earlier, asynchronous cancellation is not recomm
 
 Thread cancellation in Java uses a policy similar to deferred cancellation in Pthreads. To cancel a Java thread, you invoke the interrupt()method, which sets the interruption status of the target thread to true:  
 
-**192 Chapter 4 Threads & Concurrency**
-
 Thread worker;
 
 . . .
@@ -3193,7 +2143,7 @@ while (!Thread.currentThread().**isInterrupted**()) _{_ . . .
 
 _}_
 
-**4.6.4 Thread-Local Storage**
+### Thread-Local Storage
 
 Threads belonging to a process share the data of the process. Indeed, this data sharing provides one of the benefits of multithreaded programming. However, in some circumstances, each thread might need its own copy of certain data. We will call such data **thread-local storage** (or **TLS**). For example, in a transaction-processing system, we might service each transaction in a separate thread. Furthermore, each transaction might be assigned a unique identifier. To associate each thread with its unique transaction identifier, we could use thread-local storage.
 
@@ -3203,13 +2153,9 @@ In some ways, TLS is similar to static data; the difference is that TLS data are
 
 static thread int threadID;
 
-**4.6.5 Scheduler Activations**
+### Scheduler Activations
 
-Afinal issue to be considered with multithreaded programs concerns commu- nication between the kernel and the thread library, which may be required  
-
-**4.6 Threading Issues 193**
-
-by the many-to-many and two-level models discussed in Section 4.3.3. Such coordination allows the number of kernel threads to be dynamically adjusted to help ensure the best performance.
+Afinal issue to be considered with multithreaded programs concerns commu- nication between the kernel and the thread library, which may be required by the many-to-many and two-level models discussed in Section 4.3.3. Such coordination allows the number of kernel threads to be dynamically adjusted to help ensure the best performance.
 
 Many systems implementing either the many-to-many or the two-level model place an intermediate data structure between the user and kernel threads. This data structure—typically known as a **lightweight process**, or **LWP**—is shown in Figure 4.20. To the user-thread library, the LWP appears to be a virtual processor on which the application can schedule a user thread to run. Each LWP is attached to a kernel thread, and it is kernel threads that the operating system schedules to run on physical processors. If a kernel thread blocks (such as while waiting for an I/O operation to complete), the LWP blocks as well. Up the chain, the user-level thread attached to the LWP also blocks.
 
@@ -3218,26 +2164,16 @@ An applicationmay require any number of LWPs to run efficiently. Consider a CPU-
 One scheme for communication between the user-thread library and the kernel is known as **scheduler activation**. It works as follows: The kernel pro- vides an applicationwith a set of virtual processors (LWPs), and the application can schedule user threads onto an available virtual processor. Furthermore, the kernel must inform an application about certain events. This procedure is known as an **upcall**. Upcalls are handled by the thread library with an **upcall handler**, and upcall handlers must run on a virtual processor.
 
 One event that triggers an upcall occurs when an application thread is about to block. In this scenario, the kernel makes an upcall to the application informing it that a thread is about to block and identifying the specific thread. The kernel then allocates a new virtual processor to the application. The appli- cation runs an upcall handler on this new virtual processor, which saves the
-
-LWP
-
-user thread
-
-lightweight process
-
-kernel thread
-
+![Alt text](image-54.png)
 **Figure 4.20** Lightweight process (LWP).  
-
-**194 Chapter 4 Threads & Concurrency**
 
 state of the blocking thread and relinquishes the virtual processor onwhich the blocking thread is running. The upcall handler then schedules another thread that is eligible to run on the new virtual processor. When the event that the blocking thread was waiting for occurs, the kernel makes another upcall to the thread library informing it that the previously blocked thread is now eligible to run. The upcall handler for this event also requires a virtual processor, and the kernel may allocate a new virtual processor or preempt one of the user threads and run the upcall handler on its virtual processor. After marking the unblocked thread as eligible to run, the application schedules an eligible thread to run on an available virtual processor.
 
-**4.7 Operating-System Examples**
+## Operating-System Examples
 
 At this point, we have examined a number of concepts and issues related to threads. We conclude the chapter by exploring how threads are implemented in Windows and Linux systems.
 
-**4.7.1 Windows Threads**
+### Windows Threads
 
 A Windows application runs as a separate process, and each process may contain one or more threads. The Windows API for creating threads is covered in Section 4.4.2. Additionally,Windows uses the one-to-onemapping described in Section 4.3.2, where each user-level thread maps to an associated kernel thread.
 
@@ -3264,71 +2200,19 @@ The primary data structures of a thread include:
 • TEB—thread environment block
 
 The key components of the ETHREAD include a pointer to the process to which the thread belongs and the address of the routine in which the thread starts control. The ETHREAD also contains a pointer to the corresponding KTHREAD.  
-
-**4.7 Operating-System Examples 195**
-
-user spacekernel space
-
-pointer to parent process
-
-thread start address
-
-ETHREAD
-
-KTHREAD
-
-• • •
-
-kernel stack
-
-scheduling and
-
-synchronization information
-
-• • •
-
-user stack
-
-thread-local storage
-
-thread identifier
-
-TEB
-
-• • •
-
+![Alt text](image-55.png)
 **Figure 4.21** Data structures of a Windows thread.
 
 The KTHREAD includes scheduling and synchronization information for the thread. In addition, the KTHREAD includes the kernel stack (used when the thread is running in kernel mode) and a pointer to the TEB.
 
 The ETHREAD and the KTHREAD exist entirely in kernel space; this means that only the kernel can access them. The TEB is a user-space data structure that is accessed when the thread is running in user mode. Among other fields, the TEB contains the thread identifier, a user-mode stack, and an array for thread-local storage. The structure of a Windows thread is illustrated in Figure 4.21.
 
-**4.7.2 Linux Threads**
+### Linux Threads
 
 Linux provides the fork() system call with the traditional functionality of duplicating a process, as described in Chapter 3. Linux also provides the ability to create threads using the clone() system call. However, Linux does not distinguish between processes and threads. In fact, Linux uses the term **_task_** —rather than **_process_** or **_thread_**— when referring to a flow of control within a program.
 
 When clone() is invoked, it is passed a set of flags that determine how much sharing is to take place between the parent and child tasks. Some of these flags are listed in Figure 4.22. For example, suppose that clone() is passed the flags CLONE FS, CLONE VM, CLONE SIGHAND, and CLONE FILES. The parent and child tasks will then share the same file-system information (such as the current working directory), the same memory space, the same signal handlers,  
-
-**196 Chapter 4 Threads & Concurrency**
-
-flag meaning
-
-CLONE\_FS
-
-CLONE\_VM
-
-CLONE\_SIGHAND
-
-CLONE\_FILES
-
-File-system information is shared.
-
-The same memory space is shared.
-
-Signal handlers are shared.
-
-The set of open files is shared.
-
+![Alt text](image-56.png)
 **Figure 4.22** Some of the flags passed when clone() is invoked.
 
 and the same set of open files. Using clone() in this fashion is equivalent to creating a thread as described in this chapter, since the parent task shares most of its resources with its child task. However, if none of these flags is set when clone() is invoked, no sharing takes place, resulting in functionality similar to that provided by the fork() system call.
@@ -3337,7 +2221,7 @@ The varying level of sharing is possible because of the way a task is repre- sen
 
 Finally, the flexibility of the clone() system call can be extended to the concept of containers, a virtualization topic which was introduced in Chapter 1. Recall from that chapter that a container is a virtualization technique pro- vided by the operating system that allows creating multiple Linux systems (containers) under a single Linux kernel that run in isolation to one another. Just as certain flags passed to clone() can distinguish between creating a task that behaves more like a process or a thread based upon the amount of sharing between the parent and child tasks, there are other flags that can be passed to clone() that allow a Linux container to be created. Containers will be covered more fully in Chapter 18.
 
-**4.8 Summary**
+## Summary
 
 • A thread represents a basic unit of CPU utilization, and threads belonging to the same process share many of the process resources, including code and data.
 
@@ -3368,8 +2252,6 @@ neously. On a system with a single CPU, only concurrency is possible; parallelis
 **4.1** Provide three programming examples inwhichmultithreadingprovides better performance than a single-threaded solution.
 
 **4.2** Using Amdahl’s Law, calculate the speedup gain of an application that has a 60 percent parallel component for (a) two processing cores and (b) four processing cores.  
-
-**198 Chapter 4 Threads & Concurrency**
 
 **4.3** Does the multithreaded web server described in Section 4.1 exhibit task or data parallelism?
 
@@ -3486,7 +2368,7 @@ c. The number of kernel threads allocated to the program is greater than the num
 **EX-9**  
 
 **Exercises**
-
+```
 #include _<_pthread.h_\>_ #include _<_stdio.h_\>_
 
 int value = 0; void \*runner(void \*param); /\* the thread \*/
@@ -3506,6 +2388,7 @@ _} }_
 void \*runner(void \*param) _{_ value = 5; pthread exit(0);
 
 _}_
+```
 
 **Figure 4.22** C program for Exercise 4.19.
 
@@ -3518,7 +2401,7 @@ The two possible values for the state are PTHREAD CANCEL ENABLE and PTHREAD CANC
 Using the code segment shown in Figure 4.24, provide examples of two operations that would be suitable to perform between the calls to disable and enable thread cancellation.
 
 **EX-10**  
-
+```
 int oldstate;
 
 pthread setcancelstate(PTHREAD CANCEL DISABLE, &oldstate);
@@ -3526,7 +2409,7 @@ pthread setcancelstate(PTHREAD CANCEL DISABLE, &oldstate);
 /\* What operations would be performed here? \*/
 
 pthread setcancelstate(PTHREAD CANCEL ENABLE, &oldstate);
-
+```
 **Figure 4.23** C program for Exercise 4.21.
 
 **EX-11**  
@@ -3560,19 +2443,7 @@ Suppose you have a circle inscribed within a square, as shown in Figure 4.25. (A
 Write a multithreaded version of this algorithm that creates a separate thread to generate a number of random points. The thread will count the number of points that occur within the circle and store that result in a global variable. When this thread has exited, the parent thread will calculate and output the estimated value of π. It is worth experimenting with the number of random points generated. As a general rule, the greater the number of points, the closer the approximation to π.
 
 **P-23**  
-
-**Chapter 4 Threads & Concurrency**
-
-(−1, 1)
-
-(−1, −1)
-
-(1, 1)
-
-(1, −1)
-
-(0, 0)
-
+![Alt text](image-57.png)
 **Figure 4.25** Monte Carlo technique for calculating π.
 
 In the source-code download for this text, you will find a sample program that provides a technique for generating random numbers, as well as determining if the random (_x_, _y_) point occurs within the circle.
@@ -3598,25 +2469,7 @@ Write a multithreaded program that generates the Fibonacci sequence. This progra
 multithreaded program that tests your solution to Exercise 3.20. Youwill create a number of threads—for example, 100—and each thread will request a pid, sleep for a random period of time, and then release the pid. (Sleeping for a random period of time approximates the typical pid usage in which a pid is assigned to a new process, the process executes and then terminates, and the pid is released on the process’s termina- tion.) On UNIX and Linux systems, sleeping is accomplished through the sleep() function, which is passed an integer value representing the number of seconds to sleep. This problemwill be modified in Chapter 7.
 
 **4.29** Exercise 3.25 in Chapter 3 involves designing an echo server using the Java threading API. This server is single-threaded, meaning that the server cannot respond to concurrent echo clients until the current client exits.Modify the solution to Exercise 3.25 so that the echo server services each client in a separate request.
-
-6 2 4 5 3 9 1 8 7
-
-5 1 9 7 2 8 6 3 4
-
-8 3 7 6 1 4 2 9 5
-
-1 4 3 8 6 5 7 2 9
-
-9 5 8 2 4 7 3 6 1
-
-7 6 2 3 9 1 4 5 8
-
-3 7 1 9 5 6 8 4 2
-
-4 9 6 1 8 2 5 7 3
-
-2 8 5 4 7 3 9 1 6
-
+![Alt text](image-58.png)
 **Figure 4.26** Solution to a 9 × 9 Sudoku puzzle.
 
 **Programming Projects**
@@ -3632,8 +2485,6 @@ There are several different ways of multithreading this application. One suggest
 • A thread to check that each row contains the digits 1 through 9
 
 **P-25**  
-
-**Chapter 4 Threads & Concurrency**
 
 • Nine threads to check that each of the 3 × 3 subgrids contains the digits 1 through 9
 
@@ -3673,24 +2524,7 @@ This programming project will require passing parameters to each of the sorting 
 
 The parent threadwill output the sorted array once all sorting threads have exited.
 
-**7, 12, 19, 3, 18**
-
-**7, 12, 19, 3, 18, 4, 2, 6, 15, 8**
-
-original list
-
-**2, 3, 4, 6, 7, 8, 12, 15, 18, 19**
-
-merge thread
-
-sorted list
-
-sorting thread0
-
-sorting shread1
-
-**4, 2, 6, 15, 8**
-
+![Alt text](image-59.png)
 **Figure 4.27** Multithreaded sorting.
 
 **Project 3—Fork-Join Sorting Application** Implement the preceding project (Multithreaded Sorting Application) using Java’s fork-join parallelism API. This project will be developed in two different versions. Each version will implement a different divide-and-conquer sorting algorithm:
@@ -3699,13 +2533,7 @@ sorting shread1
 
 **2\.** Mergesort
 
-The Quicksort implementation will use the Quicksort algorithm for dividing the list of elements to be sorted into a _left half_ and a _right half_ based on the
-
-**P-27**  
-
-**Chapter 4 Threads & Concurrency**
-
-position of the pivot value. The Mergesort algorithm will divide the list into two evenly sized halves. For both the Quicksort and Mergesort algorithms, when the list to be sorted falls within some threshold value (for example, the list is size 100 or fewer), directly apply a simple algorithm such as the Selection or Insertion sort. Most data structures texts describe these two well-known, divide-and-conquer sorting algorithms.
+The Quicksort implementation will use the Quicksort algorithm for dividing the list of elements to be sorted into a _left half_ and a _right half_ based on the position of the pivot value. The Mergesort algorithm will divide the list into two evenly sized halves. For both the Quicksort and Mergesort algorithms, when the list to be sorted falls within some threshold value (for example, the list is size 100 or fewer), directly apply a simple algorithm such as the Selection or Insertion sort. Most data structures texts describe these two well-known, divide-and-conquer sorting algorithms.
 
 The class SumTask shown in Section 4.5.2.1 extends RecursiveTask, which is a result-bearing ForkJoinTask. As this assignment will involve sorting the array that is passed to the task, but not returning any values, you will instead create a class that extends RecursiveAction, a non result-bearing ForkJoinTask (see Figure 4.19).
 
@@ -3715,7 +2543,7 @@ The objects passed to each sorting algorithm are required to implement Java’s 
 
 _5_**CHAPTER**
 
-_CPU Scheduling_
+# CPU Scheduling
 
 CPU scheduling is the basis ofmultiprogrammedoperating systems. By switch- ing the CPU among processes, the operating system can make the computer more productive. In this chapter, we introduce basic CPU-scheduling concepts and present several CPU-scheduling algorithms, including real-time systems. We also consider the problem of selecting an algorithm for a particular system.
 
@@ -3739,71 +2567,29 @@ Similarly, in Chapter 1 we describe how a **_core_** is the basic computational 
 
 • Design a program that implements several different CPU scheduling algo- rithms.
 
-**199**  
-
-**200 Chapter 5 CPU Scheduling**
-
-**5.1 Basic Concepts**
+## Basic Concepts
 
 In a system with a single CPU core, only one process can run at a time. Others must wait until the CPU’s core is free and can be rescheduled. The objective of multiprogramming is to have some process running at all times, to maximize CPU utilization. The idea is relatively simple. Aprocess is executed until it must wait, typically for the completion of some I/O request. In a simple computer system, the CPU then just sits idle. All this waiting time is wasted; no useful work is accomplished.Withmultiprogramming,we try to use this timeproduc- tively. Several processes are kept inmemory at one time.When one process has to wait, the operating system takes the CPU away from that process and gives the CPU to another process. This pattern continues. Every time one process has to wait, another process can take over use of the CPU. On a multicore system, this concept of keeping the CPU busy is extended to all processing cores on the system.
 
 Scheduling of this kind is a fundamental operating-system function. Almost all computer resources are scheduled before use. The CPU is, of course, one of the primary computer resources. Thus, its scheduling is central to operating-system design.
-
-CPU burst **load store add store read** from file
-
-**store increment index write** to file
-
-**load store add store read** from file
-
-_wait for I/O_
-
-_wait for I/O_
-
-_wait for I/O_
-
-I/O burst
-
-I/O burst
-
-I/O burst
-
-CPU burst
-
-CPU burst
-
-**• • •**
-
-**• • •**
-
+![Alt text](image-60.png)
 **Figure 5.1** Alternating sequence of CPU and I/O bursts.  
 
-**5.1 Basic Concepts 201**
-
-**5.1.1 CPU–I/O Burst Cycle**
+### CPU–I/O Burst Cycle
 
 The success of CPU scheduling depends on an observed property of processes: process execution consists of a **cycle** of CPU execution and I/O wait. Processes alternate between these two states. Process execution begins with a **CPU burst**. That is followed by an **I/O burst**, which is followed by another CPU burst, then another I/O burst, and so on. Eventually, the final CPU burst endswith a system request to terminate execution (Figure 5.1).
 
 The durations of CPU bursts have been measured extensively. Although they vary greatly from process to process and from computer to computer, they tend to have a frequency curve similar to that shown in Figure 5.2. The curve is generally characterized as exponential or hyperexponential, with a large number of short CPU bursts and a small number of long CPU bursts. An I/O-bound program typically has many short CPU bursts. A CPU-bound programmight have a few long CPU bursts. This distribution can be important when implementing a CPU-scheduling algorithm.
 
-**5.1.2 CPU Scheduler**
+### CPU Scheduler
 
 Whenever the CPU becomes idle, the operating system must select one of the processes in the ready queue to be executed. The selection process is carried out by the **CPU scheduler**, which selects a process from the processes in memory that are ready to execute and allocates the CPU to that process.
 
 Note that the ready queue is not necessarily a first-in, first-out (FIFO) queue. As we shall see when we consider the various scheduling algorithms, a ready queue can be implemented as a FIFO queue, a priority queue, a tree, or simply an unordered linked list. Conceptually, however, all the processes in the ready queue are lined up waiting for a chance to run on the CPU. The records in the queues are generally process control blocks (PCBs) of the processes.
-
-burst duration
-
-fr eq
-
-ue nc
-
-y
-
+![Alt text](image-61.png)
 **Figure 5.2** Histogram of CPU-burst durations.  
 
-**202 Chapter 5 CPU Scheduling**
-
-**5.1.3 Preemptive and Nonpreemptive Scheduling**
+### Preemptive and Nonpreemptive Scheduling
 
 CPU-scheduling decisions may take place under the following four circum- stances:
 
@@ -3822,24 +2608,12 @@ When scheduling takes place only under circumstances 1 and 4,we say that the sch
 Unfortunately, preemptive scheduling can result in race conditions when data are shared among several processes. Consider the case of two processes that share data. While one process is updating the data, it is preempted so that the second process can run. The second process then tries to read the data, which are in an inconsistent state. This issue will be explored in detail in Chapter 6.
 
 Preemption also affects the design of the operating-system kernel. During the processing of a system call, the kernel may be busy with an activity on behalf of a process. Such activities may involve changing important kernel data (for instance, I/O queues). What happens if the process is preempted in the middle of these changes and the kernel (or the device driver) needs to read or modify the same structure? Chaos ensues. As will be discussed in Section 6.2, operating-system kernels can be designed as either nonpreemptive or preemptive. A nonpreemptive kernel will wait for a system call to complete or for a process to block while waiting for I/O to complete to take place before doing a context switch. This scheme ensures that the kernel structure is simple, since the kernel will not preempt a process while the kernel data structures are in an inconsistent state. Unfortunately, this kernel-execution model is a poor one for supporting real-time computing, where tasks must complete execution within a given time frame. In Section 5.6, we explore scheduling demands of real-time systems. A preemptive kernel requires mechanisms such as mutex locks to prevent race conditions when accessing shared kernel data structures. Most modern operating systems are now fully preemptive when running in kernel mode.  
-
-**5.1 Basic Concepts 203**
-
-P0 executing
-
-P1 executing
-
-save state into PCB0
-
-restore state from PCB1
-
-dispatch latency
-
+![Alt text](image-62.png)
 **Figure 5.3** The role of the dispatcher.
 
 Because interrupts can, by definition, occur at any time, and because they cannot always be ignored by the kernel, the sections of code affected by inter- rupts must be guarded from simultaneous use. The operating system needs to accept interrupts at almost all times. Otherwise, input might be lost or output overwritten. So that these sections of code are not accessed concurrently by several processes, they disable interrupts at entry and reenable interrupts at exit. It is important to note that sections of code that disable interrupts do not occur very often and typically contain few instructions.
 
-**5.1.4 Dispatcher**
+### Dispatcher
 
 Another component involved in the CPU-scheduling function is the**dispatcher**. The dispatcher is the module that gives control of the CPU’s core to the process selected by the CPU scheduler. This function involves the following:
 
@@ -3854,8 +2628,6 @@ Thedispatcher should be as fast as possible, since it is invokedduring every con
 An interesting question to consider is, how often do context switches occur? On a system-wide level, the number of context switches can be obtained by using the vmstat command that is available on Linux systems. Below is the output (which has been trimmed) from the command
 
 vmstat 1 3  
-
-**204 Chapter 5 CPU Scheduling**
 
 This command provides 3 lines of output over a 1-second delay:
 
@@ -3873,7 +2645,7 @@ voluntary ctxt switches 150 nonvoluntary ctxt switches 8
 
 This output shows the number of context switches over the lifetime of the process. Notice the distinction between **_voluntary_** and **_nonvoluntary_** context switches. A voluntary context switch occurs when a process has given up control of the CPU because it requires a resource that is currently unavailable (such as blocking for I/O.) Anonvoluntary context switch occurs when the CPU has been taken away from a process, such as when its time slice has expired or it has been preempted by a higher-priority process.
 
-**5.2 Scheduling Criteria**
+## Scheduling Criteria
 
 Different CPU-scheduling algorithms have different properties, and the choice of a particular algorithm may favor one class of processes over another. In choosing which algorithm to use in a particular situation, we must consider the properties of the various algorithms.
 
@@ -3881,11 +2653,7 @@ Many criteria have been suggested for comparing CPU-scheduling algo- rithms. Whi
 
 • **CPU utilization**. We want to keep the CPU as busy as possible. Concep- tually, CPU utilization can range from 0 to 100 percent. In a real system, it should range from 40 percent (for a lightly loaded system) to 90 percent (for a heavily loaded system). (CPU utilization can be obtained by using the top command on Linux, macOS, and UNIX systems.)
 
-• **Throughput**. If the CPU is busy executing processes, then work is being done. One measure of work is the number of processes that are completed  
-
-**5.3 Scheduling Algorithms 205**
-
-per time unit, called **throughput**. For long processes, this rate may be one process over several seconds; for short transactions, it may be tens of processes per second.
+• **Throughput**. If the CPU is busy executing processes, then work is being done. One measure of work is the number of processes that are completed  per time unit, called **throughput**. For long processes, this rate may be one process over several seconds; for short transactions, it may be tens of processes per second.
 
 • **Turnaround time**. From the point of view of a particular process, the important criterion is how long it takes to execute that process. The interval from the time of submission of a process to the time of completion is the turnaround time. Turnaround time is the sum of the periods spent waiting in the ready queue, executing on the CPU, and doing I/O.
 
@@ -3899,65 +2667,40 @@ Investigators have suggested that, for interactive systems (such as a PC desktop
 
 As we discuss various CPU-scheduling algorithms in the following section, we illustrate their operation. An accurate illustration should involve many processes, each a sequence of several hundred CPU bursts and I/O bursts. For simplicity, though, we consider only one CPU burst (in milliseconds) per process in our examples. Our measure of comparison is the average waiting time. More elaborate evaluation mechanisms are discussed in Section 5.8.
 
-**5.3 Scheduling Algorithms**
+## Scheduling Algorithms
 
 CPU scheduling deals with the problem of deciding which of the processes in the ready queue is to be allocated the CPU’s core. There aremany different CPU- scheduling algorithms. In this section, we describe several of them. Although most modern CPU architectures have multiple processing cores, we describe these scheduling algorithms in the context of only one processing core avail- able. That is, a single CPU that has a single processing core, thus the system is  
 
-**206 Chapter 5 CPU Scheduling**
-
 capable of only running one process at a time. In Section 5.5 we discuss CPU scheduling in the context of multiprocessor systems.
 
-**5.3.1 First-Come, First-Served Scheduling**
+### First-Come, First-Served Scheduling
 
 By far the simplest CPU-scheduling algorithm is the **first-come first-serve** (**FCFS**) scheduling algorithm. With this scheme, the process that requests the CPU first is allocated the CPU first. The implementation of the FCFS policy is easily managed with a FIFO queue. When a process enters the ready queue, its PCB is linked onto the tail of the queue. When the CPU is free, it is allocated to the process at the head of the queue. The running process is then removed from the queue. The code for FCFS scheduling is simple to write and understand.
 
 On the negative side, the average waiting time under the FCFS policy is often quite long. Consider the following set of processes that arrive at time 0, with the length of the CPU burst given in milliseconds:
-
-Process Burst Time _P_1 24 _P_2 3 _P_3 3
-
+![Alt text](image-63.png)
 If the processes arrive in the order _P_1, _P_2, _P_3, and are served in FCFS order, we get the result shown in the following **Gantt chart**, which is a bar chart that illustrates a particular schedule, including the start and finish times of each of the participating processes:
-
-_P_1 _P_2 _P_3
-
-3027240
-
+![Alt text](image-64.png)
 The waiting time is 0 milliseconds for process _P_1, 24 milliseconds for process _P_2, and 27 milliseconds for process _P_3\. Thus, the average waiting time is (0 + 24 + 27)/3 = 17 milliseconds. If the processes arrive in the order _P_2, _P_3, _P_1, however, the results will be as shown in the following Gantt chart:
-
-_P_1_P_2 _P_3
-
-300 3 6
-
+![Alt text](image-65.png)
 The average waiting time is now (6 + 0 + 3)/3 = 3 milliseconds. This reduction is substantial. Thus, the average waiting time under an FCFS policy is generally not minimal and may vary substantially if the processes’ CPU burst times vary greatly.
 
 In addition, consider the performance of FCFS scheduling in a dynamic situation. Assume we have one CPU-bound process and many I/O-bound pro- cesses. As the processes flow around the system, the following scenario may result. The CPU-bound process will get and hold the CPU. During this time, all the other processes will finish their I/O and will move into the ready queue, waiting for the CPU. While the processes wait in the ready queue, the I/O  
-
-**5.3 Scheduling Algorithms 207**
-
 devices are idle. Eventually, the CPU-bound process finishes its CPU burst and moves to an I/O device. All the I/O-bound processes, which have short CPU bursts, execute quickly and move back to the I/O queues. At this point, the CPU sits idle. The CPU-bound process will then move back to the ready queue and be allocated the CPU. Again, all the I/O processes end up waiting in the ready queue until the CPU-bound process is done. There is a **convoy effect** as all the other processes wait for the one big process to get off the CPU. This effect results in lower CPU and device utilization thanmight be possible if the shorter processes were allowed to go first.
 
 Note also that the FCFS scheduling algorithm is nonpreemptive. Once the CPU has been allocated to a process, that process keeps the CPU until it releases the CPU, either by terminating or by requesting I/O. The FCFS algorithm is thus particularly troublesome for interactive systems, where it is important that each process get a share of the CPU at regular intervals. It would be disastrous to allow one process to keep the CPU for an extended period.
 
-**5.3.2 Shortest-Job-First Scheduling**
+### Shortest-Job-First Scheduling
 
 A different approach to CPU scheduling is the **shortest-job-firs** (**SJF**) schedul- ing algorithm. This algorithm associates with each process the length of the process’s next CPU burst.When the CPU is available, it is assigned to the process that has the smallest next CPU burst. If the next CPU bursts of two processes are the same, FCFS scheduling is used to break the tie. Note that a more appro- priate term for this scheduling method would be the **_shortest-next-CPU-burst_** algorithm, because scheduling depends on the length of the next CPU burst of a process, rather than its total length. We use the term SJF because most people and textbooks use this term to refer to this type of scheduling.
 
 As an example of SJF scheduling, consider the following set of processes, with the length of the CPU burst given in milliseconds:
-
-Process Burst Time _P_1 6 _P_2 8 _P_3 7 _P_4 3
-
+![Alt text](image-66.png)
 Using SJF scheduling, we would schedule these processes according to the following Gantt chart:
-
-_P_3 _P_2_P_4 _P_1
-
-241690 3
-
+![Alt text](image-67.png)
 The waiting time is 3 milliseconds for process _P_1, 16 milliseconds for process _P_2, 9 milliseconds for process _P_3, and 0 milliseconds for process _P_4\. Thus, the average waiting time is (3 + 16 + 9 + 0)/4 = 7 milliseconds. By comparison, if we were using the FCFS scheduling scheme, the average waiting time would be 10.25 milliseconds.
 
-The SJF scheduling algorithm is provably optimal, in that it gives the mini- mum average waiting time for a given set of processes. Moving a short process  
-
-**208 Chapter 5 CPU Scheduling**
-
-before a long one decreases the waiting time of the short process more than it increases the waiting time of the long process. Consequently, the average waiting time decreases.
+The SJF scheduling algorithm is provably optimal, in that it gives the mini- mum average waiting time for a given set of processes. Moving a short process before a long one decreases the waiting time of the short process more than it increases the waiting time of the long process. Consequently, the average waiting time decreases.
 
 Although the SJF algorithm is optimal, it cannot be implemented at the level of CPU scheduling, as there is no way to know the length of the next CPU burst. One approach to this problem is to try to approximate SJF scheduling. We may not know the length of the next CPU burst, but we may be able to predict its value.We expect that the next CPU burstwill be similar in length to the previous ones. By computing an approximation of the length of the next CPU burst, we can pick the process with the shortest predicted CPU burst.
 
@@ -3968,37 +2711,8 @@ The next CPU burst is generally predicted as an **exponential average** of the m
 τ_n_+1 = α _tn_ \+ (1 − α)τ_n_.
 
 The value of _tn_ contains our most recent information, while τ_n_ stores the past history. The parameter α controls the relative weight of recent and past history in our prediction. If α = 0, then τ_n_+1 = τ_n_, and recent history has no effect (current conditions are assumed to be transient). If α = 1, then τ_n_+1 = _tn_, and only the most recent CPU burst matters (history is assumed to be old and irrelevant). More commonly, α = 1/2, so recent history and past history are equally weighted. The initial τ0 can be defined as a constant or as an overall system average. Figure 5.4 shows an exponential average with α = 1/2 and τ0 = 10.
-
-6 4 6 4 13 13 13 …
-
-810 6 6 5 9 11 12 …
-
-CPU burst (_ti_)
-
-"guess" (τ_i_)
-
-_ti_
-
-τ_i_
-
-2
-
-time
-
-4
-
-6
-
-8
-
-10
-
-12
-
+![Alt text](image-68.png)
 **Figure 5.4** Prediction of the length of the next CPU burst.  
-
-**5.3 Scheduling Algorithms 209**
-
 To understand the behavior of the exponential average, we can expand the formula for τ_n_+1 by substituting for τ_n_ to find
 
 τ_n_+1 = α_tn_ \+ (1 − α)α_tn_−1 + · · · + (1 − α)_j_α_tn_−_j_ \+ · · · + (1 − α)_n_+1τ0_._
@@ -4008,32 +2722,16 @@ Typically, α is less than 1. As a result, (1 − α) is also less than 1, and e
 The SJF algorithm can be either preemptive or nonpreemptive. The choice arises when a new process arrives at the ready queue while a previous pro- cess is still executing. The next CPU burst of the newly arrived process may be shorter than what is left of the currently executing process. A preemptive SJF algorithm will preempt the currently executing process, whereas a non- preemptive SJF algorithm will allow the currently running process to finish its CPU burst. Preemptive SJF scheduling is sometimes called **shortest-remaining- time-firs** scheduling.
 
 As an example, consider the following four processes, with the length of the CPU burst given in milliseconds:
-
-Process Arrival Time Burst Time _P_1 0 8 _P_2 1 4 _P_3 2 9 _P_4 3 5
-
+![Alt text](image-69.png)
 If the processes arrive at the ready queue at the times shown and need the indicated burst times, then the resulting preemptive SJF schedule is as depicted in the following Gantt chart:
-
-_P_ 1
-
-_P_ 3
-
-_P_ 1
-
-_P_ 2
-
-_P_ 4
-
-2617100 1 5
-
+![Alt text](image-70.png)
 Process _P_1 is started at time 0, since it is the only process in the queue. Process _P_2 arrives at time 1. The remaining time for process _P_1 (7 milliseconds) is larger than the time required by process _P_2 (4 milliseconds), so process _P_1 is preempted, and process _P_2 is scheduled. The average waiting time for this example is \[(10 − 1) + (1 − 1) + (17 − 2) + (5 − 3)\]/4 = 26/4 = 6.5 milliseconds. Nonpreemptive SJF scheduling would result in an average waiting time of 7.75 milliseconds.
 
-**5.3.3 Round-Robin Scheduling**
+### Round-Robin Scheduling
 
 The **round-robin** (**RR**) scheduling algorithm is similar to FCFS scheduling, but preemption is added to enable the system to switch between processes. Asmall unit of time, called a **time quantum** or **time slice**, is defined. A time quantum is generally from 10 to 100milliseconds in length. The ready queue is treated as a circular queue. The CPU scheduler goes around the ready queue, allocating the CPU to each process for a time interval of up to 1 time quantum.
 
 To implement RR scheduling, we again treat the ready queue as a FIFO queue of processes. New processes are added to the tail of the ready queue.  
-
-**210 Chapter 5 CPU Scheduling**
 
 The CPU scheduler picks the first process from the ready queue, sets a timer to interrupt after 1 time quantum, and dispatches the process.
 
@@ -4041,28 +2739,9 @@ One of two things will then happen. The process may have a CPU burst of less tha
 
 The average waiting time under the RR policy is often long. Consider the following set of processes that arrive at time 0, with the length of the CPU burst given in milliseconds:
 
-Process Burst Time _P_1 24 _P_2 3 _P_3 3
-
+![Alt text](image-71.png)
 If we use a time quantum of 4 milliseconds, then process _P_1 gets the first 4 milliseconds. Since it requires another 20 milliseconds, it is preempted after the first time quantum, and the CPU is given to the next process in the queue, process _P_2\. Process _P_2 does not need 4 milliseconds, so it quits before its time quantum expires. The CPU is then given to the next process, process _P_3\. Once each process has received 1 time quantum, the CPU is returned to process _P_1 for an additional time quantum. The resulting RR schedule is as follows:
-
-_P_ 1
-
-_P_ 1
-
-_P_ 1
-
-_P_ 1
-
-_P_ 1
-
-_P_ 1
-
-_P_ 2
-
-301814 26221070 4
-
-_P_ 3
-
+![Alt text](image-72.png)
 Let’s calculate the average waiting time for this schedule. _P_1 waits for 6 mil- liseconds (10 − 4), _P_2 waits for 4 milliseconds, and _P_3 waits for 7 milliseconds. Thus, the average waiting time is 17/3 = 5.66 milliseconds.
 
 In the RR scheduling algorithm, no process is allocated the CPU for more than 1 time quantum in a row (unless it is the only runnable process). If a process’s CPU burst exceeds 1 time quantum, that process is preempted and is put back in the ready queue. The RR scheduling algorithm is thus preemptive.
@@ -4070,25 +2749,7 @@ In the RR scheduling algorithm, no process is allocated the CPU for more than 1 
 If there are _n_ processes in the ready queue and the time quantum is _q_, then each process gets 1/_n_ of the CPU time in chunks of at most _q_ time units. Each process must wait no longer than (_n_− 1)× _q_ time units until its next time quan- tum. For example, with five processes and a time quantum of 20 milliseconds, each process will get up to 20 milliseconds every 100 milliseconds.
 
 The performance of the RR algorithm depends heavily on the size of the time quantum. At one extreme, if the time quantum is extremely large, the RR policy is the same as the FCFS policy. In contrast, if the time quantum is extremely small (say, 1 millisecond), the RR approach can result in a large  
-
-**5.3 Scheduling Algorithms 211**
-
-process time = 10 quantum context switches
-
-12 0
-
-6 1
-
-1 9
-
-0 10
-
-0 10
-
-0 1 2 3 4 5 6 7 8 9 10
-
-6
-
+![Alt text](image-73.png)
 **Figure 5.5** How a smaller time quantum increases context switches.
 
 number of context switches. Assume, for example, that we have only one process of 10 time units. If the quantum is 12 time units, the process finishes in less than 1 time quantum, with no overhead. If the quantum is 6 time units, however, the process requires 2 quanta, resulting in a context switch. If the time quantum is 1 time unit, then nine context switches will occur, slowing the execution of the process accordingly (Figure 5.5).
@@ -4099,70 +2760,10 @@ Turnaround time also depends on the size of the time quantum. As we can see from
 
 Although the time quantum should be large compared with the context- switch time, it should not be too large. As we pointed out earlier, if the time quantum is too large, RR scheduling degenerates to an FCFS policy. A rule of thumb is that 80 percent of the CPU bursts should be shorter than the time quantum.
 
-**5.3.4 Priority Scheduling**
+### Priority Scheduling
 
 The SJF algorithm is a special case of the general**priority-scheduling** algorithm. A priority is associated with each process, and the CPU is allocated to the  
-
-**212 Chapter 5 CPU Scheduling**
-
-a v e
-
-ra g
-
-e t
-
-u rn
-
-a ro
-
-u n
-
-d t
-
-im e
-
-1
-
-12.5
-
-12.0
-
-11.5
-
-11.0
-
-10.5
-
-10.0
-
-9.5
-
-9.0
-
-2 3 4
-
-time quantum
-
-5 6 7
-
-_P_1
-
-_P_2
-
-_P_3
-
-_P_4
-
-6
-
-3
-
-1
-
-7
-
-process time
-
+![Alt text](image-74.png)
 **Figure 5.6** How turnaround time varies with the time quantum.
 
 process with the highest priority. Equal-priority processes are scheduled in FCFS order. An SJF algorithm is simply a priority algorithm where the priority (_p_) is the inverse of the (predicted) next CPU burst. The larger the CPU burst, the lower the priority, and vice versa.
@@ -4170,25 +2771,9 @@ process with the highest priority. Equal-priority processes are scheduled in FCF
 Note that we discuss scheduling in terms of **_high_** priority and **_low_** priority. Priorities are generally indicated by some fixed range of numbers, such as 0 to 7 or 0 to 4,095. However, there is no general agreement on whether 0 is the highest or lowest priority. Some systems use low numbers to represent low priority; others use low numbers for high priority. This difference can lead to confusion. In this text, we assume that low numbers represent high priority.
 
 As an example, consider the following set of processes, assumed to have arrived at time 0 in the order _P_1, _P_2, · · ·, _P_5, with the length of the CPU burst given in milliseconds:
-
-Process Burst Time Priority _P_1 10 3 _P_2 1 1 _P_3 2 4 _P_4 1 5 _P_5 5 2
-
+![Alt text](image-75.png)
 Using priority scheduling, wewould schedule these processes according to the following Gantt chart:  
-
-**5.3 Scheduling Algorithms 213**
-
-_P_ 1
-
-_P_ 4
-
-_P_ 3
-
-_P_ 2
-
-_P_ 5
-
-19181660 1
-
+![Alt text](image-76.png)
 The average waiting time is 8.2 milliseconds. Priorities can be defined either internally or externally. Internally defined
 
 priorities use some measurable quantity or quantities to compute the priority of a process. For example, time limits, memory requirements, the number of open files, and the ratio of average I/O burst to average CPU burst have been used in computing priorities. External priorities are set by criteria outside the operating system, such as the importance of the process, the type and amount of funds being paid for computer use, the department sponsoring the work, and other, often political, factors.
@@ -4200,55 +2785,17 @@ Amajor problem with priority scheduling algorithms is **indefinit block- ing**, 
 Asolution to the problemof indefinite blockage of low-priority processes is **aging**. Aging involves gradually increasing the priority of processes that wait in the system for a long time. For example, if priorities range from 127 (low) to 0 (high), we could periodically (say, every second) increase the priority of a waiting process by 1. Eventually, even a process with an initial priority of 127 would have the highest priority in the system and would be executed. In fact, it would take a little over 2 minutes for a priority-127 process to age to a priority-0 process.
 
 Another option is to combine round-robin and priority scheduling in such a way that the system executes the highest-priority process and runs processes with the same priority using round-robin scheduling. Let’s illustrate with an example using the following set of processes, with the burst time in millisec- onds:
-
-Process Burst Time Priority _P_1 4 3 _P_2 5 2 _P_3 8 2 _P_4 7 1 _P_5 3 3  
-
-**214 Chapter 5 CPU Scheduling**
-
+![Alt text](image-77.png)
 Using priority scheduling with round-robin for processes with equal priority, we would schedule these processes according to the following Gantt chart using a time quantum of 2 milliseconds:
-
-_P_4 _P_2 _P_3 _P_2 _P_3 _P_2 _P_3 _P_1 _P_5 _P_1 _P_5
-
-0 7 9 11 13 15 16 20 22 24 26 27
-
+![Alt text](image-78.png)
 In this example, process _P_4 has the highest priority, so it will run to comple- tion. Processes_P_2 and_P_3 have the next-highest priority, and theywill execute in a round-robin fashion. Notice that when process _P_2 finishes at time 16, process _P_3 is the highest-priority process, so it will run until it completes execution. Now, only processes _P_1 and _P_5 remain, and as they have equal priority, they will execute in round-robin order until they complete.
 
-**5.3.5 Multilevel Queue Scheduling**
+### Multilevel Queue Scheduling
 
 With both priority and round-robin scheduling, all processes may be placed in a single queue, and the scheduler then selects the process with the highest priority to run. Depending on how the queues are managed, an _O_(_n_) search may be necessary to determine the highest-priority process. In practice, it is often easier to have separate queues for each distinct priority, and priority scheduling simply schedules the process in the highest-priority queue. This is illustrated in Figure 5.7. This approach—known as **multilevel queue**— also works well when priority scheduling is combined with round-robin: if there are multiple processes in the highest-priority queue, they are executed in round-robin order. In the most generalized form of this approach, a priority is assigned statically to each process, and a process remains in the same queue for the duration of its runtime.
-
-T0 T1 T2 T3 T4
-
-T5 T6 T7
-
-T8 T9 T10 T11
-
-Tx Ty Tz
-
-priority = 2
-
-priority = n
-
-priority = 1
-
-priority = 0
-
+![Alt text](image-79.png)
 **Figure 5.7** Separate queues for each priority.  
-
-**5.3 Scheduling Algorithms 215**
-
-real-time processes
-
-highest priority
-
-lowest priority
-
-system processes
-
-interactive processes
-
-batch processes
-
+![Alt text](image-80.png)
 **Figure 5.8** Multilevel queue scheduling.
 
 A multilevel queue scheduling algorithm can also be used to partition processes into several separate queues based on the process type (Figure 5.8). For example, a common division is made between **foreground** (interac- tive) processes and **background** (batch) processes. These two types of pro- cesses have different response-time requirements and so may have different scheduling needs. In addition, foreground processes may have priority (exter- nally defined) over background processes. Separate queues might be used for foreground and background processes, and each queue might have its own scheduling algorithm. The foreground queue might be scheduled by an RR algorithm, for example, while the background queue is scheduled by an FCFS algorithm.
@@ -4269,11 +2816,9 @@ Each queue has absolute priority over lower-priority queues. No process in the b
 
 Another possibility is to time-slice among the queues. Here, each queue gets a certain portion of the CPU time,which it can then schedule among its var- ious processes. For instance, in the foreground–background queue example, the foreground queue can be given 80 percent of the CPU time for RR scheduling  
 
-**216 Chapter 5 CPU Scheduling**
-
 among its processes, while the background queue receives 20 percent of the CPU to give to its processes on an FCFS basis.
 
-**5.3.6 Multilevel Feedback Queue Scheduling**
+### Multilevel Feedback Queue Scheduling
 
 Normally, when the multilevel queue scheduling algorithm is used, processes are permanently assigned to a queue when they enter the system. If there are separate queues for foreground and background processes, for example, processes do not move from one queue to the other, since processes do not change their foreground or background nature. This setup has the advantage of low scheduling overhead, but it is inflexible.
 
@@ -4282,16 +2827,8 @@ The **multilevel feedback queue** scheduling algorithm, in contrast, allows a pr
 For example, consider a multilevel feedback queue scheduler with three queues, numbered from 0 to 2 (Figure 5.9). The scheduler first executes all processes in queue 0. Only when queue 0 is empty will it execute processes in queue 1. Similarly, processes in queue 2 will be executed only if queues 0 and 1 are empty. A process that arrives for queue 1 will preempt a process in queue 2. A process in queue 1 will in turn be preempted by a process arriving for queue 0.
 
 An entering process is put in queue 0. A process in queue 0 is given a time quantum of 8 milliseconds. If it does not finish within this time, it is moved to the tail of queue 1. If queue 0 is empty, the process at the head of queue 1 is given a quantum of 16milliseconds. If it does not complete, it is preempted and is put into queue 2. Processes in queue 2 are run on an FCFS basis but are run onlywhen queues 0 and 1 are empty. To prevent starvation, a process that waits too long in a lower-priority queuemay gradually bemoved to a higher-priority queue.
-
-quantum = 8
-
-quantum = 16
-
-FCFS
-
+![Alt text](image-81.png)
 **Figure 5.9** Multilevel feedback queues.  
-
-**5.4 Thread Scheduling 217**
 
 This scheduling algorithm gives highest priority to any process with a CPU burst of 8 milliseconds or less. Such a process will quickly get the CPU, finish its CPU burst, and go off to its next I/O burst. Processes that need more than 8 but less than 24 milliseconds are also served quickly, although with lower priority than shorter processes. Long processes automatically sink to queue 2 and are served in FCFS order with any CPU cycles left over from queues 0 and 1.
 
@@ -4309,21 +2846,17 @@ In general, a multilevel feedback queue scheduler is defined by the follow- ing 
 
 The definition of a multilevel feedback queue scheduler makes it the most general CPU-scheduling algorithm. It can be configured to match a specific system under design. Unfortunately, it is also the most complex algorithm, since defining the best scheduler requires somemeans bywhich to select values for all the parameters.
 
-**5.4 Thread Scheduling**
+## Thread Scheduling
 
 In Chapter 4, we introduced threads to the process model, distinguishing between **_user-level_** and **_kernel-level_** threads. On most modern operating sys- tems it is kernel-level threads—not processes—that are being scheduled by the operating system. User-level threads are managed by a thread library, and the kernel is unaware of them. To run on a CPU, user-level threads must ulti- mately be mapped to an associated kernel-level thread, although this mapping may be indirect and may use a lightweight process (LWP). In this section, we explore scheduling issues involving user-level and kernel-level threads and offer specific examples of scheduling for Pthreads.
 
-**5.4.1 Contention Scope**
+### Contention Scope
 
-One distinction between user-level and kernel-level threads lies in how they are scheduled. On systems implementing the many-to-one (Section 4.3.1) and many-to-many (Section 4.3.3) models, the thread library schedules user- level threads to run on an available LWP. This scheme is known as **process- contention scope** (**PCS**), since competition for the CPU takes place among threads belonging to the same process. (When we say the thread library _sched- ules_ user threads onto available LWPs, we do not mean that the threads are actually _running_ on a CPU as that further requires the operating system to schedule the LWP’s kernel thread onto a physical CPU core.) To decide which  
-
-**218 Chapter 5 CPU Scheduling**
-
-kernel-level thread to schedule onto a CPU, the kernel uses **system-contention scope** (**SCS**). Competition for the CPU with SCS scheduling takes place among all threads in the system. Systems using the one-to-one model (Section 4.3.2), such as Windows and Linux schedule threads using only SCS.
+One distinction between user-level and kernel-level threads lies in how they are scheduled. On systems implementing the many-to-one (Section 4.3.1) and many-to-many (Section 4.3.3) models, the thread library schedules user- level threads to run on an available LWP. This scheme is known as **process- contention scope** (**PCS**), since competition for the CPU takes place among threads belonging to the same process. (When we say the thread library _sched- ules_ user threads onto available LWPs, we do not mean that the threads are actually _running_ on a CPU as that further requires the operating system to schedule the LWP’s kernel thread onto a physical CPU core.) To decide which kernel-level thread to schedule onto a CPU, the kernel uses **system-contention scope** (**SCS**). Competition for the CPU with SCS scheduling takes place among all threads in the system. Systems using the one-to-one model (Section 4.3.2), such as Windows and Linux schedule threads using only SCS.
 
 Typically, PCS is done according to priority—the scheduler selects the runnable thread with the highest priority to run. User-level thread priorities are set by the programmer and are not adjusted by the thread library, although some thread libraries may allow the programmer to change the priority of a thread. It is important to note that PCS will typically preempt the thread currently running in favor of a higher-priority thread; however, there is no guarantee of time slicing (Section 5.3.3) among threads of equal priority.
 
-**5.4.2 Pthread Scheduling**
+### Pthread Scheduling
 
 We provided a sample POSIX Pthread program in Section 4.4.1, along with an introduction to thread creation with Pthreads. Now, we highlight the POSIX Pthread API that allows specifying PCS or SCS during thread creation. Pthreads identifies the following contention scope values:
 
@@ -4343,8 +2876,7 @@ The first parameter for both functions contains a pointer to the attribute set f
 
 In Figure 5.10, we illustrate a Pthread scheduling API. The pro- gram first determines the existing contention scope and sets it to PTHREAD SCOPE SYSTEM. It then creates five separate threads that will run using the SCS scheduling policy. Note that on some systems, only certain contention scope values are allowed. For example, Linux and macOS systems allow only PTHREAD SCOPE SYSTEM.  
 
-**5.4 Thread Scheduling 219**
-
+```
 #include _<_pthread.h_\>_ #include _<_stdio.h_\>_ #define NUM THREADS 5
 
 int main(int argc, char \*argv\[\]) _{_
@@ -4380,12 +2912,11 @@ pthread join(tid\[i\], NULL); _}_
 /\* do some work ... \*/
 
 pthread exit(0); _}_
-
+```
 **Figure 5.10** Pthread scheduling API.  
 
-**220 Chapter 5 CPU Scheduling**
 
-**5.5 Multi-Processor Scheduling**
+## Multi-Processor Scheduling
 
 Our discussion thus far has focused on the problems of scheduling the CPU in a system with a single processing core. If multiple CPUs are available, **load shar- ing**, where multiple threads may run in parallel, becomes possible, however scheduling issues become correspondingly more complex. Many possibilities have been tried; and as we saw with CPU scheduling with a single-core CPU, there is no one best solution.
 
@@ -4401,7 +2932,7 @@ Traditionally, the term **multiprocessor** referred to systems that provided mul
 
 Here, we discuss several concerns inmultiprocessor scheduling in the con- text of these different architectures. In the first three examples we concentrate on systems in which the processors are identical—homogeneous—in terms of their functionality. We can then use any available CPU to run any process in the queue. In the last example we explore a system where the processors are not identical in their capabilities.
 
-**5.5.1 Approaches to Multiple-Processor Scheduling**
+### Approaches to Multiple-Processor Scheduling
 
 One approach to CPU scheduling in amultiprocessor system has all scheduling decisions, I/O processing, and other system activities handled by a single processor — the master server. The other processors execute only user code. This **asymmetric multiprocessing** is simple because only one core accesses the system data structures, reducing the need for data sharing. The downfall of this approach is themaster server becomes a potential bottleneckwhere overall system performance may be reduced.
 
@@ -4412,61 +2943,19 @@ The standard approach for supporting multiprocessors is **symmetric mul- tiproce
 **2\.** Each processor may have its own private queue of threads.
 
 These two strategies are contrasted in Figure 5.11. If we select the first option, we have a possible race condition on the shared ready queue and therefore must ensure that two separate processors do not choose to schedule the same thread and that threads are not lost from the queue. As discussed in  
-
-**5.5 Multi-Processor Scheduling 221**
-
-T1
-
-T1
-
-T1T1 T3
-
-T0
-
-T0
-
-T0
-
-core0 core1 coren
-
-T0 T2 Tn T2
-
-T2...
-
-... core0 core1 coren... common ready queue
-
-(a) per-core run queues
-
-(b)
-
+![Alt text](image-82.png)
 **Figure 5.11** Organization of ready queues.
 
 Chapter 6, we could use some form of locking to protect the common ready queue from this race condition. Locking would be highly contended, however, as all accesses to the queue would require lock ownership, and accessing the shared queue would likely be a performance bottleneck. The second option permits each processor to schedule threads from its private run queue and therefore does not suffer from the possible performance problems associated with a shared run queue. Thus, it is the most common approach on systems supporting SMP. Additionally, as described in Section 5.5.4, having private, per- processor run queues in fact may lead to more efficient use of cache memory. There are issues with per-processor run queues—most notably, workloads of varying sizes. However, as we shall see, balancing algorithms can be used to equalize workloads among all processors.
 
 Virtually all modern operating systems support SMP, including Windows, Linux, and macOS as well as mobile systems including Android and iOS. In the remainder of this section, we discuss issues concerning SMP systems when designing CPU scheduling algorithms.
 
-**5.5.2 Multicore Processors**
+### Multicore Processors
 
 Traditionally, SMP systems have allowed several processes to run in parallel by providing multiple physical processors. However, most contemporary com- puter hardware now places multiple computing cores on the same physical chip, resulting in a **multicore processor**. Each core maintains its architectural state and thus appears to the operating system to be a separate logical CPU. SMP systems that use multicore processors are faster and consume less power than systems in which each CPU has its own physical chip.
 
 Multicore processors may complicate scheduling issues. Let’s consider how this can happen. Researchers have discovered that when a processor accesses memory, it spends a significant amount of time waiting for the data to become available. This situation, known as a **memory stall**, occurs primarily because modern processors operate at much faster speeds thanmemory. How- ever, a memory stall can also occur because of a cache miss (accessing data that are not in cache memory). Figure 5.12 illustrates a memory stall. In this scenario, the processor can spend up to 50 percent of its time waiting for data to become available from memory.  
-
-**222 Chapter 5 CPU Scheduling**
-
-time
-
-compute cycle memory stall cycle
-
-thread C
-
-C
-
-M C M C M
-
-M
-
-C M
-
+![Alt text](image-83.png)
 **Figure 5.12** Memory stall.
 
 To remedy this situation, many recent hardware designs have imple- mented multithreaded processing cores in which two (or more) **hardware threads** are assigned to each core. That way, if one hardware thread stalls while waiting for memory, the core can switch to another thread. Figure 5.13 illus- trates a dual-threaded processing core on which the execution of thread 0 and the execution of thread 1 are interleaved. From an operating system perspec- tive, each hardware thread maintains its architectural state, such as instruction pointer and register set, and thus appears as a logical CPU that is available to run a software thread. This technique—known as **chip multithreading** (CMT) —is illustrated in Figure 5.14. Here, the processor contains four computing cores, with each core containing two hardware threads. From the perspective of the operating system, there are eight logical CPUs.
@@ -4474,53 +2963,9 @@ To remedy this situation, many recent hardware designs have imple- mented multit
 Intel processors use the term **hyper-threading** (also known as **simultane- ous multithreading**or SMT) to describe assigningmultiple hardware threads to a single processing core. Contemporary Intel processors—such as the i7—sup- port two threads per core, while the Oracle Sparc M7 processor supports eight threads per core, with eight cores per processor, thus providing the operating system with 64 logical CPUs.
 
 In general, there are two ways to multithread a processing core: **coarse- grained** and **fine-graine** multithreading. With coarse-grained multithread- ing, a thread executes on a core until a long-latency event such as a memory stall occurs. Because of the delay caused by the long-latency event, the core must switch to another thread to begin execution. However, the cost of switch- ing between threads is high, since the instruction pipeline must be flushed before the other thread can begin execution on the processor core. Once this new thread begins execution, it begins filling the pipeline with its instructions. Fine-grained (or interleaved) multithreading switches between threads at a much finer level of granularity—typically at the boundary of an instruction
-
-time
-
-thread0
-
-thread1
-
-C M C M C M C
-
-C M C M C M C
-
+![Alt text](image-84.png)
 **Figure 5.13** Multithreaded multicore system.  
-
-**5.5 Multi-Processor Scheduling 223**
-
-processor
-
-operating system view
-
-core 0
-
-hardware thread
-
-core core
-
-core 1
-
-2 3
-
-CPU0 CPU1 CPU3CPU2
-
-CPU4 CPU5 CPU6 CPU7
-
-hardware thread
-
-hardware thread
-
-hardware thread
-
-hardware thread
-
-hardware thread
-
-hardware thread
-
-hardware thread
-
+![Alt text](image-85.png)
 **Figure 5.14** Chip multithreading.
 
 cycle. However, the architectural design of fine-grained systems includes logic for thread switching. As a result, the cost of switching between threads is small.
@@ -4530,38 +2975,22 @@ It is important to note that the resources of the physical core (such as caches 
 On one level are the scheduling decisions that must be made by the oper- ating system as it chooses which software thread to run on each hardware thread (logical CPU). For all practical purposes, such decisions have been the primary focus of this chapter. Therefore, for this level of scheduling, the oper- ating systemmay choose any scheduling algorithm, including those described in Section 5.3.
 
 A second level of scheduling specifies how each core decides which hard- ware thread to run. There are several strategies to adopt in this situation. One approach is to use a simple round-robin algorithm to schedule a hardware thread to the processing core. This is the approach adopted by the UltraSPARC T3. Another approach is used by the Intel Itanium, a dual-core processor with two hardware-managed threads per core. Assigned to each hardware thread is a dynamic **_urgency_** value ranging from 0 to 7, with 0 representing the lowest urgency and 7 the highest. The Itanium identifies five different events that may  
-
-**224 Chapter 5 CPU Scheduling**
-
-processing core
-
-level 1
-
-level 2
-
-software threads
-
-hardware threads (logical processors)
-
+![Alt text](image-86.png)
 **Figure 5.15** Two levels of scheduling.
 
 trigger a thread switch. When one of these events occurs, the thread-switching logic compares the urgency of the two threads and selects the thread with the highest urgency value to execute on the processor core.
 
 Note that the two different levels of scheduling shown in Figure 5.15 are not necessarily mutually exclusive. In fact, if the operating system scheduler (the first level) is made aware of the sharing of processor resources, it canmake more effective scheduling decisions. As an example, assume that a CPU has two processing cores, and each core has two hardware threads. If two software threads are running on this system, they can be running either on the same core or on separate cores. If they are both scheduled to run on the same core, they have to share processor resources and thus are likely to proceed more slowly than if they were scheduled on separate cores. If the operating system is aware of the level of processor resource sharing, it can schedule software threads onto logical processors that do not share resources.
 
-**5.5.3 Load Balancing**
+### Load Balancing
 
 On SMP systems, it is important to keep the workload balanced among all processors to fully utilize the benefits of having more than one processor. Oth- erwise, one or more processors may sit idle while other processors have high workloads, alongwith ready queues of threads awaiting the CPU. **Load balanc- ing** attempts to keep the workload evenly distributed across all processors in an SMP system. It is important to note that load balancing is typically necessary only on systemswhere each processor has its own private ready queue of eligi- ble threads to execute. On systems with a common run queue, load balancing is unnecessary, because once a processor becomes idle, it immediately extracts a runnable thread from the common ready queue.
 
-There are two general approaches to load balancing: push migration and pull migration. With **push migration**, a specific task periodically checks the load on each processor and—if it finds an imbalance—evenly distributes the load by moving (or pushing) threads from overloaded to idle or less-busy processors. **Pull migration** occurs when an idle processor pulls a waiting task from a busy processor. Push and pullmigration need not bemutually exclusive and are, in fact, often implemented in parallel on load-balancing systems. For  
-
-**5.5 Multi-Processor Scheduling 225**
-
-example, the Linux CFS scheduler (described in Section 5.7.1) and the ULE scheduler available for FreeBSD systems implement both techniques.
+There are two general approaches to load balancing: push migration and pull migration. With **push migration**, a specific task periodically checks the load on each processor and—if it finds an imbalance—evenly distributes the load by moving (or pushing) threads from overloaded to idle or less-busy processors. **Pull migration** occurs when an idle processor pulls a waiting task from a busy processor. Push and pullmigration need not bemutually exclusive and are, in fact, often implemented in parallel on load-balancing systems. For example, the Linux CFS scheduler (described in Section 5.7.1) and the ULE scheduler available for FreeBSD systems implement both techniques.
 
 The concept of a “balanced load” may have different meanings. One view of a balanced load may require simply that all queues have approximately the same number of threads. Alternatively, balance may require an equal distri- bution of thread priorities across all queues. In addition, in certain situations, neither of these strategiesmay be sufficient. Indeed, theymaywork against the goals of the scheduling algorithm. (We leave further consideration of this as an exercise.)
 
-**5.5.4 Processor Affinity**
+### Processor Affinity
 
 Considerwhat happens to cachememorywhen a thread has been running on a specific processor. The data most recently accessed by the thread populate the cache for the processor. As a result, successive memory accesses by the thread are often satisfied in cache memory (known as a “warm cache”). Now consider what happens if the thread migrates to another processor—say, due to load balancing. The contents of cache memory must be invalidated for the first pro- cessor, and the cache for the second processor must be repopulated. Because of the high cost of invalidating and repopulating caches, most operating systems with SMP support try to avoidmigrating a thread fromone processor to another and instead attempt to keep a thread running on the same processor and take advantage of a warm cache. This is known as **processor affinit** —that is, a process has an affinity for the processor on which it is currently running.
 
@@ -4570,65 +2999,33 @@ The two strategies described in Section 5.5.1 for organizing the queue of thread
 Processor affinity takes several forms. When an operating system has a policy of attempting to keep a process running on the same processor—but not guaranteeing that it will do so—we have a situation known as **soft affinit** . Here, the operating systemwill attempt to keep a process on a single processor, but it is possible for a process to migrate between processors during load balancing. In contrast, some systems provide system calls that support **hard affinit** , thereby allowing a process to specify a subset of processors onwhich it can run. Many systems provide both soft and hard affinity. For example, Linux implements soft affinity, but it also provides the sched setaffinity() system call, which supports hard affinity by allowing a thread to specify the set of CPUs on which it is eligible to run.
 
 The main-memory architecture of a system can affect processor affinity issues as well. Figure 5.16 illustrates an architecture featuring non-uniform memory access (NUMA)where there are two physical processor chips eachwith their own CPU and local memory. Although a system interconnect allows all CPUs in a NUMA system to share one physical address space, a CPU has faster access to its localmemory than tomemory local to another CPU. If the operating system’s CPU scheduler and memory-placement algorithms are **_NUMA-aware_**  
-
-**226 Chapter 5 CPU Scheduling**
-
-CPU
-
-fast access
-
-memory
-
-CPU
-
-fast access slow access
-
-memory
-
-interconnect
-
+![Alt text](image-87.png)
 **Figure 5.16** NUMA and CPU scheduling.
 
 andwork together, then a thread that has been scheduled onto a particular CPU can be allocated memory closest to where the CPU resides, thus providing the thread the fastest possible memory access.
 
 Interestingly, load balancing often counteracts the benefits of processor affinity. That is, the benefit of keeping a thread running on the same processor is that the thread can take advantage of its data being in that processor’s cache memory. Balancing loads by moving a thread from one processor to another removes this benefit. Similarly, migrating a thread between processors may incur a penalty on NUMAsystems, where a threadmay bemoved to a processor that requires longer memory access times. In other words, there is a natural tension between load balancing and minimizing memory access times. Thus, scheduling algorithms formodernmulticoreNUMAsystems have become quite complex. In Section 5.7.1, we examine the Linux CFS scheduling algorithm and explore how it balances these competing goals.
 
-**5.5.5 Heterogeneous Multiprocessing**
+### Heterogeneous Multiprocessing
 
 In the examples we have discussed so far, all processors are identical in terms of their capabilities, thus allowing any thread to run on any processing core. The only difference being that memory access timesmay vary based upon load balancing and processor affinity policies, as well as on NUMA systems.
 
 Although mobile systems now include multicore architectures, some sys- tems are now designed using cores that run the same instruction set, yet vary in terms of their clock speed and power management, including the ability to adjust the power consumption of a core to the point of idling the core. Such systems are known as **heterogeneous multiprocessing** (HMP). Note this is not a form of asymmetric multiprocessing as described in Section 5.5.1 as both system and user tasks can run on any core. Rather, the intention behind HMP is to better manage power consumption by assigning tasks to certain cores based upon the specific demands of the task.
 
-For ARM processors that support it, this type of architecture is known as **big.LITTLE** where higher-peformance **_big_** cores are combined with energy efficient **_LITTLE_** cores. **_Big_** cores consume greater energy and therefore should  
+For ARM processors that support it, this type of architecture is known as **big.LITTLE** where higher-peformance **_big_** cores are combined with energy efficient **_LITTLE_** cores. **_Big_** cores consume greater energy and therefore should only be used for short periods of time. Likewise, **_little_** cores use less energy and can therefore be used for longer periods.
 
-**5.6 Real-Time CPU Scheduling 227**
+There are several advantages to this approach. By combining a number of slower c
+ores with faster ones, a CPU scheduler can assign tasks that do not require high performance, but may need to run for longer periods, (such as background tasks) to little cores, thereby helping to preserve a battery charge. Similarly, interactive applications which require more processing power, but may run for shorter durations, can be assigned to big cores. Additionally, if the mobile device is in a power-saving mode, energy-intensive big cores can be disabled and the system can rely solely on energy-efficient little cores. Win- dows 10 supports HMP scheduling by allowing a thread to select a scheduling policy that best supports its power management demands.
 
-only be used for short periods of time. Likewise, **_little_** cores use less energy and can therefore be used for longer periods.
-
-There are several advantages to this approach. By combining a number of slower cores with faster ones, a CPU scheduler can assign tasks that do not require high performance, but may need to run for longer periods, (such as background tasks) to little cores, thereby helping to preserve a battery charge. Similarly, interactive applications which require more processing power, but may run for shorter durations, can be assigned to big cores. Additionally, if the mobile device is in a power-saving mode, energy-intensive big cores can be disabled and the system can rely solely on energy-efficient little cores. Win- dows 10 supports HMP scheduling by allowing a thread to select a scheduling policy that best supports its power management demands.
-
-**5.6 Real-Time CPU Scheduling**
+## Real-Time CPU Scheduling
 
 CPU scheduling for real-time operating systems involves special issues. In general, we can distinguish between soft real-time systems and hard real-time systems. **Soft real-time systems** provide no guarantee as to when a critical real-time process will be scheduled. They guarantee only that the process will be given preference over noncritical processes. **Hard real-time systems** have stricter requirements. A task must be serviced by its deadline; service after the deadline has expired is the same as no service at all. In this section, we explore several issues related to process scheduling in both soft and hard real-time operating systems.
 
-**5.6.1 Minimizing Latency**
+### Minimizing Latency
 
 Consider the event-driven nature of a real-time system. The system is typically waiting for an event in real time to occur. Events may arise either in software —as when a timer expires—or in hardware—as when a remote-controlled vehicle detects that it is approaching an obstruction. When an event occurs, the system must respond to and service it as quickly as possible. We refer to **event latency** as the amount of time that elapses fromwhen an event occurs to when it is serviced (Figure 5.17).
-
-t1t0
-
-event latency
-
-event E first occurs
-
-real-time system responds to E
-
-Time
-
+![Alt text](image-88.png)
 **Figure 5.17** Event latency.  
-
-**228 Chapter 5 CPU Scheduling**
-
 Usually, different events have different latency requirements. For example, the latency requirement for an antilock brake system might be 3 to 5 millisec- onds. That is, from the time a wheel first detects that it is sliding, the system controlling the antilock brakes has 3 to 5milliseconds to respond to and control the situation. Any response that takes longer might result in the automobile’s veering out of control. In contrast, an embedded system controlling radar in an airliner might tolerate a latency period of several seconds.
 
 Two types of latencies affect the performance of real-time systems:
@@ -4644,49 +3041,9 @@ Obviously, it is crucial for real-time operating systems to minimize inter- rupt
 One important factor contributing to interrupt latency is the amount of time interrupts may be disabled while kernel data structures are being updated. Real-time operating systems require that interrupts be disabled for only very short periods of time.
 
 The amount of time required for the scheduling dispatcher to stop one process and start another is known as **dispatch latency**. Providing real-time
-
-task T running
-
-ISR
-
-determine interrupt type
-
-interrupt
-
-interrupt latency
-
-context switch
-
-time
-
+![Alt text](image-89.png)
 **Figure 5.18** Interrupt latency.  
-
-**5.6 Real-Time CPU Scheduling 229**
-
-response to event
-
-real-time
-
-process
-
-execution
-
-event
-
-conflicts
-
-time
-
-dispatch
-
-response interval
-
-dispatch latency
-
-process made availableinterrupt
-
-processing
-
+![Alt text](image-90.png)
 **Figure 5.19** Dispatch latency.
 
 tasks with immediate access to the CPU mandates that real-time operating systemsminimize this latency aswell. Themost effective technique for keeping dispatch latency low is to provide preemptive kernels. For hard real-time systems, dispatch latency is typically measured in several microseconds.
@@ -4699,23 +3056,12 @@ In Figure 5.19, we diagram the makeup of dispatch latency. The **conflic phase**
 
 Following the conflict phase, the dispatch phase schedules the high-priority process onto an available CPU.
 
-**5.6.2 Priority-Based Scheduling**
+### Priority-Based Scheduling
 
 Themost important feature of a real-time operating system is to respond imme- diately to a real-time process as soon as that process requires the CPU. As a result, the scheduler for a real-time operating system must support a priority- based algorithm with preemption. Recall that priority-based scheduling algo- rithms assign each process a priority based on its importance; more important tasks are assigned higher priorities than those deemed less important. If the scheduler also supports preemption, a process currently running on the CPU will be preempted if a higher-priority process becomes available to run.
 
 Preemptive, priority-based scheduling algorithms are discussed in detail in Section 5.3.4, and Section 5.7 presents examples of the soft real-time schedul- ing features of the Linux, Windows, and Solaris operating systems. Each of these systems assigns real-time processes the highest scheduling priority. For  
-
-**230 Chapter 5 CPU Scheduling**
-
-period1 period2 period3
-
-Time
-
-p p p
-
-ddd
-
-t tt
+![Alt text](image-91.png)
 
 **Figure 5.20** Periodic task.
 
@@ -4727,23 +3073,10 @@ Before we proceed with the details of the individual schedulers, however, wemust
 
 What is unusual about this form of scheduling is that a processmay have to announce its deadline requirements to the scheduler. Then, using a technique known as an **admission-control** algorithm, the scheduler does one of two things. It either admits the process, guaranteeing that the processwill complete on time, or rejects the request as impossible if it cannot guarantee that the task will be serviced by its deadline.
 
-**5.6.3 Rate-Monotonic Scheduling**
+### Rate-Monotonic Scheduling
 
 The **rate-monotonic** scheduling algorithm schedules periodic tasks using a static priority policy with preemption. If a lower-priority process is run- ning and a higher-priority process becomes available to run, it will preempt the lower-priority process. Upon entering the system, each periodic task is assigned a priority inversely based on its period. The shorter the period, the higher the priority; the longer the period, the lower the priority. The rationale behind this policy is to assign a higher priority to tasks that require the CPU more often. Furthermore, rate-monotonic scheduling assumes that the process-  
-
-**5.6 Real-Time CPU Scheduling 231**
-
-0 10 20 30 40 50 60 70 80 12090 100 110
-
-P1
-
-P1
-
-P1, P2
-
-P2
-
-deadlines
+![Alt text](image-92.png)
 
 **Figure 5.21** Scheduling of tasks when _P_2 has a higher priority than _P_1.
 
@@ -4760,41 +3093,9 @@ Now suppose we use rate-monotonic scheduling, in which we assign _P_1 a higher p
 Rate-monotonic scheduling is considered optimal in that if a set of pro- cesses cannot be scheduled by this algorithm, it cannot be scheduled by any other algorithm that assigns static priorities. Let’s next examine a set of pro- cesses that cannot be scheduled using the rate-monotonic algorithm.
 
 Assume that process _P_1 has a period of _p_1 = 50 and a CPU burst of _t_1 = 25. For _P_2, the corresponding values are _p_2 = 80 and _t_2 = 35. Rate-monotonic
-
-0 10 20 30 40 50 60 70 80 120 130 140 150 160 170 180 190 20090 100 110
-
-P1
-
-P1
-
-P1, P2
-
-P1 P2
-
-deadlines P1, P2P1
-
-P2 P1 P2 P1 P2
-
+![Alt text](image-93.png)
 **Figure 5.22** Rate-monotonic scheduling.  
-
-**232 Chapter 5 CPU Scheduling**
-
-0 10 20 30 40 50 60 70 80 120 130 140 150 16090 100 110
-
-P1
-
-P1
-
-P2
-
-P1 P2
-
-deadlines P1
-
-P2
-
-P1, P2
-
+![Alt text](image-94.png)
 **Figure 5.23** Missing deadlines with rate-monotonic scheduling.
 
 scheduling would assign process _P_1 a higher priority, as it has the shorter period. The total CPU utilization of the two processes is (25∕50) + (35∕80) = 0_._94, and it therefore seems logical that the two processes could be scheduled and still leave the CPU with 6 percent available time. Figure 5.23 shows the scheduling of processes _P_1 and _P_2\. Initially, _P_1 runs until it completes its CPU burst at time 25. Process _P_2 then begins running and runs until time 50, when it is preempted by _P_1\. At this point, _P_2 still has 10 milliseconds remaining in its CPU burst. Process _P_1 runs until time 75; consequently, P2 finishes its burst at time 85, after the deadline for completion of its CPU burst at time 80.
@@ -4805,27 +3106,12 @@ _N_(21∕_N_ − 1)_._
 
 With one process in the system, CPU utilization is 100 percent, but it falls to approximately 69 percent as the number of processes approaches infinity. With two processes, CPU utilization is bounded at about 83 percent. Combined CPU utilization for the two processes scheduled in Figure 5.21 and Figure 5.22 is 75 percent; therefore, the rate-monotonic scheduling algorithm is guaranteed to schedule them so that they can meet their deadlines. For the two processes scheduled in Figure 5.23, combined CPU utilization is approximately 94 per- cent; therefore, rate-monotonic scheduling cannot guarantee that they can be scheduled so that they meet their deadlines.
 
-**5.6.4 Earliest-Deadline-First Scheduling**
+### Earliest-Deadline-First Scheduling
 
 **Earliest-deadline-firs** (**EDF**) scheduling assigns priorities dynamically accord- ing to deadline. The earlier the deadline, the higher the priority; the later the deadline, the lower the priority. Under the EDF policy, when a process becomes runnable, it must announce its deadline requirements to the system. Priorities may have to be adjusted to reflect the deadline of the newly runnable process. Note how this differs from rate-monotonic scheduling, where priorities are fixed.
 
 To illustrate EDF scheduling, we again schedule the processes shown in Figure 5.23, which failed to meet deadline requirements under rate-monotonic scheduling. Recall that _P_1 has values of _p_1 = 50 and _t_1 = 25 and that _P_2 has values of _p_2 = 80 and _t_2 = 35. The EDF scheduling of these processes is shown in Figure 5.24. Process_P_1 has the earliest deadline, so its initial priority is higher than that of process _P_2\. Process _P_2 begins running at the end of the CPU burst for _P_1\. However, whereas rate-monotonic scheduling allows _P_1 to preempt _P_2  
-
-**5.6 Real-Time CPU Scheduling 233**
-
-0 10 20 30 40 50 60 70 80 120 130 140 150 16090 100 110
-
-P1
-
-P1 P1
-
-P2
-
-P1 P2
-
-deadlines P2P1P1
-
-P2 P2
+![Alt text](image-95.png)
 
 **Figure 5.24** Earliest-deadline-first scheduling.
 
@@ -4833,17 +3119,15 @@ at the beginning of its next period at time 50, EDF scheduling allows process _P
 
 Unlike the rate-monotonic algorithm, EDF scheduling does not require that processes be periodic, nor must a process require a constant amount of CPU time per burst. The only requirement is that a process announce its deadline to the scheduler when it becomes runnable. The appeal of EDF scheduling is that it is theoretically optimal—theoretically, it can schedule processes so that each process can meet its deadline requirements and CPU utilization will be 100 percent. In practice, however, it is impossible to achieve this level of CPU utilization due to the cost of context switching between processes and interrupt handling.
 
-**5.6.5 Proportional Share Scheduling**
+### Proportional Share Scheduling
 
 **Proportional share** schedulers operate by allocating _T_ shares among all appli- cations. An application can receive _N_ shares of time, thus ensuring that the application will have _N_∕_T_ of the total processor time. As an example, assume that a total of _T_ \= 100 shares is to be divided among three processes, _A_, _B_, and _C_. _A_ is assigned 50 shares, _B_ is assigned 15 shares, and _C_ is assigned 20 shares. This scheme ensures that _A_will have 50 percent of total processor time, _B_will have 15 percent, and _C_ will have 20 percent.
 
 Proportional share schedulers must work in conjunction with an admission-control policy to guarantee that an application receives its allocated shares of time. An admission-control policy will admit a client requesting a particular number of shares only if sufficient shares are available. In our current example, we have allocated 50 + 15 + 20 = 85 shares of the total of 100 shares. If a new process _D_ requested 30 shares, the admission controller would deny _D_ entry into the system.
 
-**5.6.6 POSIX Real-Time Scheduling**
+### POSIX Real-Time Scheduling
 
 The POSIX standard also provides extensions for real-time computing— POSIX.1b. Here, we cover some of the POSIX API related to scheduling real-time threads. POSIX defines two scheduling classes for real-time threads:  
-
-**234 Chapter 5 CPU Scheduling**
 
 • SCHED FIFO
 
@@ -4861,16 +3145,15 @@ The first parameter to both functions is a pointer to the set of attributes for 
 
 In Figure 5.25, we illustrate a POSIX Pthread program using this API. This program first determines the current scheduling policy and then sets the scheduling algorithm to SCHED FIFO.
 
-**5.7 Operating-System Examples**
+## Operating-System Examples
 
 We turn next to a description of the scheduling policies of the Linux, Win- dows, and Solaris operating systems. It is important to note that we use the term **_process scheduling_** in a general sense here. In fact, we are describing the scheduling of **_kernel threads_** with Solaris and Windows systems and of **_tasks_** with the Linux scheduler.
 
-**5.7.1 Example: Linux Scheduling**
+### Example: Linux Scheduling
 
 Process scheduling in Linux has had an interesting history. Prior to Version 2.5, the Linux kernel ran a variation of the traditional UNIX scheduling algorithm. However, as this algorithm was not designed with SMP systems in mind, it did not adequately support systems with multiple processors. In addition, it resulted in poor performance for systemswith a large number of runnable pro- cesses. With Version 2.5 of the kernel, the scheduler was overhauled to include a scheduling algorithm—known as _O_(1)—that ran in constant time regard- less of the number of tasks in the system. The _O_(1) scheduler also provided  
 
-**5.7 Operating-System Examples 235**
-
+```
 #include _<_pthread.h_\>_ #include _<_stdio.h_\>_ #define NUM THREADS 5
 
 int main(int argc, char \*argv\[\]) _{_
@@ -4908,10 +3191,8 @@ pthread join(tid\[i\], NULL); _}_
 /\* do some work ... \*/
 
 pthread exit(0); _}_
-
+```
 **Figure 5.25** POSIX real-time scheduling API.  
-
-**236 Chapter 5 CPU Scheduling**
 
 increased support for SMP systems, including processor affinity and load bal- ancing between processors. However, in practice, although the _O_(1) scheduler delivered excellent performance on SMP systems, it led to poor response times for the interactive processes that are common on many desktop computer sys- tems. During development of the 2.6 kernel, the scheduler was again revised; and in release 2.6.23 of the kernel, the **_Completely Fair Scheduler_** (CFS) became the default Linux scheduling algorithm.
 
@@ -4923,44 +3204,16 @@ The CFS scheduler doesn’t directly assign priorities. Rather, it records how l
 
 Let’s examine the CFS scheduler in action: Assume that two tasks have the same nice values. One task is I/O-bound, and the other is CPU-bound. Typically, the I/O-bound taskwill run only for short periods before blocking for additional I/O, and the CPU-bound taskwill exhaust its timeperiodwhenever it has an opportunity to run on a processor. Therefore, the value of vruntimewill  
 
-**5.7 Operating-System Examples 237**
-
 **_CFS PERFORMANCE_**
 
 The Linux CFS scheduler provides an efficient algorithm for selecting which task to run next. Rather than using a standard queue data structure, each runnable task is placed in a red-black tree—a balanced binary search tree whose key is based on the value of vruntime. This tree is shown below.
-
-T0
-
-T2
-
-T3 T5 T6
-
-T1
-
-T4
-
-T9T7 T8
-
-smaller larger
-
-task with the smallest value of vruntime
-
-value of vruntime
-
+![Alt text](image-96.png)
 When a task becomes runnable, it is added to the tree. If a task on the tree is not runnable (for example, if it is blocked while waiting for I/O), it is removed.Generally speaking, tasks that have been given less processing time (smaller values of vruntime) are toward the left side of the tree, and tasks that have been given more processing time are on the right side. According to the properties of a binary search tree, the leftmost node has the smallest key value, which for the sake of the CFS scheduler means that it is the task with the highest priority. Because the red-black tree is balanced, navigating it to discover the leftmost node will require _O_(_log N_) operations (where _N_ is the number of nodes in the tree). However, for efficiency reasons, the Linux scheduler caches this value in the variable rb leftmost, and thus determiningwhich task to run next requires only retrieving the cached value.
 
 eventually be lower for the I/O-bound task than for the CPU-bound task, giving the I/O-bound task higher priority than the CPU-bound task. At that point, if the CPU-bound task is executing when the I/O-bound task becomes eligible to run (for example, when I/O the task is waiting for becomes available), the I/O-bound task will preempt the CPU-bound task.
 
 Linux also implements real-time scheduling using the POSIX standard as described in Section 5.6.6. Any task scheduled using either the SCHED FIFO or the SCHED RR real-time policy runs at a higher priority than normal (non-real- time) tasks. Linux uses two separate priority ranges, one for real-time tasks and a second for normal tasks. Real-time tasks are assigned static priorities within the range of 0 to 99, and normal tasks are assigned priorities from 100 to 139. These two rangesmap into a global priority schemewherein numerically lower values indicate higher relative priorities. Normal tasks are assigned a priority  
-
-**238 Chapter 5 CPU Scheduling**
-
-0 100 13999
-
-real-time normal
-
-priority higher lower
-
+![Alt text](image-97.png)
 **Figure 5.26** Scheduling priorities on a Linux system.
 
 based on their nice values, where a value of−20maps to priority 100 and a nice value of +19 maps to 139. This scheme is shown in Figure 5.26.
@@ -4968,34 +3221,13 @@ based on their nice values, where a value of−20maps to priority 100 and a nice
 The CFS scheduler also supports load balancing, using a sophisticated technique that equalizes the load among processing cores yet is also NUMA- aware and minimizes the migration of threads. CFS defines the load of each thread as a combination of the thread’s priority and its average rate of CPU utilization. Therefore, a thread that has a high priority, yet is mostly I/O-bound and requires little CPU usage, has a generally low load, similar to the load of a low-priority thread that has high CPU utilization. Using this metric, the load of a queue is the sum of the loads of all threads in the queue, and balancing is simply ensuring that all queues have approximately the same load.
 
 As highlighted in Section 5.5.4, however, migrating a thread may result in a memory access penalty due to either having to invalidate cache con- tents or, on NUMA systems, incurring longer memory access times. To address this problem, Linux identifies a hierarchical system of scheduling domains. A **scheduling domain** is a set of CPU cores that can be balanced against one another. This idea is illustrated in Figure 5.27. The cores in each scheduling domain are grouped according to how they share the resources of the system. For example, although each core shown in Figure 5.27 may have its own level 1 (L1) cache, pairs of cores share a level 2 (L2) cache and are thus organized into separate _domain_0 and _domain_1\. Likewise, these two domains may share a level 3 (L3) cache, and are therefore organized into a processor-level domain (also known as a **NUMA node**). Taking this one-step further, on a NUMAsystem,
-
-core0
-
-core1
-
-domain0
-
-core2
-
-core3
-
-domain1
-
-physical processor domain (NUMA node)
-
-L2 L2
-
-L3
-
+![Alt text](image-98.png)
 **Figure 5.27** NUMA-aware load balancing with Linux CFS scheduler.  
-
-**5.7 Operating-System Examples 239**
-
 a larger system-level domain would combine separate processor-level NUMA nodes.
 
 The general strategy behind CFS is to balance loads within domains, begin- ning at the lowest level of the hierarchy. Using Figure 5.27 as an example, initially a thread would only migrate between cores on the same domain (i.e. within _domain_0 or _domain_1.) Load balancing at the next level would occur between _domain_0 and _domain_1\. CFS is reluctant to migrate threads between sep- arate NUMA nodes if a thread would be moved farther from its local memory, and such migration would only occur under severe load imbalances. As a general rule, if the overall system is busy, CFS will not load-balance beyond the domain local to each core to avoid the memory latency penalties of NUMA systems.
 
-**5.7.2 Example: Windows Scheduling**
+### Example: Windows Scheduling
 
 Windows schedules threads using a priority-based, preemptive scheduling algorithm. The Windows scheduler ensures that the highest-priority thread will always run. The portion of the Windows kernel that handles scheduling is called the **dispatcher**. A thread selected to run by the dispatcher will run until it is preempted by a higher-priority thread, until it terminates, until its time quantum ends, or until it calls a blocking system call, such as for I/O. If a higher-priority real-time thread becomes ready while a lower-priority thread is running, the lower-priority threadwill be preempted. This preemption gives a real-time thread preferential access to the CPU when the thread needs such access.
 
@@ -5015,11 +3247,7 @@ There is a relationship between the numeric priorities of the Windows kernel and
 
 • REALTIME PRIORITY CLASS
 
-Processes are typically members of the NORMAL PRIORITY CLASS. A process belongs to this class unless the parent of the process was a member of the IDLE PRIORITY CLASS or unless another class was specified when the process was created. Additionally, the priority class of a process can be altered with  
-
-**240 Chapter 5 CPU Scheduling**
-
-the SetPriorityClass() function in theWindows API. Priorities in all classes except the REALTIME PRIORITY CLASS are variable, meaning that the priority of a thread belonging to one of these classes can change.
+Processes are typically members of the NORMAL PRIORITY CLASS. A process belongs to this class unless the parent of the process was a member of the IDLE PRIORITY CLASS or unless another class was specified when the process was created. Additionally, the priority class of a process can be altered with the SetPriorityClass() function in theWindows API. Priorities in all classes except the REALTIME PRIORITY CLASS are variable, meaning that the priority of a thread belonging to one of these classes can change.
 
 Athreadwithin a given priority class also has a relative priority. The values for relative priorities include:
 
@@ -5048,116 +3276,8 @@ Furthermore, each thread has a base priority representing a value in the priorit
 • ABOVE NORMAL PRIORITY CLASS—10
 
 • NORMAL PRIORITY CLASS—8
-
-high above normal
-
-normal below normal
-
-idle priority
-
-time-critical
-
-real- time
-
-31
-
-26
-
-25
-
-24
-
-23
-
-22
-
-16
-
-15
-
-15
-
-14
-
-13
-
-12
-
-11
-
-1
-
-15
-
-12
-
-11
-
-10
-
-9
-
-8
-
-1
-
-15
-
-10
-
-9
-
-8
-
-7
-
-6
-
-1
-
-15
-
-8
-
-7
-
-6
-
-5
-
-4
-
-1
-
-15
-
-6
-
-5
-
-4
-
-3
-
-2
-
-1
-
-highest
-
-above normal
-
-normal
-
-lowest
-
-idle
-
-below normal
-
+![Alt text](image-99.png)
 **Figure 5.28** Windows thread priorities.  
-
-**5.7 Operating-System Examples 241**
 
 • BELOW NORMAL PRIORITY CLASS—6
 
@@ -5175,15 +3295,13 @@ Earlier versions of Windows provided a similar feature known as **fiber** , whic
 
 In addition, unlike fibers, UMS is not intended to be used directly by the programmer. The details of writing user-mode schedulers can be very chal- lenging, and UMS does not include such a scheduler. Rather, the schedulers come from programming language libraries that build on top of UMS. For example, Microsoft provides **Concurrency Runtime** (ConcRT), a concurrent programming framework for C++ that is designed for task-based parallelism  
 
-**242 Chapter 5 CPU Scheduling**
-
 (Section 4.2) on multicore processors. ConcRT provides a user-mode scheduler together with facilities for decomposing programs into tasks, which can then be scheduled on the available processing cores.
 
 Windows also supports scheduling on multiprocessor systems as described in Section 5.5 by attempting to schedule a thread on the most optimal processing core for that thread, which includes maintaining a thread’s preferred as well as most recent processor. One technique used by Windows is to create sets of logical processors (known as **SMT sets**). On a hyper-threaded SMT system, hardware threads belonging to the same CPU core would also belong to the same SMT set. Logical processors are numbered, beginning from 0. As an example, a dual-threaded/quad-core system would contain eight logical processors, consisting of the four SMT sets: _{_0, 1_}_, _{_2, 3_}_, _{_4, 5_}_, and _{_6, 7_}_. To avoid cache memory access penalites highlighted in Section 5.5.4, the scheduler attempts to maintain a thread running on logical processors within the same SMT set.
 
 To distribute loads across different logical processors, each thread is assigned an **ideal processor**, which is a number representing a thread’s preferred processor. Each process has an initial seed value identifying the ideal CPU for a thread belonging to that process. This seed is incremented for each new thread created by that process, thereby distributing the load across different logical processors. On SMT systems, the increment for the next ideal processor is in the next SMT set. For example, on a dual-threaded/quad-core system, the ideal processors for threads in a specific process would be assigned 0, 2, 4, 6, 0, 2, .... To avoid the situation wherby the first thread for each process is assigned processor 0, processes are assigned different seed values, thereby distributing the load of threads across all physical processing cores in the system. Continuing our example from above, if the seed for a second process were 1, the ideal processors would be assigned in the order 1, 3, 5, 7, 1, 3, and so forth.
 
-**5.7.3 Example: Solaris Scheduling**
+### Example: Solaris Scheduling
 
 Solaris uses priority-based thread scheduling. Each thread belongs to one of six classes:
 
@@ -5202,119 +3320,7 @@ Solaris uses priority-based thread scheduling. Each thread belongs to one of six
 Within each class there are different priorities and different scheduling algo- rithms.
 
 The default scheduling class for a process is time sharing. The scheduling policy for the time-sharing class dynamically alters priorities and assigns time slices of different lengths using a multilevel feedback queue. By default, there is an inverse relationship between priorities and time slices. The higher the  
-
-**5.7 Operating-System Examples 243**
-
-time quantumpriority
-
-return from sleep
-
-time quantum expired
-
-0
-
-5
-
-10
-
-15
-
-20
-
-25
-
-30
-
-35
-
-40
-
-45
-
-50
-
-55
-
-59
-
-200
-
-200
-
-160
-
-160
-
-120
-
-120
-
-80
-
-80
-
-40
-
-40
-
-40
-
-40
-
-20
-
-0
-
-0
-
-0
-
-5
-
-10
-
-15
-
-20
-
-25
-
-30
-
-35
-
-40
-
-45
-
-49
-
-50
-
-50
-
-51
-
-51
-
-52
-
-52
-
-53
-
-54
-
-55
-
-56
-
-58
-
-58
-
-59
-
+![Alt text](image-100.png)
 **Figure 5.29** Solaris dispatch table for time-sharing and interactive threads.
 
 priority, the smaller the time slice; and the lower the priority, the larger the time slice. Interactive processes typically have a higher priority; CPU-bound processes, a lower priority. This scheduling policy gives good response time for interactive processes and good throughput for CPU-bound processes. The interactive class uses the same scheduling policy as the time-sharing class, but it gives windowing applications—such as those created by the KDE or GNOME window managers—a higher priority for better performance.
@@ -5327,8 +3333,6 @@ Figure 5.29 shows the simplifieddispatch table for scheduling time-sharing and i
 
 • **Time quantum expired**. The new priority of a thread that has used its entire time quantum without blocking. Such threads are considered CPU- intensive. As shown in the table, these threads have their priorities low- ered.  
 
-**244 Chapter 5 CPU Scheduling**
-
 • **Return from sleep**. The priority of a thread that is returning from sleeping (such as fromwaiting for I/O). As the table illustrates,when I/O is available for a waiting thread, its priority is boosted to between 50 and 59, support- ing the scheduling policy of providing good response time for interactive processes.
 
 Threads in the real-time class are given the highest priority. A real-time process will run before a process in any other class. This assignment allows a real-time process to have a guaranteed response from the system within a bounded period of time. In general, however, few processes belong to the real-time class.
@@ -5339,135 +3343,48 @@ The fixed-priority and fair-share classes were introduced with Solaris 9. Thread
 
 Each scheduling class includes a set of priorities. However, the scheduler converts the class-specific priorities into global priorities and selects the thread with the highest global priority to run. The selected thread runs on the CPU until it (1) blocks, (2) uses its time slice, or (3) is preempted by a higher-priority thread. If there are multiple threads with the same priority, the scheduler uses a round-robin queue. Figure 5.30 illustrates how the six scheduling classes relate to one another and how they map to global priorities. Notice that the kernel maintains ten threads for servicing interrupts. These threads do not belong to any scheduling class and execute at the highest priority (160–169). Asmentioned, Solaris has traditionally used themany-to-manymodel (Section 4.3.3) but switched to the one-to-one model (Section 4.3.2) beginning with Solaris 9.
 
-**5.8 Algorithm Evaluation**
+## Algorithm Evaluation
 
 How do we select a CPU-scheduling algorithm for a particular system? As we saw in Section 5.3, there are many scheduling algorithms, each with its own parameters. As a result, selecting an algorithm can be difficult.
 
 The first problem is defining the criteria to be used in selecting an algo- rithm. As we saw in Section 5.2, criteria are often defined in terms of CPU utilization, response time, or throughput. To select an algorithm, we must first define the relative importance of these elements. Our criteria may include several measures, such as these:
 
 • Maximizing CPU utilization under the constraint that the maximum response time is 300 milliseconds  
-
-**5.8 Algorithm Evaluation 245**
-
-interrupt threads
-
-169 highest
-
-lowest
-
-first
-
-scheduling order
-
-global priority
-
-last
-
-160
-
-159
-
-100
-
-60 59
-
-0
-
-99
-
-realtime (RT) threads
-
-system (SYS) threads
-
-fair share (FSS) threads
-
-fixed priority (FX) threads
-
-timeshare (TS) threads
-
-interactive (IA) threads
-
+![Alt text](image-101.png)
 **Figure 5.30** Solaris scheduling.
 
 • Maximizing throughput such that turnaround time is (on average) linearly proportional to total execution time
 
 Once the selection criteria have been defined,wewant to evaluate the algo- rithms under consideration. We next describe the various evaluation methods we can use.
 
-**5.8.1 Deterministic Modeling**
+### Deterministic Modeling
 
 One major class of evaluation methods is **analytic evaluation**. Analytic evalu- ation uses the given algorithm and the system workload to produce a formula or number to evaluate the performance of the algorithm for that workload.
 
 **Deterministic modeling** is one type of analytic evaluation. This method takes a particular predetermined workload and defines the performance of each algorithm for that workload. For example, assume that we have the workload shown below. All five processes arrive at time 0, in the order given, with the length of the CPU burst given in milliseconds:  
 
-**246 Chapter 5 CPU Scheduling**
-
-Process Burst Time _P_1 10 _P_2 29 _P_3 3 _P_4 7 _P_5 12
-
 Consider the FCFS, SJF, and RR (quantum = 10 milliseconds) scheduling algo- rithms for this set of processes. Which algorithm would give the minimum average waiting time?
 
 For the FCFS algorithm, we would execute the processes as
 
-_P_ 2
-
-_P_ 5
-
-_P_ 3
-
-_P_ 4
-
-_P_ 1
-
-6139 49420 10
-
+![Alt text](image-102.png)
 The waiting time is 0 milliseconds for process _P_1, 10 milliseconds for process _P_2, 39 milliseconds for process _P_3, 42 milliseconds for process _P_4, and 49 milliseconds for process _P_5\. Thus, the average waiting time is (0 + 10 + 39 + 42 + 49)/5 = 28 milliseconds.
 
 With nonpreemptive SJF scheduling, we execute the processes as
-
-_P_ 5
-
-_P_ 2
-
-_P_ 3
-
-_P_ 4
-
-613220100 3
-
-_P_ 1
-
+![Alt text](image-103.png)
 The waiting time is 10 milliseconds for process _P_1, 32 milliseconds for process _P_2, 0 milliseconds for process _P_3, 3 milliseconds for process _P_4, and 20 millisec- onds for process _P_5\. Thus, the average waiting time is (10 + 32 + 0 + 3 + 20)/5 = 13 milliseconds.
 
 With the RR algorithm, we execute the processes as
-
-_P_ 5
-
-_P_ 5
-
-_P_ 2
-
-_P_ 2
-
-_P_ 2
-
-_P_ 3
-
-_P_ 4
-
-6130 40 50 5220 23100
-
-_P_ 1
-
+![Alt text](image-104.png)
 The waiting time is 0 milliseconds for process _P_1, 32 milliseconds for process _P_2, 20 milliseconds for process _P_3, 23 milliseconds for process _P_4, and 40 milliseconds for process _P_5\. Thus, the average waiting time is (0 + 32 + 20 + 23 + 40)/5 = 23 milliseconds.
 
 We can see that, in this case, the average waiting time obtained with the SJF policy is less than half that obtained with FCFS scheduling; the RR algorithm gives us an intermediate value.
 
 Deterministicmodeling is simple and fast. It gives us exact numbers, allow- ing us to compare the algorithms.However, it requires exact numbers for input, and its answers apply only to those cases. The main uses of deterministic modeling are in describing scheduling algorithms and providing examples. In cases where we are running the same program over and over again and can  
 
-**5.8 Algorithm Evaluation 247**
-
 measure the program’s processing requirements exactly, wemay be able to use deterministic modeling to select a scheduling algorithm. Furthermore, over a set of examples, deterministic modeling may indicate trends that can then be analyzed and proved separately. For example, it can be shown that, for the environment described (all processes and their times available at time 0), the SJF policy will always result in the minimum waiting time.
 
-**5.8.2 Queueing Models**
+### Queueing Models
 
 On many systems, the processes that are run vary from day to day, so there is no static set of processes (or times) to use for deterministicmodeling.What can be determined, however, is the distribution of CPU and I/O bursts. These dis- tributions can be measured and then approximated or simply estimated. The result is a mathematical formula describing the probability of a particular CPU burst. Commonly, this distribution is exponential and is described by its mean. Similarly, we can describe the distribution of times when processes arrive in the system (the arrival-time distribution). From these two distributions, it is possible to compute the average throughput, utilization, waiting time, and so on for most algorithms.
 
@@ -5483,9 +3400,7 @@ We can use Little’s formula to compute one of the three variables if we know t
 
 Queueing analysis can be useful in comparing scheduling algorithms, but it also has limitations. At the moment, the classes of algorithms and distribu- tions that can be handled are fairly limited. The mathematics of complicated algorithms and distributions can be difficult to work with. Thus, arrival and service distributions are often defined in mathematically tractable—but unre- alistic—ways. It is also generally necessary to make a number of indepen- dent assumptions, which may not be accurate. As a result of these difficulties, queueing models are often only approximations of real systems, and the accu- racy of the computed results may be questionable.  
 
-**248 Chapter 5 CPU Scheduling**
-
-**5.8.3 Simulations**
+### Simulations
 
 To get a more accurate evaluation of scheduling algorithms, we can use simu- lations. Running simulations involves programming a model of the computer system. Software data structures represent the major components of the sys- tem. The simulator has a variable representing a clock. As this variable’s value is increased, the simulator modifies the system state to reflect the activities of the devices, the processes, and the scheduler. As the simulation executes, statistics that indicate algorithm performance are gathered and printed.
 
@@ -5494,44 +3409,11 @@ The data to drive the simulation can be generated in severalways. Themost common
 A distribution-driven simulation may be inaccurate, however, because of relationships between successive events in the real system. The frequency distribution indicates only howmany instances of each event occur; it does not indicate anything about the order of their occurrence. To correct this problem, we can use **trace files.** We create a trace by monitoring the real system and recording the sequence of actual events (Figure 5.31).We then use this sequence to drive the simulation. Trace files provide an excellent way to compare two algorithms on exactly the same set of real inputs. This method can produce accurate results for its inputs.
 
 Simulations can be expensive, often requiring many hours of computer time. A more detailed simulation provides more accurate results, but it also
-
-actual process
-
-execution
-
-performance statistics for FCFS
-
-simulation
-
-FCFS
-
-performance statistics for SJF
-
-performance statistics
-
-for RR (_q_ = 14)
-
-trace tape
-
-simulation
-
-SJF
-
-simulation
-
-RR (_q_ = 14)
-
-• • • CPU 10 I/O 213 CPU 12 I/O 112 CPU 2 I/O 147 CPU 173
-
-• • •
-
+![Alt text](image-105.png)
 **Figure 5.31** Evaluation of CPU schedulers by simulation.  
-
-**5.8 Algorithm Evaluation 249**
-
 takes more computer time. In addition, trace files can require large amounts of storage space. Finally, the design, coding, and debugging of the simulator can be a major task.
 
-**5.8.4 Implementation**
+### Implementation
 
 Even a simulation is of limited accuracy. The only completely accurate way to evaluate a scheduling algorithm is to code it up, put it in the operating system, and see how it works. This approach puts the actual algorithm in the real system for evaluation under real operating conditions.
 
@@ -5545,9 +3427,7 @@ In general, most flexible scheduling algorithms are those that can be altered by
 
 Another approach is to use APIs that can modify the priority of a process or thread. The Java, POSIX, and Windows APIs provide such functions. The downfall of this approach is that performance-tuning a system or application most often does not result in improvedperformance inmore general situations.  
 
-**250 Chapter 5 CPU Scheduling**
-
-**5.9 Summary**
+## Summary
 
 • CPU scheduling is the task of selecting a waiting process from the ready queue and allocating the CPU to it. The CPU is allocated to the selected process by the dispatcher.
 
@@ -5575,8 +3455,6 @@ Another approach is to use APIs that can modify the priority of a process or thr
 
 • Rate-monotonic real-time scheduling schedules periodic tasks using a static priority policy with preemption.  
 
-**Practice Exercises 251**
-
 • Earliest-deadline-first (EDF) scheduling assigns priorities according to deadline. The earlier the deadline, the higher the priority; the later the deadline, the lower the priority.
 
 • Proportional share scheduling allocates _T_ shares among all applications. If an application is allocated _N_ shares of time, it is ensured of having _N_∕_T_ of the total processor time.
@@ -5597,23 +3475,14 @@ Another approach is to use APIs that can modify the priority of a process or thr
 
 **5.3** Suppose that the following processes arrive for execution at the times indicated. Each processwill run for the amount of time listed. In answer- ing the questions, use nonpreemptive scheduling, and base all decisions on the information you have at the time the decision must be made.
 
-Process Arrival Time Burst Time _P_1 0.0 8 _P_2 0.4 4 _P_3 1.0 1
-
 a. What is the average turnaround time for these processes with the FCFS scheduling algorithm?
 
 b. What is the average turnaround time for these processes with the SJF scheduling algorithm?
 
-c. The SJF algorithm is supposed to improve performance, but notice that we chose to run process _P_1 at time 0 because we did not know that two shorter processes would arrive soon. Compute what the  
-
-**252 Chapter 5 CPU Scheduling**
-
-average turnaround time will be if the CPU is left idle for the first 1 unit and then SJF scheduling is used. Remember that processes _P_1 and _P_2 are waiting during this idle time, so their waiting time may increase. This algorithm could be known as **_future-knowledge scheduling_**.
+c. The SJF algorithm is supposed to improve performance, but notice that we chose to run process _P_1 at time 0 because we did not know that two shorter processes would arrive soon. Compute what the average turnaround time will be if the CPU is left idle for the first 1 unit and then SJF scheduling is used. Remember that processes _P_1 and _P_2 are waiting during this idle time, so their waiting time may increase. This algorithm could be known as **_future-knowledge scheduling_**.
 
 **5.4** Consider the following set of processes, with the length of the CPU burst time given in milliseconds:
-
-Process Burst Time Priority _P_1 2 2 _P_2 1 1 _P_3 8 4 _P_4 4 2 _P_5 5 3
-
-The processes are assumed to have arrived in the order _P_1, _P_2, _P_3, _P_4, _P_5, all at time 0.
+![Alt text](image-106.png)
 
 a. Draw four Gantt charts that illustrate the execution of these pro- cesses using the following scheduling algorithms: FCFS, SJF, non- preemptive priority (a larger priority number implies a higher priority), and RR (quantum = 2).
 
@@ -5624,14 +3493,8 @@ c. What is the waiting time of each process for each of these schedul- ing algor
 d. Which of the algorithms results in the minimum average waiting time (over all processes)?
 
 **5.5** The following processes are being scheduled using a preemptive, round- robin scheduling algorithm.
-
-Process Priority Burst Arrival _P_1 40 20 0 _P_2 30 25 25 _P_3 30 25 30 _P_4 35 15 60 _P_5 5 10 100 _P_6 10 10 105
-
-Each process is assigned a numerical priority,with a higher number indi- cating a higher relative priority. In addition to the processes listed below, the system also has an **idle task** (which consumes no CPU resources and is identified as _Pidle_). This task has priority 0 and is scheduled when- ever the system has no other available processes to run. The length of a  
-
-**Practice Exercises 253**
-
-time quantum is 10 units. If a process is preempted by a higher-priority process, the preempted process is placed at the end of the queue.
+![Alt text](image-107.png)
+Each process is assigned a numerical priority,with a higher number indi- cating a higher relative priority. In addition to the processes listed below, the system also has an **idle task** (which consumes no CPU resources and is identified as _Pidle_). This task has priority 0 and is scheduled when- ever the system has no other available processes to run. The length of a time quantum is 10 units. If a process is preempted by a higher-priority process, the preempted process is placed at the end of the queue.
 
 a. Show the scheduling order of the processes using a Gantt chart.
 
@@ -5666,8 +3529,6 @@ Priority = (recent CPU usage / 2) + base
 where base = 60 and _recent CPU usage_ refers to a value indicating how often a process has used the CPU since priorities were last recalculated.
 
 Assume that recent CPU usage for process _P_1 is 40, for process _P_2 is 18, and for process _P_3 is 10. What will be the new priorities for these three processes when priorities are recalculated? Based on this information, does the traditional UNIX scheduler raise or lower the relative priority of a CPU-bound process?  
-
-**254 Chapter 5 CPU Scheduling**
 
 **Further Reading**
 
@@ -5726,9 +3587,7 @@ b. α = 0_._99 and τ0 = 10 milliseconds
 **EX-12**  
 
 **5.17** Consider the following set of processes, with the length of the CPU burst given in milliseconds:
-
-Process Burst Time Priority _P_1 5 4 _P_2 3 1 _P_3 1 2 _P_4 7 2 _P_5 4 3
-
+![Alt text](image-108.png)
 The processes are assumed to have arrived in the order _P_1, _P_2, _P_3, _P_4, _P_5, all at time 0.
 
 a. Draw four Gantt charts that illustrate the execution of these pro- cesses using the following scheduling algorithms: FCFS, SJF, non- preemptive priority (a larger priority number implies a higher priority), and RR (quantum = 2).
@@ -5740,9 +3599,7 @@ c. What is the waiting time of each process for each of these schedul- ing algor
 d. Which of the algorithms results in the minimum average waiting time (over all processes)?
 
 **5.18** The following processes are being scheduled using a preemptive, priority-based, round-robin scheduling algorithm.
-
-Process Priority Burst Arrival _P_1 8 15 0 _P_2 3 20 0 _P_3 4 20 20 _P_4 4 20 25 _P_5 5 5 45 _P_6 5 15 55
-
+![Alt text](image-109.png)
 Each process is assigned a numerical priority,with a higher number indi- cating a higher relative priority. The scheduler will execute the highest- priority process. For processes with the same priority, a round-robin scheduler will be used with a time quantum of 10 units. If a process is preempted by a higher-priority process, the preempted process is placed at the end of the queue.
 
 a. Show the scheduling order of the processes using a Gantt chart.
