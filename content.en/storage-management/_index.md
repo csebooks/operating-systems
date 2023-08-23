@@ -7,7 +7,7 @@ weight: 10
 
 Part Five
 
-_Storage Management_
+**_Storage Management_**
 
 Computer systems must provide mass storage for permanently storing files and data. Modern computers implementmass storage as secondary storage, using both hard disks and nonvolatile memory devices.
 
@@ -15,9 +15,9 @@ Secondary storage devices vary in many aspects. Some transfer a character at a t
 
 Because of all this device variation, the operating system needs to provide a wide range of functionality so that applications can control all aspects of the devices. One key goal of an operating system’s I/O subsystem is to provide the simplest interface possible to the rest of the system. Because devices are a performance bottleneck, another key is to optimize I/O for maximum concurrency.  
 
-_11_**CHAPTER**
+_11_ **CHAPTER**
 
-_Mass-Storage Structure_
+# Mass-Storage Structure
 
 In this chapter, we discuss how mass storage—the nonvolatile storage sys- tem of a computer—is structured. The main mass-storage system in modern computers is secondary storage, which is usually provided by hard disk drives (HDD) and nonvolatilememory (NVM) devices. Some systems also have slower, larger, tertiary storage, generally consisting of magnetic tape, optical disks, or even cloud storage.
 
@@ -35,13 +35,13 @@ There are many types of mass storage, and we use the general term **_non- volati
 
 • Discuss operating-system services provided for mass storage, including RAID.
 
-**11.1 Overview of Mass-Storage Structure**
+## Overview of Mass-Storage Structure
 
 The bulk of secondary storage for modern computers is provided by **hard disk drives** (**HDDs**) and **nonvolatile memory** (**NVM**) devices. In this section,
 
 **449**  
 
-**450 Chapter 11 Mass-Storage Structure**
+
 
 track _t_
 
@@ -65,7 +65,7 @@ rotation
 
 we describe the basic mechanisms of these devices and explain how operat- ing systems translate their physical properties to logical storage via address mapping.
 
-**11.1.1 Hard Disk Drives**
+### Hard Disk Drives
 
 Conceptually, HDDs are relatively simple (Figure 11.1). Each disk **platter** has a flat circular shape, like a CD. Common platter diameters range from 1.8 to 3.5 inches. The two surfaces of a platter are covered with a magnetic material. We store information by recording it magnetically on the platters, and we read information by detecting the magnetic pattern on the platters.
 
@@ -73,7 +73,7 @@ A read–write head “flies” just above each surface of every platter. The he
 
 Adisk drivemotor spins it at high speed.Most drives rotate 60 to 250 times per second, specified in terms of rotations per minute (**RPM**). Common drives spin at 5,400, 7,200, 10,000, and 15,000 RPM. Some drives power down when not in use and spin up upon receiving an I/O request. Rotation speed relates to transfer rates. The **transfer rate** is the rate at which data flow between the drive and the computer. Another performance aspect, the **positioning time**, or **random-access time**, consists of two parts: the time necessary to move the disk arm to the desired cylinder, called the **seek time**, and the time necessary for the  
 
-**11.1 Overview of Mass-Storage Structure 451**
+
 
 **Figure 11.2** A 3.5-inch HDD with cover removed.
 
@@ -87,13 +87,13 @@ HDDs are sealed units, and some chassis that hold HDDs allow their removal witho
 
 As with many aspects of computing, published performance numbers for disks are not the same as real-world performance numbers. Stated transfer rates are always higher than **effective transfer rates**, for example. The transfer rate may be the rate at which bits can be read from themagnetic media by the disk head, but that is different from the rate at which blocks are delivered to the operating system.  
 
-**452 Chapter 11 Mass-Storage Structure**
 
-**11.1.2 Nonvolatile Memory Devices**
+
+### Nonvolatile Memory Devices
 
 Nonvolatile memory (NVM) devices are growing in importance. Simply described, NVM devices are electrical rather than mechanical. Most commonly, such a device is composed of a controller and flash NAND die semiconductor chips, which are used to store data. Other NVM technologies exist, like DRAM with battery backing so it doesn’t lose its contents, as well as other semiconductor technology like 3D XPoint, but they are far less common and so are not discussed in this book.
 
-**11.1.2.1 Overview of Nonvolatile Memory Devices**
+#### Overview of Nonvolatile Memory Devices
 
 Flash-memory-based NVM is frequently used in a disk-drive-like container, in which case it is called a **solid-state disk** (**SSD**) (Figure 11.3). In other instances, it takes the formof a **USB drive** (also known as a thumbdrive or flash drive) or a DRAM stick. It is also surface-mounted onto motherboards as the main storage in devices like smartphones. In all forms, it acts and can be treated in the same way. Our discussion of NVM devices focuses on this technology.
 
@@ -103,7 +103,7 @@ Because NVM devices can be much faster than hard disk drives, standard bus inter
 
 **Figure 11.3** A 3.5-inch SSD circuit board.  
 
-**11.1 Overview of Mass-Storage Structure 453**
+
 
 Some systems use it as a direct replacement for disk drives, while others use it as a new cache tier, moving data among magnetic disks, NVM, and main memory to optimize performance.
 
@@ -111,13 +111,13 @@ NAND semiconductors have some characteristics that present their own storage and
 
 These limitations have led to several ameliorating algorithms. Fortunately, they are usually implemented in the NVM device controller and are not of con- cern to the operating system. The operating system simply reads and writes logical blocks, and the device manages how that is done. (Logical blocks are discussed inmore detail in Section 11.1.5.) However, NVM devices have perfor- mance variations based on their operating algorithms, so a brief discussion of what the controller does is warranted.
 
-**11.1.2.2 NAND Flash Controller Algorithms**
+#### NAND Flash Controller Algorithms
 
 Because NAND semiconductors cannot be overwritten once written, there are usually pages containing invalid data. Consider a file-system block, written once and then later written again. If no erase has occurred in the meantime, the page first written has the old data, which are now invalid, and the second page has the current, good version of the block. A NAND block containing valid and invalid pages is shown in Figure 11.4. To track which logical blocks contain valid data, the controller maintains a **flas translation layer** (**FTL**). This table maps which physical pages contain currently valid logical blocks. It also
 
 **Figure 11.4** A NAND block with valid and invalid pages.  
 
-**454 Chapter 11 Mass-Storage Structure**
+
 
 tracks physical block state—that is, which blocks contain only invalid pages and therefore can be erased.
 
@@ -127,13 +127,13 @@ The over-provisioning space can also help with **wear leveling**. If some blocks
 
 In terms of data protection, like HDDs, NVM devices provide error- correcting codes, which are calculated and stored along with the data during writing and read with the data to detect errors and correct them if possible. (Error-correcting codes are discussed in Section 11.5.1.) If a page frequently has correctible errors, the page might be marked as bad and not used in subsequent writes. Generally, a single NVM device, like an HDD, can have a catastrophic failure in which it corrupts or fails to reply to read or write requests. To allow data to be recoverable in those instances, RAID protection is used.
 
-**11.1.3 Volatile Memory**
+### Volatile Memory
 
 It might seem odd to discuss volatile memory in a chapter on mass-storage structure, but it is justifiable because DRAM is frequently used as amass-storage device. Specifically, **RAM drives** (which are known by many names, including RAM disks) act like secondary storage but are created by device drivers that carve out a section of the system’s DRAM and present it to the rest of the system as it if were a storage device. These “drives” can be used as raw block devices, but more commonly, file systems are created on them for standard file operations.
 
 Computers already have buffering and caching, so what is the purpose of yet another use of DRAM for temporary data storage?After all, DRAM is volatile, and data on a RAM drive does not survive a system crash, shutdown, or power down. Caches and buffers are allocated by the programmer or operating sys- tem, whereas RAM drives allow the user (as well as the programmer) to place  
 
-**11.1 Overview of Mass-Storage Structure 455**
+
 
 **_MAGNETIC TAPES_**
 
@@ -147,15 +147,15 @@ data in memory for temporary safekeeping using standard file operations. In fact
 
 RAM drives are useful as high-speed temporary storage space. Although NVM devices are fast, DRAM is much faster, and I/O operations to RAM drives are the fastest way to create, read, write, and delete files and their contents. Many programs use (or could benefit from using) RAM drives for storing temporary files. For example, programs can share data easily by writing and reading files from a RAMdrive. For another example, Linux at boot time creates a temporary root file system (initrd) that allows other parts of the system to have access to a root file system and its contents before the parts of the operating system that understand storage devices are loaded.  
 
-**456 Chapter 11 Mass-Storage Structure**
 
-**11.1.4 Secondary Storage Connection Methods**
+
+### Secondary Storage Connection Methods
 
 A secondary storage device is attached to a computer by the system bus or an **I/O bus**. Several kinds of buses are available, including **advanced technology attachment** (**ATA**), **serial ATA** (**SATA**), **eSATA**, **serial attached SCSI** (**SAS**), **uni- versal serial bus** (**USB**), and **fibr channel** (**FC**). The most common connection method is SATA. Because NVM devices are much faster than HDDs, the industry created a special, fast interface for NVM devices called **NVM express** (**NVMe**). NVMe directly connects the device to the systemPCI bus, increasing throughput and decreasing latency compared with other connection methods.
 
 The data transfers on a bus are carried out by special electronic processors called **controllers** (or **host-bus adapters** (**HBA**)). The **host controller** is the controller at the computer end of the bus. A **device controller** is built into each storage device. To perform a mass storage I/O operation, the computer places a command into the host controller, typically using memory-mapped I/O ports, as described in Section 12.2.1. The host controller then sends the command via messages to the device controller, and the controller operates the drive hardware to carry out the command. Device controllers usually have a built-in cache. Data transfer at the drive happens between the cache and the storage media, and data transfer to the host, at fast electronic speeds, occurs between the cache host DRAM via DMA.
 
-**11.1.5 Address Mapping**
+### Address Mapping
 
 Storage devices are addressed as large one-dimensional arrays of **logical blocks**, where the logical block is the smallest unit of transfer. Each logical block maps to a physical sector or semiconductor page. The one-dimensional array of logical blocks is mapped onto the sectors or pages of the device. Sector 0 could be the first sector of the first track on the outermost cylinder on an HDD, for example. The mapping proceeds in order through that track, then through the rest of the tracks on that cylinder, and then through the rest of the cylinders, from outermost to innermost. For NVM the mapping is from a tuple (finite ordered list) of chip, block, and page to an array of logical blocks. A logical block address (**LBA**) is easier for algorithms to use than a sector, cylinder, head tuple or chip, block, page tuple.
 
@@ -163,7 +163,7 @@ By using this mapping on an HDD, we can—at least in theory—convert a logical
 
 Let’s look more closely at the second reason. On media that use **constant linear velocity** (**CLV**), the density of bits per track is uniform. The farther a track is from the center of the disk, the greater its length, so the more sectors it can  
 
-**11.2 HDD Scheduling 457**
+
 
 hold. As we move from outer zones to inner zones, the number of sectors per track decreases. Tracks in the outermost zone typically hold 40 percent more sectors than do tracks in the innermost zone. The drive increases its rotation speed as the headmoves from the outer to the inner tracks to keep the same rate of data moving under the head. This method is used in CD-ROM and DVD-ROM drives. Alternatively, the disk rotation speed can stay constant; in this case, the density of bits decreases from inner tracks to outer tracks to keep the data rate constant (and performance relatively the same no matter where data is on the drive). This method is used in hard disks and is known as **constant angular velocity** (**CAV**).
 
@@ -171,7 +171,7 @@ The number of sectors per track has been increasing as disk technology improves,
 
 Note that there are more types of storage devices than are reasonable to cover in an operating systems text. For example, there are “shingled magnetic recording” hard drives with higher density but worse perfor- mance than mainstream HDDs (see http://www.tomsitpro.com/articles/ shingled-magnetic-recoding-smr-101-basics,2-933.html). There are also combination devices that include NVM and HDD technology, or volume managers (see Section 11.5) that can knit together NVM and HDD devices into a storage unit faster than HDD but lower cost than NVM. These devices have different characteristics from the more common devices, and might need different caching and scheduling algorithms to maximize performance.
 
-**11.2 HDD Scheduling**
+## HDD Scheduling
 
 One of the responsibilities of the operating system is to use the hardware efficiently. For HDDs,meeting this responsibility entailsminimizing access time and maximizing data transfer bandwidth.
 
@@ -187,7 +187,7 @@ Whenever a process needs I/O to or from the drive, it issues a system call to th
 
 • The amount of data to transfer  
 
-**458 Chapter 11 Mass-Storage Structure**
+
 
 If the desired drive and controller are available, the request can be serviced immediately. If the drive or controller is busy, any new requests for service will be placed in the queue of pending requests for that drive. For a multiprogram- ming system with many processes, the device queue may often have several pending requests.
 
@@ -195,7 +195,7 @@ The existence of a queue of requests to a device that can have its perfor- mance
 
 In the past, HDD interfaces required that the host specify which track and which head to use, and much effort was spent on disk scheduling algorithms. Drives newer than the turn of the century not only do not expose these controls to the host, but also map LBA to physical addresses under drive control. The current goals of disk scheduling include fairness, timeliness, and optimiza- tions, such as bunching reads or writes that appear in sequence, as drives perform best with sequential I/O. Therefore some scheduling effort is still useful. Any one of several disk-scheduling algorithms can be used, and we discuss them next. Note that absolute knowledge of head location and phys- ical block/cylinder locations is generally not possible on modern drives. But as a rough approximation, algorithms can assume that increasing LBAs mean increasing physical addresses, and LBAs close together equate to physical block proximity.
 
-**11.2.1 FCFS Scheduling**
+### FCFS Scheduling
 
 The simplest form of disk scheduling is, of course, the first-come, first-served (FCFS) algorithm (or FIFO). This algorithm is intrinsically fair, but it generally does not provide the fastest service. Consider, for example, a disk queue with requests for I/O to blocks on cylinders
 
@@ -205,13 +205,13 @@ in that order. If the disk head is initially at cylinder 53, it will first move 
 
 The wild swing from 122 to 14 and then back to 124 illustrates the problem with this schedule. If the requests for cylinders 37 and 14 could be serviced together, before or after the requests for 122 and 124, the total head movement could be decreased substantially, and performance could be thereby improved.
 
-**11.2.2 SCAN Scheduling**
+### SCAN Scheduling
 
 In the **SCAN algorithm**, the disk arm starts at one end of the disk and moves toward the other end, servicing requests as it reaches each cylinder, until it gets to the other end of the disk. At the other end, the direction of head movement is reversed, and servicing continues. The head continuously scans back and forth across the disk. The SCAN algorithm is sometimes called the **elevator algorithm**, since the disk arm behaves just like an elevator in a building, first servicing all the requests going up and then reversing to service requests the other way.
 
 Let’s return to our example to illustrate. Before applying SCAN to schedule the requests on cylinders 98, 183, 37, 122, 14, 124, 65, and 67, we need to know  
 
-**11.2 HDD Scheduling 459**
+
 
 0 14 37 536567 98 122124 183 199
 
@@ -233,15 +233,15 @@ head starts at 53
 
 **Figure 11.7** SCAN disk scheduling.  
 
-**460 Chapter 11 Mass-Storage Structure**
 
-**11.2.3 C-SCAN Scheduling**
+
+### C-SCAN Scheduling
 
 **Circular SCAN (C-SCAN) scheduling** is a variant of SCAN designed to provide a more uniformwait time. Like SCAN, C-SCANmoves the head from one end of the disk to the other, servicing requests along the way. When the head reaches the other end, however, it immediately returns to the beginning of the disk without servicing any requests on the return trip.
 
 Let’s return to our example to illustrate. Before applying C-SCAN to sched- ule the requests on cylinders 98, 183, 37, 122, 14, 124, 65, and 67, we need to know the direction of head movement in which the requests are scheduled. Assuming that the requests are scheduled when the disk arm is moving from 0 to 199 and that the initial head position is again 53, the request will be served as depicted in Figure 11.8. The C-SCAN scheduling algorithm essentially treats the cylinders as a circular list that wraps around from the final cylinder to the first one.
 
-**11.2.4 Selection of a Disk-Scheduling Algorithm**
+### Selection of a Disk-Scheduling Algorithm
 
 There are many disk-scheduling algorithms not included in this coverage, because they are rarely used. But how do operating system designers decide which to implement, anddeployers chose the best to use? For any particular list of requests, we can define an optimal order of retrieval, but the computation needed to find an optimal schedule may not justify the savings over SCAN. With any scheduling algorithm, however, performance depends heavily on the number and types of requests. For instance, suppose that the queue usually has just one outstanding request. Then, all scheduling algorithms behave the same, because they have only one choice of where to move the disk head: they all behave like FCFS scheduling.
 
@@ -255,13 +255,13 @@ head starts at 53
 
 **Figure 11.8** C-SCAN disk scheduling.  
 
-**11.3 NVM Scheduling 461**
+
 
 sorted in LBAorder, essentially implementing C-SCAN. All I/O requests are sent in a batch in this LBA order. Deadline keeps four queues: two read and two write, one sorted by LBA and the other by FCFS. It checks after each batch to see if there are requests in the FCFS queues older than a configured age (by default, 500 ms). If so, the LBA queue (read or write) containing that request is selected for the next batch of I/O.
 
 The deadline I/O scheduler is the default in the Linux RedHat 7 distribu- tion, but **RHEL** 7 also includes two others. NOOP is preferred for CPU-bound sys- tems using fast storage such as NVM devices, and the **Completely Fair Queue- ing scheduler** (**CFQ**) is the default for SATAdrives. CFQ maintains three queues (with insertion sort to keep them sorted in LBAorder): real time, best effort (the default), and idle. Each has exclusive priority over the others, in that order,with starvation possible. It uses historical data, anticipating if a process will likely issue more I/O requests soon. If it so determines, it idles waiting for the new I/O, ignoring other queued requests. This is to minimize seek time, assuming locality of reference of storage I/O requests, per process. Details of these sched- ulers can be found in https://access.redhat.com/site/documentation/en-US /Red Hat Enterprise Linux/7/html/Performance Tuning Guide/index.html.
 
-**11.3 NVM Scheduling**
+## NVM Scheduling
 
 The disk-scheduling algorithms just discussed apply to mechanical platter- based storage like HDDs. They focus primarily on minimizing the amount of disk head movement. NVM devices do not contain moving disk heads and commonly use a simple FCFS policy. For example, the Linux **NOOP** scheduler uses an FCFS policy but modifies it to merge adjacent requests. The observed behavior of NVM devices indicates that the time required to service reads is uniform but that, because of the properties of flash memory, write service time is not uniform. Some SSD schedulers have exploited this property and merge only adjacent write requests, servicing all read requests in FCFS order.
 
@@ -269,13 +269,13 @@ Aswe have seen, I/O can occur sequentially or randomly. Sequential access is opt
 
 NVM devices offer much less of an advantage for raw sequential through- put, where HDD head seeks are minimized and reading and writing of data to the media are emphasized. In those cases, for reads, performance for the two types of devices can range from equivalent to an order of magnitude advantage for NVM devices.Writing to NVM is slower than reading, decreasing the advantage. Furthermore, while write performance for HDDs is consistent throughout the life of the device, write performance for NVM devices varies depending on how full the device is (recall the need for garbage collection and over-provisioning) and how “worn” it is. An NVM device near its end of life due to many erase cycles generally has much worse performance than a new device.  
 
-**462 Chapter 11 Mass-Storage Structure**
+
 
 One way to improve the lifespan and performance of NVM devices over time is to have the file system inform the device when files are deleted, so that the device can erase the blocks those files were stored on. This approach is discussed further in Section 14.5.6.
 
 Let’s lookmore closely at the impact of garbage collection on performance. Consider an NVM device under random read and write load. Assume that all blocks have beenwritten to, but there is free space available. Garbage collection must occur to reclaim space taken by invalid data. That means that a write might cause a read of one or more pages, a write of the good data in those pages to overprovisioning space, an erase of the all-invalid-data block, and the placement of that block into overprovisioning space. In summary, one write request eventually causes a page write (the data), one or more page reads (by garbage collection), and one or more page writes (of good data from the garbage-collected blocks). The creation of I/O requests not by applications but by the NVM device doing garbage collection and space management is called **write amplificatio** and can greatly impact the write performance of the device. In the worst case, several extra I/Os are triggered with each write request.
 
-**11.4 Error Detection and Correction**
+## Error Detection and Correction
 
 Error detection and correction are fundamental to many areas of computing, including memory, networking, and storage. **Error detection** determines if a problem has occurred — for example a bit in DRAM spontaneously changed from a 0 to a 1, the contents of a network packet changed during transmission, or a block of data changed between when it was written and when it was read. By detecting the issue, the system can halt an operation before the error is propagated, report the error to the user or administrator, or warn of a device that might be starting to fail or has already failed.
 
@@ -285,17 +285,17 @@ Parity is one form of **checksums**, which use modular arithmetic to compute, st
 
 An **error-correction code** (**ECC**) not only detects the problem, but also corrects it. The correction is done by using algorithms and extra amounts of storage. The codes vary based on how much extra storage they need and how many errors they can correct. For example, disks drives use per-sector ECC and  
 
-**11.5 Storage Device Management 463**
+
 
 flash drives per-page ECC. When the controller writes a sector/page of data during normal I/O, the ECC is writtenwith a value calculated from all the bytes in the data beingwritten.When the sector/page is read, the ECC is recalculated and compared with the stored value. If the stored and calculated numbers are different, this mismatch indicates that the data have become corrupted and that the storage media may be bad (Section 11.5.3). The ECC is error correcting because it contains enough information, if only a few bits of data have been corrupted, to enable the controller to identify which bits have changed and calculate what their correct values should be. It then reports a recoverable **soft error**. If too many changes occur, and the ECC cannot correct the error, a non- correctable **hard error** is signaled. The controller automatically does the ECC processing whenever a sector or page is read or written.
 
 Error detection and correction are frequently differentiators between con- sumer products and enterprise products. ECC is used in some systems for DRAM error correction and data path protection, for example.
 
-**11.5 Storage Device Management**
+## Storage Device Management
 
 The operating system is responsible for several other aspects of storage device management, too. Here, we discuss drive initialization, booting from a drive, and bad-block recovery.
 
-**11.5.1 Drive Formatting, Partitions, and Volumes**
+### Drive Formatting, Partitions, and Volumes
 
 Anew storage device is a blank slate: it is just a platter of a magnetic recording material or a set of uninitialized semiconductor storage cells. Before a storage device can store data, it must be divided into sectors that the controller can read andwrite. NVMpagesmust be initialized and the FTL created. This process is called **low-level formatting**, or **physical formatting**. Low-level formatting fills the device with a special data structure for each storage location. The data structure for a sector or page typically consists of a header, a data area, and a trailer. The header and trailer contain information used by the controller, such as a sector/page number and an error detection or correction code.
 
@@ -305,7 +305,7 @@ Before it can use a drive to hold files, the operating system still needs to rec
 
 The first step is to **partition** the device into one or more groups of blocks or pages. The operating system can treat each partition as though it were a separate device. For instance, one partition can hold a file system containing a copy of the operating system’s executable code, another the swap space, and another a file system containing the user files. Some operating systems and file systems perform the partitioning automatically when an entire device is to  
 
-**464 Chapter 11 Mass-Storage Structure**
+
 
 be managed by the file system. The partition information is written in a fixed format at a fixed location on the storage device. In Linux, the fdisk command is used to manage partitions on storage devices. The device, when recognized by the operating system, has its partition information read, and the operating system then creates device entries for the partitions (in /dev in Linux). From there, a configuration file, such as /etc/fstab, tells the operating system to mount each partition containing a file system at a specified location and to use mount options such as read-only. **Mounting** a file system is making the file system available for use by the system and its users.
 
@@ -319,13 +319,13 @@ To increase efficiency, most file systems group blocks together into larger chun
 
 Some operating systems give special programs the ability to use a partition as a large sequential array of logical blocks, without any file-system data structures. This array is sometimes called the **raw disk**, and I/O to this array is termed **_raw I/O._** It can be used for swap space (see Section 11.6.2), for example, and some database systems prefer raw I/O because it enables them to control  
 
-**11.5 Storage Device Management 465**
+
 
 **Figure 11.9** Windows 7 Disk Management tool showing devices, partitions, volumes, and file systems.
 
 the exact location where each database record is stored. Raw I/O bypasses all the file-system services, such as the buffer cache, file locking, prefetching, space allocation, file names, and directories. We can make certain applications more efficient by allowing them to implement their own special-purpose storage services on a raw partition, but most applications use a provided file system rather than managing data themselves. Note that Linux generally does not support raw I/O but can achieve similar access by using the DIRECT flag to the open() system call.
 
-**11.5.2 Boot Block**
+### Boot Block
 
 For a computer to start running—for instance, when it is powered up or rebooted—it must have an initial program to run. This initial **bootstrap** loader tends to be simple. For most computers, the bootstrap is stored in NVM flash memory firmware on the system motherboard and mapped to a known mem- ory location. It can be updated by product manufacturers as needed, but also can be written to by viruses, infecting the system. It initializes all aspects of the system, from CPU registers to device controllers and the contents of main memory.
 
@@ -335,7 +335,7 @@ The code in the bootstrap NVM instructs the storage controller to read the boot 
 
 Let’s consider as an example the boot process in Windows. First, note that Windows allows a drive to be divided into partitions, and one partition— identified as the **boot partition**—contains the operating system and device drivers. The Windows system places its boot code in the first logical block on the hard disk or first page of the NVM device, which it terms the **master boot**  
 
-**466 Chapter 11 Mass-Storage Structure**
+
 
 MBR
 
@@ -357,7 +357,7 @@ boot partition
 
 **record**, or **MBR**. Booting begins by running code that is resident in the system’s firmware. This code directs the system to read the boot code from the MBR, understanding just enough about the storage controller and storage device to load a sector from it. In addition to containing boot code, the MBR contains a table listing the partitions for the drive and a flag indicating which partition the system is to be booted from, as illustrated in Figure 11.10. Once the system identifies the boot partition, it reads the first sector/page from that partition (called the **boot sector**), which directs it to the kernel. It then continues with the remainder of the boot process, which includes loading the various subsystems and system services.
 
-**11.5.3 Bad Blocks**
+### Bad Blocks
 
 Because disks have moving parts and small tolerances (recall that the disk head flies just above the disk surface), they are prone to failure. Sometimes the failure is complete; in this case, the disk needs to be replaced and its contents restored from backup media to the new disk. More frequently, one or more sectors become defective. Most disks even come from the factory with **bad blocks**. Depending on the disk and controller in use, these blocks are handled in a variety of ways.
 
@@ -369,7 +369,7 @@ A typical bad-sector transaction might be as follows:
 
 • The operating system tries to read logical block 87.  
 
-**11.6 Swap-Space Management 467**
+
 
 • The controller calculates the ECC and finds that the sector is bad. It reports this finding to the operating system as an I/O error.
 
@@ -385,17 +385,17 @@ Recoverable soft errors may trigger a device activity in which a copy of the blo
 
 NVM devices also have bits, bytes, and even pages that either are nonfunc- tional at manufacturing time or go bad over time. Management of those faulty areas is simpler than for HDDs because there is no seek time performance loss to be avoided. Either multiple pages can be set aside and used as replacement locations, or space from the over-provisioning area can be used (decreasing the usable capacity of the over-provisioning area). Either way, the controller maintains a table of bad pages and never sets those pages as available to write to, so they are never accessed.
 
-**11.6 Swap-Space Management**
+## Swap-Space Management
 
 Swappingwas first presented in Section 9.5, wherewe discussedmoving entire processes between secondary storage andmainmemory. Swapping in that set- ting occurs when the amount of physical memory reaches a critically low point andprocesses aremoved frommemory to swap space to free availablememory. In practice, very few modern operating systems implement swapping in this fashion. Rather, systems now combine swapping with virtual memory tech- niques (Chapter 10) and swap pages, not necessarily entire processes. In fact, some systems now use the terms “swapping” and “paging” interchangeably, reflecting the merging of these two concepts.
 
 **Swap-space management** is another low-level task of the operating sys- tem. Virtual memory uses secondary storage space as an extension of main memory. Since drive access is much slower than memory access, using swap  
 
-**468 Chapter 11 Mass-Storage Structure**
+
 
 space significantly decreases systemperformance. Themain goal for the design and implementation of swap space is to provide the best throughput for the vir- tual memory system. In this section, we discuss how swap space is used, where swap space is located on storage devices, and how swap space is managed.
 
-**11.6.1 Swap-Space Use**
+### Swap-Space Use
 
 Swap space is used in various ways by different operating systems, depending on the memory-management algorithms in use. For instance, systems that implement swapping may use swap space to hold an entire process image, including the code and data segments. Paging systemsmay simply store pages that have been pushed out of mainmemory. The amount of swap space needed on a system can therefore vary froma fewmegabytes of disk space to gigabytes, depending on the amount of physical memory, the amount of virtual memory it is backing, and the way in which the virtual memory is used.
 
@@ -403,19 +403,19 @@ Note that it may be safer to overestimate than to underestimate the amount of sw
 
 Some operating systems—including Linux—allow the use of multiple swap spaces, including both files and dedicated swap partitions. These swap spaces are usually placed on separate storage devices so that the load placed on the I/O system by paging and swapping can be spread over the system’s I/O bandwidth.
 
-**11.6.2 Swap-Space Location**
+### Swap-Space Location
 
 Aswap space can reside in one of two places: it can be carved out of the normal file system, or it can be in a separate partition. If the swap space is simply a large file within the file system, normal file-system routines can be used to create it, name it, and allocate its space.
 
 Alternatively, swap space can be created in a separate **raw partition**. No file system or directory structure is placed in this space. Rather, a separate swap-space storage manager is used to allocate and deallocate the blocks from the raw partition. This manager uses algorithms optimized for speed rather than for storage efficiency, because swap space is accessed much more frequently than file systems, when it is used (recall that swap space is used for swapping and paging). Internal fragmentation may increase, but this trade- off is acceptable because the life of data in the swap space generally is much shorter than that of files in the file system. Since swap space is reinitialized at boot time, any fragmentation is short-lived. The raw-partition approach creates a fixed amount of swap space during disk partitioning. Adding more swap space requires either repartitioning the device (which involves moving  
 
-**11.7 Storage Attachment 469**
+
 
 the other file-system partitions or destroying them and restoring them from backup) or adding another swap space elsewhere.
 
 Some operating systems are flexible and can swap both in raw partitions and in file-system space. Linux is an example: the policy and implementa- tion are separate, allowing the machine’s administrator to decide which type of swapping to use. The trade-off is between the convenience of allocation and management in the file system and the performance of swapping in raw partitions.
 
-**11.6.3 Swap-Space Management: An Example**
+### Swap-Space Management: An Example
 
 We can illustrate how swap space is used by following the evolution of swap- ping and paging in various UNIX systems. The traditional UNIX kernel started with an implementation of swapping that copied entire processes between contiguous disk regions and memory. UNIX later evolved to a combination of swapping and paging as paging hardware became available.
 
@@ -425,11 +425,11 @@ More changes were made in later versions of Solaris. The biggest change is that 
 
 Linux is similar to Solaris in that swap space is now used only for anony- mous memory. Linux allows one or more swap areas to be established. A swap area may be in either a swap file on a regular file system or a dedicated swap partition. Each swap area consists of a series of 4-KB **page slots**, which are used to hold swapped pages. Associated with each swap area is a **swap map**—an array of integer counters, each corresponding to a page slot in the swap area. If the value of a counter is 0, the corresponding page slot is available. Values greater than 0 indicate that the page slot is occupied by a swapped page. The value of the counter indicates the number of mappings to the swapped page. For example, a value of 3 indicates that the swapped page is mapped to three different processes (which can occur if the swapped page is storing a region of memory shared by three processes). The data structures for swapping on Linux systems are shown in Figure 11.11.
 
-**11.7 Storage Attachment**
+## Storage Attachment
 
 Computers access secondary storage in three ways: via host-attached storage, network-attached storage, and cloud storage.  
 
-**470 Chapter 11 Mass-Storage Structure**
+
 
 swap area page slot
 
@@ -439,7 +439,7 @@ swap map 1 0 3 0 1
 
 **Figure 11.11** The data structures for swapping on Linux systems.
 
-**11.7.1 Host-Attached Storage**
+### Host-Attached Storage
 
 **Host-attached storage** is storage accessed through local I/O ports. These ports use several technologies, the most common being SATA, as mentioned earlier. A typical system has one or a few SATA ports.
 
@@ -449,13 +449,13 @@ High-end workstations and servers generally need more storage or need to share s
 
 A wide variety of storage devices are suitable for use as host-attached storage. Among these are HDDs; NVM devices; CD, DVD, Blu-ray, and tape drives; and storage-area networks (**SANs**) (discussed in Section 11.7.4). The I/O commands that initiate data transfers to a host-attached storage device are reads andwrites of logical data blocks directed to specifically identified storage units (such as bus ID or target logical unit).
 
-**11.7.2 Network-Attached Storage**
+### Network-Attached Storage
 
 **Network-attached storage** (**NAS**) (Figure 11.12) provides access to storage across a network.AnNAS device can be either a special-purpose storage system or a general computer system that provides its storage to other hosts across the network. Clients access network-attached storage via a remote-procedure- call interface such as NFS for UNIX and Linux systems or CIFS for Windows machines. The remote procedure calls (RPCs) are carried via TCP or UDP over an IP network—usually the same local-area network (LAN) that carries all data traffic to the clients. The network-attached storage unit is usually implemented as a storage array with software that implements the RPC interface.
 
 CIFS and NFS provide various locking features, allowing the sharing of files betweenhosts accessing aNASwith those protocols. For example, a user logged in tomultipleNAS clients can access her homedirectory fromall of those clients, simultaneously.  
 
-**11.7 Storage Attachment 471**
+
 
 NAS
 
@@ -473,7 +473,7 @@ Network-attached storage provides a convenient way for all the computers on a LA
 
 **iSCSI** is the latest network-attached storage protocol. In essence, it uses the IP network protocol to carry the SCSI protocol. Thus, networks—rather than SCSI cables—can be used as the interconnects between hosts and their storage. As a result, hosts can treat their storage as if it were directly attached, even if the storage is distant from the host. Whereas NFS and CIFS present a file system and send parts of files across the network, iSCSI sends logical blocks across the network and leaves it to the client to use the blocks directly or create a file system with them.
 
-**11.7.3 Cloud Storage**
+### Cloud Storage
 
 Section 1.10.5 discussed cloud computing. One offering from cloud providers is **cloud storage**. Similar to network-attached storage, cloud storage provides access to storage across a network. Unlike NAS, the storage is accessed over the Internet or another WAN to a remote data center that provides storage for a fee (or even for free).
 
@@ -481,7 +481,7 @@ Another difference between NAS and cloud storage is how the storage is accessed 
 
 One reason that APIs are used instead of existing protocols is the latency and failure scenarios of a WAN. NAS protocols were designed for use in LANs, which have lower latency thanWANs and aremuch less likely to lose connectiv- ity between the storage user and the storage device. If a LAN connection fails, a system using NFS or CIFS might hang until it recovers. With cloud storage, failures like that are more likely, so an application simply pauses access until connectivity is restored.  
 
-**472 Chapter 11 Mass-Storage Structure**
+
 
 LAN/WAN
 
@@ -505,7 +505,7 @@ SAN
 
 **Figure 11.13** Storage-area network.
 
-**11.7.4 Storage-Area Networks and Storage Arrays**
+### Storage-Area Networks and Storage Arrays
 
 One drawback of network-attached storage systems is that the storage I/O operations consume bandwidth on the data network, thereby increasing the latency of network communication. This problem can be particularly acute in large client–server installations—the communication between servers and clients competes for bandwidth with the communication among servers and storage devices.
 
@@ -515,23 +515,23 @@ A storage array is a purpose-built device (see Figure 11.14) that includes SANpo
 
 Some storage arrays include SSDs. An array may contain only SSDs, result- ing in maximum performance but smaller capacity, or may include a mix of SSDs and HDDs, with the array software (or the administrator) selecting the best medium for a given use or using the SSDs as a cache and HDDs as bulk storage.  
 
-**11.8 RAID Structure 473**
+
 
 **Figure 11.14** A storage array.
 
 FC is the most common SAN interconnect, although the simplicity of iSCSI is increasing its use. Another SAN interconnect is **InfiniBan** (**IB**)—a special- purpose bus architecture that provides hardware and software support for high-speed interconnection networks for servers and storage units.
 
-**11.8 RAID Structure**
+## RAID Structure
 
 Storage devices have continued to get smaller and cheaper, so it is now eco- nomically feasible to attach many drives to a computer system. Having a large number of drives in a system presents opportunities for improving the rate at which data can be read or written, if the drives are operated in paral- lel. Furthermore, this setup offers the potential for improving the reliability of data storage, because redundant information can be stored on multiple drives. Thus, failure of one drive does not lead to loss of data. A variety of disk-organization techniques, collectively called **redundant arrays of inde- pendent disks** (**RAIDs**), are commonly used to address the performance and reliability issues.
 
 In the past, RAIDs composed of small, cheap disks were viewed as a cost- effective alternative to large, expensive disks. Today, RAIDs are used for their higher reliability and higher data-transfer rate rather than for economic rea- sons. Hence, the **_I_** in **_RAID,_**which once stood for “inexpensive,” now stands for “independent.”
 
-**11.8.1 Improvement of Reliability via Redundancy**
+### Improvement of Reliability via Redundancy
 
 Let’s first consider the reliability of a RAID of HDDs. The chance that some disk out of a set of _N_ disks will fail is much greater than the chance that a specific single disk will fail. Suppose that the **mean time between failures** (**MTBF**) of a single disk is 100,000 hours. Then the MTBF of some disk in an array of 100  
 
-**474 Chapter 11 Mass-Storage Structure**
+
 
 **_STRUCTURING RAID_**
 
@@ -549,11 +549,11 @@ You should be aware that we cannot really assume that drive failures will be ind
 
 Power failures are a particular source of concern, since they occur far more frequently than do natural disasters. Even with mirroring of drives, if writes are in progress to the same block in both drives, and power fails before both blocks are fully written, the two blocks can be in an inconsistent state. One solution to this problem is to write one copy first, then the next. Another is to add a solid-state nonvolatile cache to the RAID array. This write-back cache is  
 
-**11.8 RAID Structure 475**
+
 
 protected from data loss during power failures, so the write can be considered complete at that point, assuming the cache has some kind of error protection and correction, such as ECC or mirroring.
 
-**11.8.2 Improvement in Performance via Parallelism**
+### Improvement in Performance via Parallelism
 
 Now let’s consider how parallel access to multiple drives improves perfor- mance. With mirroring, the rate at which read requests can be handled is doubled, since read requests can be sent to either drive (as long as both in a pair are functional, as is almost always the case). The transfer rate of each read is the same as in a single-drive system, but the number of reads per unit time has doubled.
 
@@ -567,11 +567,11 @@ Parallelism in a storage system, as achieved through striping, has twomain goals
 
 **2\.** Reduce the response time of large accesses.
 
-**11.8.3 RAID Levels**
+### RAID Levels
 
 Mirroring provides high reliability, but it is expensive. Striping provides high data-transfer rates, but it does not improve reliability. Numerous schemes to provide redundancy at lower cost by using disk striping combined with “parity” bits (which we describe shortly) have been proposed. These schemes have different cost–performance trade-offs and are classified according to levels called **RAID levels**. We describe only the most common levels here; Figure 11.15 shows them pictorially (in the figure, _P_ indicates error-correcting bits and _C_ indicates a second copy of the data). In all cases depicted in the figure, four drives’ worth of data are stored, and the extra drives are used to store redundant information for failure recovery.  
 
-**476 Chapter 11 Mass-Storage Structure**
+
 
 **Figure 11.15** RAID levels.
 
@@ -583,7 +583,7 @@ Mirroring provides high reliability, but it is expensive. Striping provides high
 
 The idea of ECC can be used directly in storage arrays via striping of blocks across drives. For example, the first data block of a sequence of writes can be stored in drive 1, the second block in drive 2, and so on until the _N_th block is stored in drive _N_; the error-correction calculation result of those blocks is stored on drive _N_ \+ 1. This scheme is shown in Figure 11.15(c), where the drive labeled _P_ stores the error-correction block. If one of the drives fails, the error-correction code recalculation detects that and  
 
-**11.8 RAID Structure 477**
+
 
 prevents the data from being passed to the requesting process, throwing an error.
 
@@ -601,7 +601,7 @@ A performance problem with RAID 4—and with all parity-based RAID levels—is t
 
 • **RAID level 5**. RAID level 5, or block-interleaved distributed parity, differs from level 4 in that it spreads data and parity among all_N_+1 drives, rather  
 
-**478 Chapter 11 Mass-Storage Structure**
+
 
 than storing data in _N_ drives and parity in one drive. For each set of _N_ blocks, one of the drives stores the parity and the others store data. For example, with an array of five drives, the parity for the _n_th block is stored in drive (_n_mod 5) + 1. The _n_th blocks of the other four drives store actual data for that block. This setup is shown in Figure 11.15(d), where the _P_s are distributed across all the drives. A parity block cannot store parity for blocks in the same drive, because a drive failure would result in loss of data as well as of parity, and hence the loss would not be recoverable. By spreading the parity across all the drives in the set, RAID 5 avoids potential overuse of a single parity drive, which can occur with RAID 4. RAID 5 is the most common parity RAID.
 
@@ -613,7 +613,7 @@ than storing data in _N_ drives and parity in one drive. For each set of _N_ blo
 
 Another RAID variation is RAID level 1 + 0, in which drives are mirrored in pairs and then the resulting mirrored pairs are striped. This scheme has some theoretical advantages over RAID 0 + 1. For example, if a single drive fails in RAID 0 + 1, an entire stripe is inaccessible, leaving only the other stripe. With a failure in RAID 1 + 0, a single drive is unavailable, but the drive that mirrors it is still available, as are all the rest of the drives (Figure 11.16).  
 
-**11.8 RAID Structure 479**
+
 
 x
 
@@ -647,7 +647,7 @@ The implementation of RAID is another area of variation. Consider the following 
 
 • RAID can be implemented in the SAN interconnect layer by drive virtualiza- tion devices. In this case, a device sits between the hosts and the storage. It  
 
-**480 Chapter 11 Mass-Storage Structure**
+
 
 accepts commands from the servers and manages access to the storage. It could provide mirroring, for example, by writing each block to two separate storage devices.
 
@@ -657,7 +657,7 @@ The implementation of these features differs depending on the layer at which RAI
 
 One other aspect of most RAID implementations is a hot spare drive or drives. A **hot spare** is not used for data but is configured to be used as a replacement in case of drive failure. For instance, a hot spare can be used to rebuild a mirrored pair should one of the drives in the pair fail. In this way, the RAID level can be reestablished automatically, without waiting for the failed drive to be replaced. Allocating more than one hot spare allows more than one failure to be repaired without human intervention.
 
-**11.8.4 Selecting a RAID Level**
+### Selecting a RAID Level
 
 Given the many choices they have, how do system designers choose a RAID level? One consideration is rebuild performance. If a drive fails, the time needed to rebuild its data can be significant. This may be an important factor if a continuous supply of data is required, as it is in high-performance or interactive database systems. Furthermore, rebuild performance influences the mean time between failures.
 
@@ -665,7 +665,7 @@ Rebuild performance varies with the RAID level used. Rebuilding is easiest for R
 
 RAID level 0 is used in high-performance applications where data loss is not critical. For example, in scientific computing where a data set is loaded and explored, RAID level 0 works well because any drive failures would just require a repair and reloading of the data from its source. RAID level 1 is popular for applications that require high reliability with fast recovery. RAID  
 
-**11.8 RAID Structure 481**
+
 
 **_THE InServ STORAGE ARRAY_**
 
@@ -679,15 +679,15 @@ A further innovation is **utility storage**. Some file systems do not expand or 
 
 RAID system designers and administrators of storage have to make several other decisions as well. For example, how many drives should be in a given RAID set? Howmany bits should be protected by each parity bit? If more drives are in an array, data-transfer rates are higher, but the system is more expensive. If more bits are protected by a parity bit, the space overhead due to parity bits is lower, but the chance that a second drive will fail before the first failed drive is repaired is greater, and that will result in data loss.
 
-**11.8.5 Extensions**
+### Extensions
 
 The concepts of RAID have been generalized to other storage devices, including arrays of tapes, and even to the broadcast of data over wireless systems. When applied to arrays of tapes, RAID structures are able to recover data even if one of the tapes in an array is damaged.When applied to broadcast of data, a block of data is split into short units and is broadcast along with a parity unit. If one of the units is not received for any reason, it can be reconstructed from the other  
 
-**482 Chapter 11 Mass-Storage Structure**
+
 
 units. Commonly, tape-drive robots containing multiple tape drives will stripe data across all the drives to increase throughput and decrease backup time.
 
-**11.8.6 Problems with RAID**
+### Problems with RAID
 
 Unfortunately, RAID does not always assure that data are available for the operating system and its users. Apointer to a file could be wrong, for example, or pointers within the file structure could be wrong. Incomplete writes (called “torn writes”), if not properly recovered, could result in corrupt data. Some other process could accidentally write over a file system’s structures, too. RAID protects against physical media errors, but not other hardware and software errors. A failure of the hardware RAID controller, or a bug in the software RAID code, could result in total data loss. As large as is the landscape of software and hardware bugs, that is how numerous are the potential perils for data on a system.
 
@@ -713,7 +713,7 @@ address
 
 **Figure 11.17** ZFS checksums all metadata and data.  
 
-**11.8 RAID Structure 483**
+
 
 rection than is found in RAID drive sets or standard file systems. The extra overhead that is created by the checksum calculation and extra block read- modify-write cycles is not noticeable because the overall performance of ZFS is very fast. (A similar checksum feature is found in the Linux BTRFS file system. See https://btrfs.wiki.kernel.org/index.php/Btrfs design.)
 
@@ -723,7 +723,7 @@ Even if the storage array allowed the entire set of twenty drives to be created 
 
 ZFS combines file-system management and volume management into a unit providing greater functionality than the traditional separation of those functions allows. Drives, or partitions of drives, are gathered together via RAID sets into **pools** of storage. A pool can hold one or more ZFS file systems. The entire pool’s free space is available to all file systems within that pool. ZFS uses the memory model of malloc() and free() to allocate and release storage for each file system as blocks are used and freed within the file system. As a result, there are no artificial limits on storage use and no need to relocate file systems between volumes or resize volumes. ZFS provides quotas to limit the size of a file system and reservations to assure that a file system can grow by a specified amount, but those variables can be changed by the file-system owner at any time. Other systems like Linux have volumemanagers that allow the logical joining of multiple disks to create larger-than-disk volumes to hold large file systems. Figure 11.18(a) depicts traditional volumes and file systems, and Figure 11.18(b) shows the ZFS model.
 
-**11.8.7 Object Storage**
+### Object Storage
 
 General-purpose computers typically use file systems to store content for users. Another approach to data storage is to start with a storage pool and place objects in that pool. This approach differs from file systems in that there is no way to navigate the pool and find those objects. Thus, rather than being user-oriented, object storage is computer-oriented, designed to be used by programs. A typical sequence is:
 
@@ -733,7 +733,7 @@ General-purpose computers typically use file systems to store content for users.
 
 **3\.** Delete the object via the object ID.  
 
-**484 Chapter 11 Mass-Storage Structure**
+
 
 FS
 
@@ -765,7 +765,7 @@ While object storage is not common on general-purpose computers, huge amounts of
 
 For the history of object stores see http://www.theregister.co.uk/2016/07/15 /the history boys cas and object storage map.
 
-**11.9 Summary**
+## Summary
 
 • Hard disk drives and nonvolatilememory devices are themajor secondary storage I/O units on most computers. Modern secondary storage is struc- tured as large one-dimensional arrays of logical blocks.
 
@@ -785,7 +785,7 @@ For the history of object stores see http://www.theregister.co.uk/2016/07/15 /th
 
 • Because of the amount of storage required on large systems, and because storage devices fail in various ways, secondary storage devices are fre- quently made redundant via RAID algorithms. These algorithms allow more than one drive to be used for a given operation and allow continued  
 
-**486 Chapter 11 Mass-Storage Structure**
+
 
 operation and even automatic recovery in the face of a drive failure. RAID algorithms are organized into different levels; each level provides some combination of reliability and high transfer rates.
 
@@ -847,7 +847,7 @@ Arelatively newfile system, BTRFS, is detailed in https://btrfs.wiki.kernel.or g
 
 For the history of object stores see http://www.theregister.co.uk/2016/07/15 /the history boys cas and object storage map.  
 
-**488 Chapter 11 Mass-Storage Structure**
+
 
 **Bibliography**
 
@@ -981,9 +981,9 @@ Your program will service a disk with 5,000 cylinders numbered 0 to 4,999. The p
 
 **P-55**  
 
-_12_**CHAPTER**
+_12_ **CHAPTER**
 
-_I/O Systems_
+# I/O Systems
 
 The two main jobs of a computer are I/O and computing. In many cases, the main job is I/O, and the computing or processing is merely incidental. For instance, when we browse a web page or edit a file, our immediate interest is to read or enter some information, not to compute an answer.
 
@@ -997,17 +997,17 @@ The role of the operating system in computer I/O is to manage and con- trol I/O 
 
 • Explain the performance aspects of I/O hardware and software.
 
-**12.1 Overview**
+## Overview
 
 The control of devices connected to the computer is a major concern of operating-system designers. Because I/O devices vary so widely in their func- tion and speed (consider a mouse, a hard disk, a flash drive, and a tape robot), varied methods are needed to control them. These methods form the I/O subsystem of the kernel, which separates the rest of the kernel from the complexities of managing I/O devices.
 
 **489**  
 
-**490 Chapter 12 I/O Systems**
+
 
 I/O-device technology exhibits two conflicting trends. On the one hand, we see increasing standardization of software and hardware interfaces. This trend helps us to incorporate improved device generations into existing computers and operating systems.On the other hand,we see an increasingly broad variety of I/O devices. Some new devices are so unlike previous devices that it is a challenge to incorporate them into our computers and operating systems. This challenge is met by a combination of hardware and software techniques. The basic I/O hardware elements, such as ports, buses, and device controllers, accommodate a wide variety of I/O devices. To encapsulate the details and oddities of different devices, the kernel of an operating system is structured to use device-driver modules. The **device drivers** present a uniform device- access interface to the I/O subsystem, much as system calls provide a standard interface between the application and the operating system.
 
-**12.2 I/O Hardware**
+## I/O Hardware
 
 Computers operate a great many kinds of devices. Most fit into the general categories of storage devices (disks, tapes), transmission devices (network con- nections, Bluetooth), and human-interface devices (screen, keyboard, mouse, audio in and out). Other devices are more specialized, such as those involved in the steering of a jet. In these aircraft, a human gives input to the flight com- puter via a joystick and foot pedals, and the computer sends output commands that cause motors to move rudders and flaps and fuels to the engines. Despite the incredible variety of I/O devices, though, we need only a few concepts to understand how the devices are attached and how the software can control the hardware.
 
@@ -1015,7 +1015,7 @@ A device communicates with a computer system by sending signals over a cable or 
 
 Buses are used widely in computer architecture and vary in their signal- ing methods, speed, throughput, and connection methods. A typical PC bus structure appears in Figure 12.1. In the figure, a **PCIe bus** (the common PC system bus) connects the processor–memory subsystem to fast devices, and an **expansion bus** connects relatively slow devices, such as the keyboard and serial and USB ports. In the lower-left portion of the figure, four disks are connected together on a **serial-attached SCSI** (**SAS**) bus plugged into an SAS controller. PCIe is a flexible bus that sends data over one or more “lanes.” A lane is composed of two signaling pairs, one pair for receiving data and the other for transmitting. Each lane is therefore composed of four wires, and each  
 
-**12.2 I/O Hardware 491**
+
 
 expansion bus
 
@@ -1051,11 +1051,11 @@ lane is used as a full-duplex byte stream, transporting data packets in an eight
 
 A **controller** is a collection of electronics that can operate a port, a bus, or a device. A serial-port controller is a simple device controller. It is a single chip (or portion of a chip) in the computer that controls the signals on the wires of a serial port. By contrast, a **fibr channel** (**FC**) bus controller is not simple. Because the FC protocol is complex and used in data centers rather than on PCs, the FC bus controller is often implemented as a separate circuit board —or a **host bus adapter** (**HBA**)—that connects to a bus in the computer. It typically contains a processor, microcode, and some private memory to enable it to process the FC protocol messages. Some devices have their own built-in controllers. If you look at a disk drive, you will see a circuit board attached to one side. This board is the disk controller. It implements the disk side of the protocol for some kinds of connection—SAS and SATA, for instance. It has microcode and a processor to do many tasks, such as bad-sector mapping, prefetching, buffering, and caching.
 
-**12.2.1 Memory-Mapped I/O**
+### Memory-Mapped I/O
 
 Howdoes the processor give commands and data to a controller to accomplish an I/O transfer? The short answer is that the controller has one ormore registers for data and control signals. The processor communicates with the controller by reading and writing bit patterns in these registers. One way in which this communication can occur is through the use of special I/O instructions  
 
-**492 Chapter 12 I/O Systems**
+
 
 I/O address range (hexadecimal)
 
@@ -1117,13 +1117,13 @@ I/O device control typically consists of four registers, called the status, cont
 
 • The **control register** can be written by the host to start a command or to change the mode of a device. For instance, a certain bit in the control register of a serial port chooses between full-duplex and half-duplex com-  
 
-**12.2 I/O Hardware 493**
+
 
 munication, another bit enables parity checking, a third bit sets the word length to 7 or 8 bits, and other bits select one of the speeds supported by the serial port.
 
 The data registers are typically 1 to 4 bytes in size. Some controllers have FIFO chips that can hold several bytes of input or output data to expand the capacity of the controller beyond the size of the data register. A FIFO chip can hold a small burst of data until the device or host is able to receive those data.
 
-**12.2.2 Polling**
+### Polling
 
 The complete protocol for interaction between the host and a controller can be intricate, but the basic handshaking notion is simple. We explain hand- shaking with an example. Assume that 2 bits are used to coordinate the producer–consumer relationship between the controller and the host. The con- troller indicates its state through the busy bit in the status register. (Recall that to **_set_** a bit means to write a 1 into the bit and to **_clear_** a bit means to write a 0 into it.) The controller sets the busy bit when it is busy working and clears the busy bit when it is ready to accept the next command. The host signals its wishes via the command-ready bit in the command register. The host sets the command-ready bit when a command is available for the controller to execute. For this example, the host writes output through a port, coordinating with the controller by handshaking as follows.
 
@@ -1143,11 +1143,11 @@ This loop is repeated for each byte. In step 1, the host is **busy-waiting** or 
 
 status register over and over until the busy bit becomes clear. If the controller and device are fast, thismethod is a reasonable one. But if thewaitmay be long, the host should probably switch to another task.How, then, does the host know when the controller has become idle? For some devices, the host must service the device quickly, or data will be lost. For instance, when data are streaming in on a serial port or from a keyboard, the small buffer on the controller will overflow and datawill be lost if the host waits too long before returning to read the bytes.  
 
-**494 Chapter 12 I/O Systems**
+
 
 In many computer architectures, three CPU-instruction cycles are sufficient to poll a device: read a device register, logical-and to extract a status bit, and branch if not zero. Clearly, the basic polling operation is efficient. But polling becomes inefficient when it is attempted repeatedly yet rarely finds a device ready for service, while other useful CPU processing remains undone. In such instances, it may be more efficient to arrange for the hardware controller to notify the CPU when the device becomes ready for service, rather than to require the CPU to poll repeatedly for an I/O completion. The hardware mechanism that enables a device to notify the CPU is called an **interrupt**.
 
-**12.2.3 Interrupts**
+### Interrupts
 
 The basic interrupt mechanism works as follows. The CPU hardware has a wire called the **interrupt-request line** that the CPU senses after executing every instruction. When the CPU detects that a controller has asserted a signal on the interrupt-request line, the CPU performs a state save and jumps to the **interrupt-handler routine** at a fixed address in memory. The interrupt han- dler determines the cause of the interrupt, performs the necessary processing, performs a state restore, and executes a return from interrupt instruction to return the CPU to the execution state prior to the interrupt. We say that the device controller **_raises_** an interrupt by asserting a signal on the interrupt request line, the CPU **_catches_** the interrupt and **_dispatches_** it to the interrupt
 
@@ -1191,7 +1191,7 @@ generates interrupt signal
 
 **Figure 12.3** Interrupt-driven I/O cycle.  
 
-**12.2 I/O Hardware 495**
+
 
 **Figure 12.4** Latency command on Mac OS X.
 
@@ -1213,7 +1213,7 @@ In modern computer hardware, these features are provided by the CPU and by the *
 
 Most CPUs have two interrupt request lines. One is the **nonmaskable interrupt**, which is reserved for events such as unrecoverable memory errors. The second interrupt line is **maskable**: it can be turned off by the CPU before  
 
-**496 Chapter 12 I/O Systems**
+
 
 the execution of critical instruction sequences thatmust not be interrupted. The maskable interrupt is used by device controllers to request service.
 
@@ -1309,7 +1309,7 @@ maskable interrupts
 
 **Figure 12.5** Intel Pentium processor event-vector table.  
 
-**12.2 I/O Hardware 497**
+
 
 The interrupt mechanism also implements a system of **interrupt priority levels**. These levels enable the CPU to defer the handling of low-priority inter- rupts without masking all interrupts and make it possible for a high-priority interrupt to preempt the execution of a low-priority interrupt.
 
@@ -1323,7 +1323,7 @@ Another example is found in the implementation of system calls. Usually, a progr
 
 Interrupts can also be used to manage the flow of control within the ker- nel. For example, consider the case of the processing required to complete a disk read. One step may copy data from kernel space to the user buffer. This copying is time consuming but not urgent—it should not block other high- priority interrupt handling. Another step is to start the next pending I/O for that disk drive. This step has higher priority. If the disks are to be used effi- ciently, we need to start the next I/O as soon as the previous one completes. Consequently, a pair of interrupt handlers implements the kernel code that  
 
-**498 Chapter 12 I/O Systems**
+
 
 completes a disk read. The high-priority handler records the I/O status, clears the device interrupt, starts the next pending I/O, and raises a low-priority interrupt to complete the work. Later, when the CPU is not occupied with high- prioritywork, the low-priority interruptwill be dispatched. The corresponding handler completes the user-level I/O by copying data from kernel buffers to the application space and then calling the scheduler to place the application on the ready queue.
 
@@ -1331,11 +1331,11 @@ A threaded kernel architecture is well suited to implement multiple inter- rupt 
 
 In summary, interrupts are used throughout modern operating systems to handle asynchronous events and to trap to supervisor-mode routines in the kernel. To enable the most urgent work to be done first, modern computers use a system of interrupt priorities. Device controllers, hardware faults, and system calls all raise interrupts to trigger kernel routines. Because interrupts are used so heavily for time-sensitive processing, efficient interrupt handling is required for good system performance. Interrupt-driven I/O is now much more common than polling, with polling being used for high-throughput I/O. Sometimes the two are used together. Some device drivers use interruptswhen the I/O rate is low and switch to polling when the rate increases to the point where polling is faster and more efficient.
 
-**12.2.4 Direct Memory Access**
+### Direct Memory Access
 
 For a device that does large transfers, such as a disk drive, it seems waste- ful to use an expensive general-purpose processor to watch status bits and to feed data into a controller register one byte at a time—a process termed **programmed I/O** (**PIO**). Computers avoid burdening the main CPU with PIO by offloading some of this work to a special-purpose processor called a **direct- memory-access** (**DMA**) controller. To initiate a DMA transfer, the host writes a DMA command block into memory. This block contains a pointer to the source of a transfer, a pointer to the destination of the transfer, and a count of the number of bytes to be transferred. A command block can be more complex, including a list of sources and destinations addresses that are not contiguous. This **scatter–gather** method allows multiple transfers to be executed via a sin- gle DMA command. The CPU writes the address of this command block to the DMA controller, then goes on with other work. The DMA controller proceeds to operate the memory bus directly, placing addresses on the bus to perform transfers without the help of the main CPU. A simple DMA controller is a stan- dard component in all modern computers, from smartphones to mainframes.  
 
-**12.2 I/O Hardware 499**
+
 
 Note that it is most straightforward for the target address to be in kernel address space. If it were in user space, the user could, for example, modify the contents of that space during the transfer, losing some set of data. To get the DMA-transferred data to the user space for thread access, however, a second copy operation, this time from kernel memory to user memory, is needed. This **double buffering** is inefficient. Over time, operating systems have moved to using memory-mapping (see Section 12.2.1) to perform I/O transfers directly between devices and user address space.
 
@@ -1347,13 +1347,13 @@ drive 1 drive 2
 
 **Figure 12.6** Steps in a DMA transfer.  
 
-**500 Chapter 12 I/O Systems**
+
 
 others perform **direct virtual memory access** (**DVMA**), using virtual addresses that undergo translation to physical addresses. DVMA can perform a transfer between two memory-mapped devices without the intervention of the CPU or the use of main memory.
 
 On protected-mode kernels, the operating system generally prevents pro- cesses from issuing device commands directly. This discipline protects data from access-control violations and also protects the system from erroneous use of device controllers, which could cause a system crash. Instead, the operat- ing system exports functions that a sufficiently privileged process can use to access low-level operations on the underlying hardware. On kernels without memory protection, processes can access device controllers directly. This direct access can be used to achieve high performance, since it can avoid kernel com- munication, context switches, and layers of kernel software. Unfortunately, it interferes with system security and stability. Common general-purpose oper- ating systems protect memory and devices so that the system can try to guard against erroneous or malicious applications.
 
-**12.2.5 I/O Hardware Summary**
+### I/O Hardware Summary
 
 Although the hardware aspects of I/O are complex when considered at the level of detail of electronics-hardware design, the concepts that we have just described are sufficient to enable us to understand many I/O features of oper- ating systems. Let’s review the main concepts:
 
@@ -1371,11 +1371,11 @@ Although the hardware aspects of I/O are complex when considered at the level of
 
 We gave a basic example of the handshaking that takes place between a device controller and the host earlier in this section. In reality, the wide variety of available devices poses a problem for operating-system implementers. Each kind of device has its own set of capabilities, control-bit definitions, and pro- tocols for interacting with the host—and they are all different. How can the operating system be designed so that we can attach new devices to the com- puter without rewriting the operating system? And when the devices vary so widely, how can the operating system give a convenient, uniform I/O interface to applications? We address those questions next.
 
-**12.3 Application I/O Interface**
+## Application I/O Interface
 
 In this section, we discuss structuring techniques and interfaces for the oper- ating system that enable I/O devices to be treated in a standard, uniform way. We explain, for instance, how an application can open a file on a disk without  
 
-**12.3 Application I/O Interface 501**
+
 
 kernel
 
@@ -1449,7 +1449,7 @@ The purpose of the device-driver layer is to hide the differences among device c
 
 Unfortunately for device-hardware manufacturers, each type of operating system has its own standards for the device-driver interface. A given device may ship with multiple device drivers—for instance, drivers for Windows, Linux, AIX, and macOS. Devices vary on many dimensions, as illustrated in Figure 12.8.  
 
-**502 Chapter 12 I/O Systems**
+
 
 aspect variation example
 
@@ -1503,7 +1503,7 @@ device speed
 
 For the purpose of application access, many of these differences are hidden by the operating system, and the devices are grouped into a few conventional types. The resulting styles of device access have been found to be useful and broadly applicable. Although the exact system callsmay differ across operating systems, the device categories are fairly standard. The major access conven-  
 
-**12.3 Application I/O Interface 503**
+
 
 tions include block I/O, character-stream I/O, memory-mapped file access, and network sockets. Operating systems also provide special system calls to access a few additional devices, such as a time-of-day clock and a timer. Some oper- ating systems provide a set of system calls for graphical display, video, and audio devices.
 
@@ -1519,13 +1519,13 @@ brw-rw---- 1 root disk 8, 0 Mar 16 09:18 /dev/sda brw-rw---- 1 root disk 8, 1 Ma
 
 shows that 8 is the major device number. The operating system uses that information to route I/O requests to the appropriate device driver. The minor numbers 0, 1, 2, and 3 indicate the instance of the device, allowing requests for I/O to a device entry to select the exact device for the request.
 
-**12.3.1 Block and Character Devices**
+### Block and Character Devices
 
 The**block-device interface** captures all the aspects necessary for accessing disk drives and other block-oriented devices. The device is expected to understand commands such as read() and write(). If it is a random-access device, it is also expected to have a seek() command to specify which block to trans- fer next. Applications normally access such a device through a file-system interface. We can see that read(), write(), and seek() capture the essential behaviors of block-storage devices, so that applications are insulated from the low-level differences among those devices.
 
 The operating system itself, as well as special applications such as database-management systems, may prefer to access a block device as a simple linear array of blocks. This mode of access is sometimes called **raw I/O**. If the application performs its own buffering, then using a file system would cause extra, unneeded buffering. Likewise, if an application provides its own locking of blocks or regions, then any operating-system locking services would be redundant at the least and contradictory at the worst. To avoid  
 
-**504 Chapter 12 I/O Systems**
+
 
 these conflicts, raw-device access passes control of the device directly to the application, letting the operating system step out of the way. Unfortunately, no operating-system services are then performed on this device. A compromise that is becoming common is for the operating system to allow a mode of operation on a file that disables buffering and locking. In the UNIX world, this is called **direct I/O**.
 
@@ -1533,19 +1533,19 @@ Memory-mapped file access can be layered on top of block-device drivers. Rather 
 
 A keyboard is an example of a device that is accessed through a **character- stream interface**. The basic system calls in this interface enable an application to get() or put() one character. On top of this interface, libraries can be built that offer line-at-a-time access, with buffering and editing services (for example, when a user types a backspace, the preceding character is removed from the input stream). This style of access is convenient for input devices such as keyboards, mice, and modems that produce data for input “spontaneously” —that is, at times that cannot necessarily be predicted by the application. This access style is also good for output devices such as printers and audio boards, which naturally fit the concept of a linear stream of bytes.
 
-**12.3.2 Network Devices**
+### Network Devices
 
 Because the performance and addressing characteristics of network I/O differ significantly from those of disk I/O, most operating systems provide a network I/O interface that is different from the read()–write()–seek() interface used for disks. One interface available in many operating systems, including UNIX and Windows, is the network **socket** interface.
 
 Think of a wall socket for electricity: any electrical appliance can be plugged in. By analogy, the system calls in the socket interface enable an application to create a socket, to connect a local socket to a remote address (which plugs this application into a socket created by another application), to listen for any remote application to plug into the local socket, and to send and receive packets over the connection. To support the implementation of network servers, the socket interface also provides a function called select() that manages a set of sockets. A call to select() returns information about which sockets have a packet waiting to be received and which sockets have room to accept a packet to be sent. The use of select() eliminates the polling and busy waiting that would otherwise be necessary for network I/O. These functions encapsulate the essential behaviors of networks, greatly facilitating  
 
-**12.3 Application I/O Interface 505**
+
 
 the creation of distributed applications that can use any underlying network hardware and protocol stack.
 
 Many other approaches to interprocess communication and network com- munication have been implemented. For instance, Windows provides one interface to the network interface card and a second interface to the network protocols. In UNIX, which has a long history as a proving ground for network technology, we find half-duplex pipes, full-duplex FIFOs, full-duplex STREAMS, message queues, and sockets. Information on UNIX networking is given in Section C.9.
 
-**12.3.3 Clocks and Timers**
+### Clocks and Timers
 
 Most computers have hardware clocks and timers that provide three basic functions:
 
@@ -1561,11 +1561,11 @@ The hardware to measure elapsed time and to trigger operations is called a **pro
 
 Computers have clock hardware that is used for a variety of purposes. Modern PCs include a **high-performance event timer** (**HPET**), which runs at rates in the 10-megahertz range. It has several comparators that can be set to trigger once or repeatedly when the value they hold matches that of the HPET. The trigger generates an interrupt, and the operating system’s clock management routines determine what the timer was for and what action to take. The precision of triggers is limited by the resolution of the timer, together with the overhead of maintaining virtual clocks. Furthermore, if the timer ticks are used to maintain the system time-of-day clock, the system clock can drift. Drift can be corrected via protocols designed for that purpose, such as NTP, the **network time protocol**, which uses sophisticated latency calculations to keep a computer’s clock accurate almost to atomic-clock levels. In most computers,  
 
-**506 Chapter 12 I/O Systems**
+
 
 the hardware clock is constructed from a high-frequency counter. In some computers, the value of this counter can be read from adevice register, inwhich case the counter can be considered a high-resolution clock. Although this clock does not generate interrupts, it offers accurate measurements of time intervals.
 
-**12.3.4 Nonblocking and Asynchronous I/O**
+### Nonblocking and Asynchronous I/O
 
 Another aspect of the system-call interface relates to the choice between block- ing I/O and nonblocking I/O. When an application issues a **blocking** system call, the execution of the calling thread is suspended. The thread ismoved from the operating system’s run queue to a wait queue. After the system call com- pletes, the thread is moved back to the run queue, where it is eligible to resume execution. When it resumes execution, it will receive the values returned by the system call. The physical actions performed by I/O devices are generally asynchronous—they take a varying or unpredictable amount of time. Nev- ertheless, operating systems provide blocking system calls for the application interface, because blocking application code is easier towrite than nonblocking application code.
 
@@ -1577,7 +1577,7 @@ An alternative to a nonblocking system call is an asynchronous system call. An a
 
 Asynchronous activities occur throughout modern operating systems. Fre- quently, they are not exposed to users or applications but rather are contained within the operating-system operation. Secondary storage device and network I/O are useful examples. By default, when an application issues a network send request or a storage device write request, the operating system notes the request, buffers the I/O, and returns to the application. When possible, to optimize overall system performance, the operating system completes the request. If a system failure occurs in the interim, the application will lose any “in-flight” requests. Therefore, operating systems usually put a limit on how  
 
-**12.3 Application I/O Interface 507**
+
 
 **Figure 12.9** Two I/O methods: (a) synchronous and (b) asynchronous.
 
@@ -1585,21 +1585,21 @@ long they will buffer a request. Some versions of UNIX flush their secondary sto
 
 A good example of nonblocking behavior is the select() system call for network sockets. This system call takes an argument that specifies a maxi- mum waiting time. By setting it to 0, a thread can poll for network activity without blocking. But using select() introduces extra overhead, because the select() call only checks whether I/O is possible. For a data transfer, select() must be followed by some kind of read() or write() command. A variation on this approach, found in Mach, is a blocking multiple-read call. It specifies desired reads for several devices in one system call and returns as soon as any one of them completes.
 
-**12.3.5 Vectored I/O**
+### Vectored I/O
 
 Some operating systems provide another major variation of I/O via their appli- cation interfaces. **Vectored I/O** allows one system call to perform multiple I/O operations involving multiple locations. For example, the UNIX readv sys- tem call accepts a vector of multiple buffers and either reads from a source to that vector or writes from that vector to a destination. The same transfer  
 
-**508 Chapter 12 I/O Systems**
+
 
 could be caused by several individual invocations of system calls, but this **scatter–gather** method is useful for a variety of reasons.
 
 Multiple separate buffers can have their contents transferred via one sys- tem call, avoiding context-switching and system-call overhead. Without vec- tored I/O, the data might first need to be transferred to a larger buffer in the right order and then transmitted, which is inefficient. In addition, some versions of scatter–gather provide atomicity, assuring that all the I/O is done without interruption (and avoiding corruption of data if other threads are also performing I/O involving those buffers). When possible, programmers make use of scatter–gather I/O features to increase throughput and decrease system overhead.
 
-**12.4 Kernel I/O Subsystem**
+## Kernel I/O Subsystem
 
 Kernels provide many services related to I/O. Several services—scheduling, buffering, caching, spooling, device reservation, and error handling—are pro- vided by the kernel’s I/O subsystem and build on the hardware and device- driver infrastructure. The I/O subsystem is also responsible for protecting itself from errant processes and malicious users.
 
-**12.4.1 I/O Scheduling**
+### I/O Scheduling
 
 To schedule a set of I/O requests means to determine a good order in which to execute them. The order in which applications issue system calls rarely is the best choice. Scheduling can improve overall system performance, can share device access fairly among processes, and can reduce the average waiting time for I/O to complete. Here is a simple example to illustrate. Suppose that a disk arm is near the beginning of a disk and that three applications issue blocking read calls to that disk. Application 1 requests a block near the end of the disk, application 2 requests one near the beginning, and application 3 requests one in themiddle of the disk. The operating system can reduce the distance that the disk arm travels by serving the applications in the order 2, 3, 1. Rearranging the order of service in this way is the essence of I/O scheduling.
 
@@ -1607,7 +1607,7 @@ Operating-system developers implement scheduling by maintaining a wait queue of 
 
 When a kernel supports asynchronous I/O, it must be able to keep track of many I/O requests at the same time. For this purpose, the operating system might attach the wait queue to a **device-status table**. The kernel manages this table, which contains an entry for each I/O device, as shown in Figure 12.10. Each table entry indicates the device’s type, address, and state (not functioning,  
 
-**12.4 Kernel I/O Subsystem 509**
+
 
 device: keyboard status: idle
 
@@ -1637,13 +1637,13 @@ idle, or busy). If the device is busy with a request, the type of request and ot
 
 Scheduling I/O operations is oneway inwhich the I/O subsystem improves the efficiency of the computer. Another way is by using storage space in main memory or elsewhere in the storage hierarchy via buffering, caching, and spooling.
 
-**12.4.2 Buffering**
+### Buffering
 
 A**buffer**, of course, is amemory area that stores data being transferred between two devices or between a device and an application. Buffering is done for three reasons. One reason is to cope with a speed mismatch between the producer and consumer of a data stream. Suppose, for example, that a file is being received via Internet for storage on an SSD. The network speed may be a thousand times slower than the drive. So a buffer is created in main memory to accumulate the bytes received from the network. When an entire buffer of data has arrived, the buffer can be written to the drive in a single operation. Since the drivewrite is not instantaneous and the network interface still needs a place to store additional incoming data, two buffers are used.After the network fills the first buffer, the drive write is requested. The network then starts to fill the second buffer while the first buffer is written to storage. By the time the network has filled the second buffer, the drive write from the first one should have completed, so the network can switch back to the first buffer while the drive writes the second one. This **double buffering** decouples the producer of data from the consumer, thus relaxing timing requirements between them. The need for this decoupling is illustrated in Figure 12.11, which lists the enormous differences in device speeds for typical computer hardware and interfaces.
 
 A second use of buffering is to provide adaptations for devices that have different data-transfer sizes. Such disparities are especially common in computer networking, where buffers are used widely for fragmentation and  
 
-**510 Chapter 12 I/O Systems**
+
 
 **Figure 12.11** Common PC and data-center I/O device and interface speeds.
 
@@ -1651,33 +1651,33 @@ reassembly of messages. At the sending side, a large message is fragmented into 
 
 A third use of buffering is to support copy semantics for application I/O. An example will clarify the meaning of “copy semantics.” Suppose that an application has a buffer of data that it wishes to write to disk. It calls the write() systemcall, providing a pointer to the buffer and an integer specifying the number of bytes to write. After the system call returns, what happens if the application changes the contents of the buffer? With **copy semantics**, the version of the data written to disk is guaranteed to be the version at the time of the application system call, independent of any subsequent changes in the application’s buffer. A simple way in which the operating system can guarantee copy semantics is for the write() system call to copy the application data into a kernel buffer before returning control to the application. The disk write is performed from the kernel buffer, so that subsequent changes to the application buffer have no effect. Copying of data between kernel buffers and application data space is common in operating systems, despite the overhead that this operation introduces, because of the clean semantics. The same effect can be obtained more efficiently by clever use of virtual memory mapping and copy-on-write page protection.
 
-**12.4.3 Caching**
+### Caching
 
 A **cache** is a region of fast memory that holds copies of data. Access to the cached copy is more efficient than access to the original. For instance, the instructions of the currently running process are stored on disk, cached in physicalmemory, and copied again in the CPU’s secondary andprimary caches.  
 
-**12.4 Kernel I/O Subsystem 511**
+
 
 The difference between a buffer and a cache is that a buffer may hold the only existing copy of a data item, whereas a cache, by definition, holds a copy on faster storage of an item that resides elsewhere.
 
 Caching and buffering are distinct functions, but sometimes a region of memory can be used for both purposes. For instance, to preserve copy seman- tics and to enable efficient scheduling of disk I/O, the operating system uses buffers in main memory to hold disk data. These buffers are also used as a cache, to improve the I/O efficiency for files that are shared by applications or that are being written and reread rapidly. When the kernel receives a file I/O request, the kernel first accesses the buffer cache to see whether that region of the file is already available in main memory. If it is, a physical disk I/O can be avoided or deferred. Also, disk writes are accumulated in the buffer cache for several seconds, so that large transfers are gathered to allow efficient write schedules. This strategy of delaying writes to improve I/O efficiency is discussed, in the context of remote file access, in Section 19.8.
 
-**12.4.4 Spooling and Device Reservation**
+### Spooling and Device Reservation
 
 A **spool** is a buffer that holds output for a device, such as a printer, that cannot accept interleaved data streams. Although a printer can serve only one job at a time, several applicationsmaywish to print their output concurrently, without having their output mixed together. The operating system solves this problem by intercepting all output to the printer. Each application’s output is spooled to a separate secondary storage file. When an application finishes printing, the spooling system queues the corresponding spool file for output to the printer. The spooling system copies the queued spool files to the printer one at a time. In some operating systems, spooling is managed by a system daemon process. In others, it is handled by an in-kernel thread. In either case, the operating system provides a control interface that enables users and system administrators to display the queue, remove unwanted jobs before those jobs print, suspend printing while the printer is serviced, and so on.
 
 Some devices, such as tape drives and printers, cannot usefully multiplex the I/O requests of multiple concurrent applications. Spooling is one way operating systems can coordinate concurrent output. Anotherway to dealwith concurrent device access is to provide explicit facilities for coordination. Some operating systems (including VMS) provide support for exclusive device access by enabling a process to allocate an idle device and to deallocate that device when it is no longer needed. Other operating systems enforce a limit of one open file handle to such a device. Many operating systems provide functions that enable processes to coordinate exclusive access among themselves. For instance, Windows provides system calls to wait until a device object becomes available. It also has a parameter to the OpenFile() system call that declares the types of access to be permitted to other concurrent threads. On these systems, it is up to the applications to avoid deadlock.
 
-**12.4.5 Error Handling**
+### Error Handling
 
 An operating system that uses protected memory can guard against many kinds of hardware and application errors, so that a complete system failure is not the usual result of each minor mechanical malfunction. Devices and I/O transfers can fail inmanyways, either for transient reasons, as when a network  
 
-**512 Chapter 12 I/O Systems**
+
 
 becomes overloaded, or for “permanent” reasons, as when a disk controller becomes defective. Operating systems can often compensate effectively for transient failures. For instance, a disk read() failure results in a read() retry, and a network send() error results in a resend(), if the protocol so specifies. Unfortunately, if an important component experiences a permanent failure, the operating system is unlikely to recover.
 
 As a general rule, an I/O system call will return one bit of information about the status of the call, signifying either success or failure. In the UNIX operating system, an additional integer variable named errno is used to return an error code—one of about a hundred values—indicating the general nature of the failure (for example, argument out of range, bad pointer, or file not open). By contrast, some hardware can provide highly detailed error infor- mation, although many current operating systems are not designed to convey this information to the application. For instance, a failure of a SCSI device is reported by the SCSI protocol in three levels of detail: a **sense key** that iden- tifies the general nature of the failure, such as a hardware error or an illegal request; an **additional sense code** that states the category of failure, such as a bad command parameter or a self-test failure; and an **additional sense-code qualifie** that gives even more detail, such as which command parameter was in error or which hardware subsystem failed its self-test. Further, many SCSI devices maintain internal pages of error-log information that can be requested by the host—but seldom are.
 
-**12.4.6 I/O Protection**
+### I/O Protection
 
 Errors are closely related to the issue of protection. A user process may acci- dentally or purposely attempt to disrupt the normal operation of a system by attempting to issue illegal I/O instructions. We can use various mechanisms to ensure that such disruptions cannot take place in the system.
 
@@ -1685,11 +1685,11 @@ To prevent users from performing illegal I/O, we define all I/O instructions to 
 
 In addition, any memory-mapped and I/O port memory locations must be protected from user access by the memory-protection system. Note that a kernel cannot simply deny all user access. Most graphics games and video editing and playback software need direct access to memory-mapped graphics controller memory to speed the performance of the graphics, for example. The kernel might in this case provide a locking mechanism to allow a section of graphics memory (representing a window on screen) to be allocated to one process at a time.
 
-**12.4.7 Kernel Data Structures**
+### Kernel Data Structures
 
 The kernel needs to keep state information about the use of I/O components. It does so through a variety of in-kernel data structures, such as the open-file table  
 
-**12.4 Kernel I/O Subsystem 513**
+
 
 **Figure 12.12** Use of a system call to perform I/O.
 
@@ -1699,7 +1699,7 @@ UNIX provides file-system access to a variety of entities, such as user files, r
 
 Some operating systems use object-oriented methods even more exten- sively. For instance, Windows uses a message-passing implementation for I/O. An I/O request is converted into a message that is sent through the kernel to the I/O manager and then to the device driver, each of which may change the message contents. For output, the message contains the data to be written. For input, the message contains a buffer to receive the data. The message-passing approach can add overhead, by comparison with procedural techniques that use shared data structures, but it simplifies the structure and design of the I/O system and adds flexibility.  
 
-**514 Chapter 12 I/O Systems**
+
 
 active-inode table
 
@@ -1747,7 +1747,7 @@ file descriptor
 
 **Figure 12.13** UNIX I/O kernel structure.
 
-**12.4.8 Power Management**
+### Power Management
 
 Computers residing in data centers may seem far removed from issues of power use, but as power costs increase and the world becomes increasingly troubled about the long-term effects of greenhouse gas emissions, data cen- ters have become a cause for concern and a target for increased efficiencies. Electricity use generates heat, and computer components can fail due to high temperatures, so cooling is part of the equation as well. Consider that cool- ing a modern data center may use twice as much electricity as powering the equipment does. Many approaches to data-center power optimization are in use, ranging from interchanging data-center air without side air, chilling with natural sources such as lake water, and solar panels.
 
@@ -1755,7 +1755,7 @@ Operating systems play a role in power use (and therefore heat gener- ation and 
 
 CPU cores can be suspended when the system load does not require them and resumed when the load increases and more cores are needed to run the queue of threads. Their state, of course, needs to be saved on suspend and restored on resume. This feature is needed in servers because a data center full  
 
-**12.4 Kernel I/O Subsystem 515**
+
 
 of servers can use vast amounts of electricity, and disabling unneeded cores can decrease electricity (and cooling) needs.
 
@@ -1767,13 +1767,13 @@ How is Android able to turn off the individual components of a phone? How does i
 
 With these technologies, Android can aggressively manage its power con- sumption. But a final piece of the solution ismissing: the ability for applications to temporarily prevent the system from entering power collapse. Consider a user playing a game, watching a video, or waiting for a web page to open. In all of these cases, the application needs a way to keep the device awake, at least temporarily. Wakelocks enable this functionality. Applications acquire and release wakelocks as needed. While an application holds a wakelock, the kernel will prevent the system from entering power collapse. For example, while theAndroidMarket is updating an application, it will hold awakelock to  
 
-**516 Chapter 12 I/O Systems**
+
 
 ensure that the system does not go to sleep until the update is complete. Once complete, the Android Market will release the wakelock, allowing the system to enter power collapse.
 
 Power management in general is based on device management, which is more complicated than we have so far portrayed it. At boot time, the firmware systemanalyzes the systemhardware and creates a device tree in RAM. The ker- nel then uses that device tree to load device drivers andmanage devices.Many additional activities pertaining to devices must be managed, though, includ- ing addition and subtraction of devices from a running system (“hot-plug”), understanding and changing device states, and power management. Modern general-purpose computers use another set of firmware code, **advanced con- figuratio and power interface** (**ACPI**), to manage these aspects of hardware. ACPI is an industry standard (http://www.acpi.info) with many features. It pro- vides code that runs as routines callable by the kernel for device state discovery and management, device error management, and power management. For example, when the kernel needs to quiesce a device, it calls the device driver, which calls the ACPI routines, which then talk to the device.
 
-**12.4.9 Kernel I/O Subsystem Summary**
+### Kernel I/O Subsystem Summary
 
 In summary, the I/O subsystem coordinates an extensive collection of services that are available to applications and to other parts of the kernel. The I/O subsystem supervises these procedures:
 
@@ -1803,7 +1803,7 @@ The upper levels of the I/O subsystem access devices via the uniform interface p
 
 Earlier, we described the handshaking between a device driver and a device controller, but we did not explain how the operating system connects an appli- cation request to a set of network wires or to a specific disk sector. Consider,  
 
-**12.5 Transforming I/O Requests to Hardware Operations 517**
+
 
 for example, reading a file from disk. The application refers to the data by a file name. Within a disk, the file system maps from the file name through the file-system directories to obtain the space allocation of the file. For instance, in MS-DOS for FAT (a relatively simple operating and file system still used today as a common interchange format), the name maps to a number that indicates an entry in the file-access table, and that table entry tells which disk blocks are allocated to the file. In UNIX, the name maps to an inode number, and the corresponding inode contains the space-allocation information. But how is the connection made from the file name to the disk controller (the hardware port address or the memory-mapped controller registers)?
 
@@ -1815,7 +1815,7 @@ UNIX represents device names in the regular file-system name space. Unlike anMS-
 
 Modern operating systems gain significant flexibility from the multiple stages of lookup tables in the path between a request and a physical device con- troller. The mechanisms that pass requests between applications and drivers are general. Thus, we can introduce new devices and drivers into a com- puter without recompiling the kernel. In fact, some operating systems have the ability to load device drivers on demand. At boot time, the system first probes the hardware buses to determine what devices are present. It then loads the necessary drivers, either immediately or when first required by an I/O request. Devices added after boot can be detected by the error they cause (interrupt-generatedwith no associated interrupt handler, for example), which  
 
-**518 Chapter 12 I/O Systems**
+
 
 can prompt the kernel to inspect the device details and load an appropri- ate device driver dynamically. Of course, dynamic loading (and unloading) is more complicated than static loading, requiring more complex kernel algo- rithms, device-structure locking, error handling, and so forth.
 
@@ -1829,7 +1829,7 @@ Wenext describe the typical life cycle of a blocking read request, as depicted i
 
 **Figure 12.14** The life cycle of an I/O request.  
 
-**12.6 STREAMS 519**
+
 
 **4\.** The device driver allocates kernel buffer space to receive the data and schedules the I/O. Eventually, the driver sends commands to the device controller by writing into the device-control registers.
 
@@ -1845,13 +1845,13 @@ Wenext describe the typical life cycle of a blocking read request, as depicted i
 
 **10\.** Moving the process to the ready queue unblocks the process. When the scheduler assigns the process to the CPU, the process resumes execution at the completion of the system call.
 
-**12.6 STREAMS**
+## STREAMS
 
 UNIX System V (and many subsequent UNIX releases) has an interesting mech- anism, called **STREAMS**, that enables an application to assemble pipelines of driver code dynamically. Astream is a full-duplex connection between a device driver and a user-level process. It consists of a **stream head** that interfaces with the user process, a **driver end** that controls the device, and zero or more **stream modules** between the stream head and the driver end. Each of these compo- nents contains a pair of queues—a read queue and a write queue. Message passing is used to transfer data between queues. The STREAMS structure is shown in Figure 12.15.
 
 Modules provide the functionality of STREAMS processing; they are **_pushed_** onto a stream by use of the ioctl() system call. For example, a process can open a USB device (like a keyboard) via a stream and can push on a module to handle input editing. Because messages are exchanged between queues in adjacent modules, a queue in one module may overflow an adjacent queue. To prevent this from occurring, a queue may support **flo control**. Without flow control, a queue accepts all messages and immediately sends them on to the queue in the adjacent module without buffering them. A queue that supports flow control buffers messages and does not accept messages without sufficient buffer space. This process involves exchanges of control messages between queues in adjacent modules.  
 
-**520 Chapter 12 I/O Systems**
+
 
 user process
 
@@ -1885,11 +1885,11 @@ STREAMS I/O is asynchronous (or nonblocking) except when the user pro- cess comm
 
 As mentioned, the driver end—like the stream head and modules—has a read and write queue. However, the driver end must respond to interrupts, such as one triggered when a frame is ready to be read from a network. Unlike the stream head, which may block if it is unable to copy a message to the next queue in line, the driver end must handle all incoming data. Drivers must support flow control as well. However, if a device’s buffer is full, the device typically resorts to dropping incoming messages. Consider a network card whose input buffer is full. The network card must simply drop further messages until there is enough buffer space to store incoming messages.  
 
-**12.7 Performance 521**
+
 
 The benefit of using STREAMS is that it provides a framework for amodular and incremental approach to writing device drivers and network protocols. Modules may be used by different streams and hence by different devices. For example, a networking module may be used by both an Ethernet network card and a 802.11 wireless network card. Furthermore, rather than treating character-device I/O as an unstructured byte stream, STREAMS allows sup- port for message boundaries and control information when communicating betweenmodules.Most UNIX variants support STREAMS, and it is the preferred method for writing protocols and device drivers. For example, System V UNIX and Solaris implement the socket mechanism using STREAMS.
 
-**12.7 Performance**
+## Performance
 
 I/O is a major factor in system performance. It places heavy demands on the CPU to execute device-driver code and to schedule processes fairly and efficiently as they block and unblock. The resulting context switches stress the CPU and its hardware caches. I/O also exposes any inefficiencies in the interrupt-handling mechanisms in the kernel. In addition, I/O loads down the memory bus during data copies between controllers and physical memory and again during copies between kernel buffers and application data space. Coping gracefully with all these demands is one of the major concerns of a computer architect.
 
@@ -1899,7 +1899,7 @@ Network traffic can also cause a high context-switch rate. Consider, for instanc
 
 Now, the remote system’s network hardware receives the packet, and an interrupt is generated. The character is unpacked from the network proto- cols and is given to the appropriate network daemon. The network daemon identifies which remote login session is involved and passes the packet to the appropriate subdaemon for that session. Throughout this flow, there are con- text switches and state switches (Figure 12.16). Usually, the receiver echoes the character back to the sender; that approach doubles the work.  
 
-**522 Chapter 12 I/O Systems**
+
 
 **Figure 12.16** Intercomputer communications.
 
@@ -1921,7 +1921,7 @@ We can employ several principles to improve the efficiency of I/O:
 
 I/O devices vary greatly in complexity. For instance, a mouse is simple. The mousemovements and button clicks are converted into numeric values that are passed from hardware, through the mouse device driver, to the application. By contrast, the functionality provided by the Windows disk device driver is complex. It not onlymanages individual disks but also implements RAID arrays  
 
-**12.7 Performance 523**
+
 
 (Section 11.8). To do so, it converts an application’s read or write request into a coordinated set of disk I/O operations. Moreover, it implements sophisticated error-handling and data-recovery algorithms and takesmany steps to optimize disk performance.
 
@@ -1991,7 +1991,7 @@ ti o n s )
 
 **Figure 12.17** Device functionality progression.  
 
-**524 Chapter 12 I/O Systems**
+
 
 **Figure 12.18** I/O performance of storage (and network latency).
 
@@ -1999,7 +1999,7 @@ opment time (months rather than days), and the decreased flexibility. For instan
 
 Over time, as with other aspects of computing, I/O devices have been increasing in speed. Nonvolatile memory devices are growing in popularity and in the variety of devices available. The speed of NVM devices varies from high to extraordinary,with next-generationdevices nearing the speedof DRAM. These developments are increasing pressure on I/O subsystems as well as operating system algorithms to take advantage of the read/write speeds now available. Figure 12.18 shows CPU and storage devices in two dimensions: capacity and latency of I/O operations. Added to the figure is a representation of networking latency to reveal the performance “tax” networking adds to I/O.
 
-**12.8 Summary**
+## Summary
 
 • The basic hardware elements involved in I/O are buses, device controllers, and the devices themselves.
 
@@ -2031,7 +2031,7 @@ Over time, as with other aspects of computing, I/O devices have been increasing 
 
 **12.7** Distinguish between a driver end and a stream module in a STREAMS operation.  
 
-**526 Chapter 12 I/O Systems**
+
 
 **Further Reading**
 
