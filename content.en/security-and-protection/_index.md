@@ -7,7 +7,7 @@ weight: 12
 
 Part Seven
 
-_Security and Protection_
+**_Security and Protection_**
 
 Security ensures the authentication of system users to protect the integrity of the information stored in the system (both data and code), as well as the physical resources of the computer system. The security system prevents unauthorized access, malicious destruction or alteration of data, and accidental introduction of inconsistency.
 
@@ -15,7 +15,7 @@ Protection mechanisms control access to a system by limiting the types of file a
 
 Protection is provided by a mechanism that controls the access of programs, processes, or users to the resources defined by a computer system. This mechanism must provide a means for specifying the con- trols to be imposed, together with a means of enforcing them.  
 
-_16_**CHAPTER**
+_16_ **CHAPTER**
 
 # Security
 
@@ -1150,9 +1150,9 @@ c. Authentication and secrecy: only the receiver can decrypt the message, and th
 
 **EX-53**  
 
-_17_**CHAPTER**
+_17_ **CHAPTER**
 
-_Protection_
+# Protection
 
 In Chapter 16, we addressed security, which involves guarding computer resources against unauthorized access, malicious destruction or alteration, and accidental introduction of inconsistency. In this chapter, we turn to protection, which involves controlling the access of processes and users to the resources defined by a computer system.
 

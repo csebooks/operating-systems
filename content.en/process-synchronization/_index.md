@@ -13,7 +13,7 @@ A system typically consists of several (perhaps hundreds or even thou- sands) of
 
 _Process synchronization_ involves using tools that control access to shared data to avoid race conditions. These tools must be used carefully, as their incorrect use can result in poor system performance, including deadlock.  
 
-_6_**CHAPTER**
+_6_ **CHAPTER**
 
 # Synchronization Tools
 
