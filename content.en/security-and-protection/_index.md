@@ -1,6 +1,6 @@
 ---
-title: 'PART SEVEN SECURITY AND PROTECTION'
-weight: 12
+title: 'SECURITY AND PROTECTION'
+weight: 7
 ---
 
   

@@ -1,6 +1,6 @@
 ---
-title: 'PART THREE PROCESS SYNCHRONIZATION'
-weight: 8
+title: 'PROCESS SYNCHRONIZATION'
+weight: 3
 ---
 
   

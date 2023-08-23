@@ -1,6 +1,6 @@
 ---
-title: 'PART FOUR MEMORY MANAGEMENT'
-weight: 9
+title: 'MEMORY MANAGEMENT'
+weight: 4
 ---
 
   

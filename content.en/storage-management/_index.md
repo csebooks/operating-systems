@@ -1,6 +1,6 @@
 ---
-title: 'PART FIVE STORAGE MANAGEMENT'
-weight: 10
+title: 'STORAGE MANAGEMENT'
+weight: 5
 ---
 
   

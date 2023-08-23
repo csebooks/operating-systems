@@ -1,6 +1,6 @@
 ---
-title: 'PART TWO PROCESS MANAGEMENT'
-weight: 7
+title: 'PROCESS MANAGEMENT'
+weight: 2
 ---
 
   
