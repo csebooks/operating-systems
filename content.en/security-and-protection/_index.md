@@ -36,11 +36,7 @@ Security involves guarding computer resources against unauthorized access, malic
 ## The Security Problem
 
 In many applications, ensuring the security of the computer system is worth considerable effort. Large commercial systems containing payroll or other financial data are inviting targets to thieves. Systems that contain data pertain- ing to corporate operations may be of interest to unscrupulous competitors. Furthermore, loss of such data, whether by accident or fraud, can seriously impair the ability of the corporation to function. Even raw computing resources are attractive to attackers for bitcoin mining, for sending spam, and as a source from which to anonymously attack other systems.
-
-**621**  
-
-
-
+  
 In Chapter 17, we discuss mechanisms that the operating system can pro- vide (with appropriate aid from the hardware) that allow users to protect their resources, including programs and data. These mechanisms work well only as long as the users conform to the intended use of and access to these resources.
 
 We say that a system is **secure** if its resources are used and accessed as intended under all circumstances. Unfortunately, total security cannot be achieved. Nonetheless, we must have mechanisms to make security breaches a rare occurrence, rather than the norm.
@@ -59,8 +55,6 @@ Security violations (or misuse) of the system can be categorized as inten- tiona
 
 Attackers use several standard methods in their attempts to breach secu- rity. Themost common is**masquerading**, inwhich one participant in a commu- nication pretends to be someone else (another host or another person). Bymas- querading, attackers breach **authentication**, the correctness of identification; they can then gain access that they would not normally be allowed. Another common attack is to replay a captured exchange of data. A **replay attack** consists of the malicious or fraudulent repeat of a valid data transmission. Sometimes the replay comprises the entire attack—for example, in a repeat of a request to transfer money. But frequently it is done along with **message**  
 
-
-
 **modificatio** , in which the attacker changes data in a communication without the sender’s knowledge. Consider the damage that could be done if a request for authentication had a legitimate user’s information replaced with an unau- thorized user’s. Yet another kind of attack is the **man-in-the-middle attack**, in which an attacker sits in the data flow of a communication, masquerading as the sender to the receiver, and vice versa. In a network communication, a man-in-the-middle attack may be preceded by a **session hijacking**, in which an active communication session is intercepted.
 
 Another broad class of attacks is aimed at **privilege escalation**. Every system assigns privileges to users, even if there is just one user and that user is the administrator. Generally, the system includes several sets of privileges, one for each user account and some for the system. Frequently, privileges are also assigned to nonusers of the system (such as users from across the Internet accessing a web page without logging in or anonymous users of services such as file transfer). Even a sender of email to a remote system can be considered to have privileges—the privilege of sending an email to a receiving user on that system. Privilege escalation gives attackers more privileges than they are supposed to have. For example, an email containing a script or macro that is executed exceeds the email sender’s privileges. Masquerading and message modification, mentioned above, are often done to escalate privileges. There are many more examples, as this is a very common type of attack. Indeed, it is difficult to detect and prevent all of the various attacks in this category.
@@ -75,26 +69,17 @@ To protect a system, we must take security measures at four levels:
 
 Further, computer data in modern systems frequently travel over pri- vate leased lines, shared lines like the Internet, wireless connections, and dial-up lines. Intercepting these data can be just as harmful as breaking into a computer, and interruption of communications can constitute a remote denial-of-service attack, diminishing users’ use of and trust in the system.
 
-**3\. Operating system**. The operating system and its built-in set of appli- cations and services comprise a huge code base that may harbor many vulnerabilities. Insecure default settings, misconfigurations, and security  
-
-
-
-bugs are only a few potential problems. Operating systems must thus be kept up to date (via continuous patching) and “hardened”—configured and modified to decrease the attack surface and avoid penetration. The **attack surface** is the set of points at which an attacker can try to break into the system.
+**3\. Operating system**. The operating system and its built-in set of appli- cations and services comprise a huge code base that may harbor many vulnerabilities. Insecure default settings, misconfigurations, and security bugs are only a few potential problems. Operating systems must thus be kept up to date (via continuous patching) and “hardened”—configured and modified to decrease the attack surface and avoid penetration. The **attack surface** is the set of points at which an attacker can try to break into the system.
 
 **4\. Application**. Third-party applications may also pose risks, especially if they possess significant privileges. Some applications are inherently malicious, but even benign applications may contain security bugs. Due to the vast number of third-party applications and their disparate code bases, it is virtually impossible to ensure that all such applications are secure.
 
-This four-layered security model is shown in Figure 16.1. The four-layer model of security is like a chain made of links: a vulnerabil-
-
-ity in any of its layers can lead to full system compromise. In that respect, the old adage that security is only as strong as its weakest link holds true.
+This four-layered security model is shown in Figure 16.1. The four-layer model of security is like a chain made of links: a vulnerability in any of its layers can lead to full system compromise. In that respect, the old adage that security is only as strong as its weakest link holds true.
 
 Another factor that cannot be overlooked is the human one. Authorization must be performed carefully to ensure that only allowed, trusted users have access to the system. Even authorized users, however, may be malicious or may be “encouraged” to let others use their access—whetherwillingly orwhen duped through **social engineering**, which uses deception to persuade people to give up confidential information. One type of social-engineering attack is **phishing**, in which a legitimate-looking e-mail or web page misleads a user into entering confidential information. Sometimes, all it takes is a click of a link on a browser page or in an email to inadvertently download a malicious payload, compromising system security on the user’s computer. Usually that PC is not the end target, but rather some more valuable resource. From that compromised system, attacks on other systems on the LAN or other users ensue.
 
 So far, we’ve seen that all four factors in the four-level model, plus the human factor, must be taken into account if security is to be maintained. Fur- thermore, the system must provide protection (discussed in great detail in Chapter 17) to allow the implementation of security features. Without the abil- ity to authorize users and processes to control their access, and to log their activities, it would be impossible for an operating system to implement secu- rity measures or to run securely. Hardware protection features are needed to support an overall protection scheme. For example, a systemwithout memory
-
+![Alt text](image.png)
 **Figure 16.1** The four-layered model of security.  
-
-
-
 protection cannot be secure. New hardware features are allowing systems to be made more secure, as we shall discuss.
 
 Unfortunately, little in security is straightforward. As intruders exploit security vulnerabilities, security countermeasures are created and deployed. This causes intruders to become more sophisticated in their attacks. For exam- ple, spyware can provide a conduit for spam through innocent systems (we discuss this practice in Section 16.2), which in turn can deliver phishing attacks to other targets. This cat-and-mouse game is likely to continue, with more security tools needed to block the escalating intruder techniques and activities.
@@ -111,11 +96,7 @@ Processes, along with the kernel, are the only means of accomplishing work on a 
 
 Many systems have mechanisms for allowing programs written by a user to be executed by other users. If these programs are executed in a domain that provides the access rights of the executing user, the other users may misuse these rights. A program that acts in a clandestine or malicious manner, rather than simply performing its stated function, is called a **Trojan horse**. If the pro- gram is executed in another domain, it can escalate privileges. As an example, consider a mobile app that purports to provide some benign functionality— say, a flashlight app—but that meanwhile surreptitiously accesses the user’s contacts or messages and smuggles them to some remote server.
 
-A classic variation of the Trojan horse is a “Trojan mule” program that emulates a login program. An unsuspecting user starts to log in at a terminal, computer, or web page and notices that she has apparently mistyped her  
-
-
-
-password. She tries again and is successful. What has happened is that her authentication key and password have been stolen by the login emulator, which was left running on the computer by the attacker or reached via a bad URL. The emulator stored away the password, printed out a login error message, and exited; the user was then provided with a genuine login prompt. This type of attack can be defeated by having the operating system print a usagemessage at the end of an interactive session, by requiring a nontrappable key sequence to get to the login prompt, such as the control-alt-delete combination used by all modern Windows operating systems, or by the user ensuring the URL is the right, valid one.
+A classic variation of the Trojan horse is a “Trojan mule” program that emulates a login program. An unsuspecting user starts to log in at a terminal, computer, or web page and notices that she has apparently mistyped her password. She tries again and is successful. What has happened is that her authentication key and password have been stolen by the login emulator, which was left running on the computer by the attacker or reached via a bad URL. The emulator stored away the password, printed out a login error message, and exited; the user was then provided with a genuine login prompt. This type of attack can be defeated by having the operating system print a usagemessage at the end of an interactive session, by requiring a nontrappable key sequence to get to the login prompt, such as the control-alt-delete combination used by all modern Windows operating systems, or by the user ensuring the URL is the right, valid one.
 
 Another variation on the Trojan horse is **spyware**. Spyware sometimes accompanies a program that the user has chosen to install. Most frequently, it comes along with freeware or shareware programs, but sometimes it is included with commercial software. Spyware may download ads to display on the user’s system, create pop-up browser windows when certain sites are visited, or capture information from the user’s system and return it to a central site. The installation of an innocuous-seeming program on a Windows system could result in the loading of a spyware daemon. The spyware could contact a central site, be given a message and a list of recipient addresses, and deliver a spam message to those users from the Windows machine. This process would continue until the user discovered the spyware. Frequently, the spyware is not discovered. In 2010, it was estimated that 90 percent of spam was being delivered by this method. This theft of service is not even considered a crime in most countries!
 
@@ -171,7 +152,7 @@ As an example, consider the simplest code-injection vector—a buffer over- flow
 The answer is that the outcome of an overflow depends largely on the length of the overflow and the overflowing contents (Figure 16.3). It also varies greatly with the code generated by the compiler, which may be optimized  
 
 
-
+![Alt text](image-1.png)
 **Figure 16.3** The possible outcomes of buffer overflows.
 
 in ways that affect the outcome: optimizations often involve adjustments to memory layout (commonly, repositioning or padding variables).
@@ -182,26 +163,19 @@ in ways that affect the outcome: optimizations often involve adjustments to memo
 
 **3\.** If the overflow greatly exceeds the padding, all of the current function’s stack frame is overwritten. At the very top of the frame is the function’s return address, which is accessed when the function returns. The flow of the program is subverted and can be redirected by the attacker to another region of memory, including memory controlled by the attacker (for example, the input buffer itself, or the stack or the heap). The injected code is then executed, allowing the attacker to run arbitrary code as the processes’ effective ID.
 
-Note that a careful programmer could have performed bounds checking on the size of argv\[1\] by using the strncpy() function rather than strcpy(), replacing the line “strcpy(buffer, argv\[1\]);” with “strncpy(buffer, argv\[1\], sizeof(buffer)-1);”. Unfortunately, good bounds checking is the exception rather than the norm. strcpy() is one of a known class of vulner- able functions, which include sprintf(), gets(), and other functions with no  
-
-
-
-regard to buffer sizes. But even size-aware variants can harbor vulnerabilities when coupled with arithmetic operations over finite-length integers, which may lead to an integer overflow.
+Note that a careful programmer could have performed bounds checking on the size of argv\[1\] by using the strncpy() function rather than strcpy(), replacing the line “strcpy(buffer, argv\[1\]);” with “strncpy(buffer, argv\[1\], sizeof(buffer)-1);”. Unfortunately, good bounds checking is the exception rather than the norm. strcpy() is one of a known class of vulner- able functions, which include sprintf(), gets(), and other functions with no regard to buffer sizes. But even size-aware variants can harbor vulnerabilities when coupled with arithmetic operations over finite-length integers, which may lead to an integer overflow.
 
 At this point, the dangers inherent in a simple oversight in maintaining a buffer should be clearly evident. Brian Kerningham and Dennis Ritchie (in their book **_The C Programming Language_**) referred to the possible outcome as “undefined behavior,” but perfectly predictable behavior can be coerced by an attacker, as was first demonstrated by the Morris Worm (and documented in RFC1135: https://tools.ietf.org/html/rfc1135). It was not until several years later, however, that an article in issue 49 of **_Phrack_** magazine (“Smashing the Stack for Fun and Profit” http://phrack.org/issues/49/14.html) introduced the exploitation technique to the masses, unleashing a deluge of exploits.
 
 To achieve code injection, there must first be injectable code. The attacker first writes a short code segment such as the following:
-
+```
 void func (void) _{_
 
 execvp(“/bin/sh”, “/bin/sh”, NULL); ; _}_
-
+```
 Using the execvp() system call, this code segment creates a shell process. If the program being attacked runs with root permissions, this newly created shell will gain complete access to the system. Of course, the code segment can do anything allowed by the privileges of the attacked process. The code segment is next compiled into its assembly binary opcode form and then transformed into a binary stream. The compiled form is often referred to as shellcode, due to its classic function of spawning a shell, but the term has grown to encompass any type of code, includingmore advanced code used to add newusers to a system, reboot, or even connect over the network and wait for remote instructions (called a “reverse shell”). A shellcode exploit is shown in Figure 16.4. Code that is briefly used, only to redirect execution to some other location, is much like a trampoline, “bouncing” code flow from one spot to another.
-
+![Alt text](image-2.png)
 **Figure 16.4** Trampoline to code execution when exploiting a buffer overflow.  
-
-
-
 There are, in fact, shellcode compilers (the “MetaSploit” project being a notable example), which also take care of such specifics as ensuring that the code is compact and contains no NULL bytes (in case of exploitation via string copy, which would terminate on NULLs). Such a compiler may even mask the shellcode as alphanumeric characters.
 
 If the attacker has managed to overwrite the return address (or any func- tion pointer, such as that of a VTable), then all it takes (in the simple case) is to redirect the address to point to the supplied shellcode, which is commonly loaded as part of the user input, through an environment variable, or over some file or network input. Assuming no mitigations exist (as described later), this is enough for the shellcode to execute and the hacker to succeed in the attack. Alignment considerations are often handled by adding a sequence of NOP instructions before the shellcode. The result is known as a NOP-sled, as it causes execution to “slide” down the NOP instructions until the payload is encountered and executed.
@@ -218,16 +192,14 @@ Another form of program threat is a **virus**. Avirus is a fragment of code embe
 
 Viruses are usually borne via spam e-mail and phishing attacks. They can also spread when users download viral programs from Internet file-sharing services or exchange infected disks. Adistinction can bemade between viruses, which require human activity, and **worms**, which use a network to replicate without any help from humans.  
 
-
-
 For an example of how a virus “infects” a host, consider Microsoft Office files. These files can contain **_macros_** (or Visual Basic programs) that programs in the Office suite (Word, PowerPoint, and Excel) will execute automatically. Because these programs run under the user’s own account, the macros can run largely unconstrained (for example, deleting user files at will). The following code sample shows how simple it is to write a Visual Basic macro that a worm could use to format the hard drive of a Windows computer as soon as the file containing the macro was opened:
-
+```
 Sub AutoOpen() Dim oFS
 
 Set oFS = CreateObject(”Scripting.FileSystemObject”) vs = Shell(”c: command.com /k format c:”,vbHide)
 
 End Sub
-
+```
 Commonly, the worm will also e-mail itself to others in the user’s contact list. How do viruses work? Once a virus reaches a target machine, a program
 
 known as a **virus dropper** inserts the virus into the system. The virus dropper is usually a Trojan horse, executed for other reasons but installing the virus as its core activity. Once installed, the virus may do any one of a number of things. There are literally thousands of viruses, but they fall into several main categories. Note that many viruses belong to more than one category.
@@ -239,37 +211,7 @@ known as a **virus dropper** inserts the virus into the system. The virus droppe
 • **Macro**. Most viruses are written in a low-level language, such as assembly or C. Macro viruses are written in a high-level language, such as Visual Basic. These viruses are triggered when a program capable of executing the macro is run. For example, a macro virus could be contained in a spreadsheet file.
 
 • **Rootkit**. Originally coined to describe back doors on UNIX systemsmeant to provide easy root access, the term has since expanded to viruses and malware that infiltrate the operating system itself. The result is complete system compromise; no aspect of the system can be deemed trusted.When malware infects the operating system, it can take over all of the system’s functions, including those functions that would normally facilitate its own detection.  
-
-
-
-whenever new removable R/W disk is installed, it infects
-
-that as well
-
-it has a logic bomb to wreak havoc at a
-
-certain date
-
-virus replaces original boot block
-
-with itself
-
-at system boot, virus decreases physical
-
-memory, hides in memory above new limit
-
-virus attaches to disk read- write interrupt, monitors all
-
-disk activity
-
-it blocks any attempts of other programs to write the
-
-boot sector
-
-virus copies boot sector to unused
-
-location X
-
+![Alt text](image-3.png)
 **Figure 16.5** A boot-sector computer virus.
 
 • **Source code**. A source code virus looks for source code and modifies it to include the virus and to help spread the virus.
@@ -279,8 +221,6 @@ location X
 • **Encrypted**. An encrypted virus includes decryption code along with the encrypted virus, again to avoid detection. The virus first decrypts and then executes.
 
 • **Stealth**. This tricky virus attempts to avoid detection by modifying parts of the system that could be used to detect it. For example, it could modify the read system call so that if the file it has modified is read, the original form of the code is returned rather than the infected code.  
-
-
 
 • **Multipartite**. Avirus of this type is able to infectmultiple parts of a system, including boot sectors, memory, and files. This makes it difficult to detect and contain.
 
@@ -298,36 +238,7 @@ The more **_open_** an operating system is—the more services it has enabled an
 
 All hackers leave tracks behind them—whether via network traffic pat- terns, unusual packet types, or othermeans. For that reason, hackers frequently launch attacks from **zombie systems**—independent systems or devices that have been compromised by hackers but that continue to serve their own- ers while being used without the owners’ knowledge for nefarious purposes,  
 
-
-
-communication
-
-communication
-
-communicationcommunication
-
-sender receiver
-
-attacker
-
-sender
-
-attacker
-
-receiver
-
-attacker
-
-**Masquerading**
-
-**Man-in-the-middle**
-
-**Normal**
-
-sender
-
-receiver
-
+![Alt text](image-4.png)
 **Figure 16.6** Standard security attacks.1
 
 including denial-of-service attacks and spam relay. Zombiesmake hackers par- ticularly difficult to track because they mask the original source of the attack and the identity of the attacker. This is one ofmany reasons for securing “incon- sequential” systems, not just systems containing “valuable” information or services—lest they be turned into strongholds for hackers.
@@ -337,9 +248,6 @@ The widespread use of broadband and WiFi has only exacerbated the difficulty in 
 ### Attacking Network Traffic
 
 Networks are common and attractive targets, and hackers have many options for mounting network attacks. As shown in Figure 16.6, an attacker can opt to remain passive and intercept network traffic (an attack commonly referred to as **sniffin** ), often obtaining useful information about the types of sessions
-
-1Lorelyn Medina/Shutterstock.  
-
 
 
 conducted between systems or the sessions’ content. Alternatively, an attacker can take a more active role, either masquerading as one of the parties (referred to as **spoofin** ), or becoming a fully activeman-in-the-middle, intercepting and possibly modifying transactions between two peers.
@@ -358,8 +266,6 @@ Sometimes a site does not even know it is under attack. It can be difficult to d
 
 There are other interesting aspects of DoS attacks. For example, if an authentication algorithm locks an account for a period of time after several incorrect attempts to access the account, then an attacker could cause all authentication to be blocked by purposely making incorrect attempts to access all accounts. Similarly, a firewall that automatically blocks certain kinds of traf- fic could be induced to block that traffic when it should not. These examples suggest that programmers and systems managers need to fully understand the algorithms and technologies they are deploying. Finally, computer science classes are notorious sources of accidental system DoS attacks. Consider the first programming exercises in which students learn to create subprocesses or threads. A common bug involves spawning subprocesses infinitely. The system’s free memory and CPU resources don’t stand a chance.  
 
-
-
 ### Port Scanning
 
 Port scanning is not itself an attack but is a means for a hacker to detect a system’s vulnerabilities to attack. (Security personnel also use port scanning —for example, to detect services that are not needed or are not supposed to be running.) Port scanning typically is automated, involving a tool that attempts to create a TCP/IPconnection or send a UDP packet to a specific port or a range of ports.
@@ -376,8 +282,6 @@ There are many defenses against computer attacks, running the gamut from methodo
 
 In an isolated computer, the operating system can reliably determine the sender and recipient of all interprocess communication, since it controls all communication channels in the computer. In a network of computers, the situation is quite different. A networked computer receives bits “from the wire” with no immediate and reliable way of determining what machine or application sent those bits. Similarly, the computer sends bits onto the network with no way of knowing who might eventually receive them. Additionally, when either sending or receiving, the system has no way of knowing if an eavesdropper listened to the communication.  
 
-
-
 Commonly, network addresses are used to infer the potential senders and receivers of network messages. Network packets arrive with a source address, such as an IP address. And when a computer sends a message, it names the intended receiver by specifying a destination address. However, for appli- cations where security matters, we are asking for trouble if we assume that the source or destination address of a packet reliably determines who sent or received that packet. A rogue computer can send a message with a falsified source address, and numerous computers other than the one specified by the destination address can (and typically do) receive a packet. For example, all of the routers on theway to the destinationwill receive the packet, too.How, then, is an operating system to decidewhether to grant a requestwhen it cannot trust the named source of the request? And how is it supposed to provide protection for a request or data when it cannot determine who will receive the response or message contents it sends over the network?
 
 It is generally considered infeasible to build a network of any scale in which the source and destination addresses of packets can be **_trusted_** in this sense. Therefore, the only alternative is somehow to eliminate the need to trust the network. This is the job of cryptography. Abstractly, **cryptography** is used to constrain the potential senders and/or receivers of a message. Modern cryptography is based on secrets called **keys** that are selectively distributed to computers in a network and used to processmessages. Cryptography enables a recipient of amessage to verify that themessagewas created by some computer possessing a certain key. Similarly, a sender can encode its message so that only a computer with a certain key can decode the message. Unlike network addresses, however, keys are designed so that it is not computationally feasible to derive them from themessages theywere used to generate or from any other public information. Thus, they provide a much more trustworthy means of constraining senders and receivers of messages.
@@ -388,11 +292,7 @@ Finally, note that cryptography is a field of study unto itself, with large and 
 
 ### Encryption
 
-Because it solves a wide variety of communication security problems, **encryp- tion** is used frequently inmany aspects ofmodern computing. It is used to send messages securely across a network, as well as to protect database data, files, and even entire disks from having their contents read by unauthorized entities. An encryption algorithm enables the sender of a message to ensure that only a computer possessing a certain key can read the message or to ensure that the writer of data is the only reader of the data. Encryption of messages is an ancient practice, of course, and there have been many encryption algorithms,  
-
-
-
-dating back to ancient times. In this section, we describe important modern encryption principles and algorithms.
+Because it solves a wide variety of communication security problems, **encryp- tion** is used frequently inmany aspects ofmodern computing. It is used to send messages securely across a network, as well as to protect database data, files, and even entire disks from having their contents read by unauthorized entities. An encryption algorithm enables the sender of a message to ensure that only a computer possessing a certain key can read the message or to ensure that the writer of data is the only reader of the data. Encryption of messages is an ancient practice, of course, and there have been many encryption algorithms, dating back to ancient times. In this section, we describe important modern encryption principles and algorithms.
 
 An encryption algorithm consists of the following components:
 
@@ -418,64 +318,7 @@ For the past several decades, the most commonly used symmetric encryp- tion algo
 
 DES is now considered insecure for many applications because its keys can be exhaustively searched with moderate computing resources. (Note, though, that it is still frequently used.) Rather than giving up on DES, NIST created a modification called **triple DES**, in which the DES algorithm is repeated three times (two encryptions and one decryption) on the same plaintext using two or three keys—for example, _c_ \= _Ek_3(_Dk_2(_Ek_1(_m_))). When three keys are used, the effective key length is 168 bits.  
 
-
-
-key exchange
-
-message m
-
-message m
-
-encryption algorithm
-
-E
-
-decryption algorithm
-
-D
-
-write
-
-encryption key k
-
-decryption key k
-
-read
-
-in s e c u re
-
-c h a n n e l
-
-p la
-
-in te
-
-x t
-
-c ip
-
-h e rte
-
-x t
-
-c =
-
-E k (m
-
-) p la
-
-in te
-
-x t
-
-m =
-
-D k (c
-
-)
-
-attacker
-
+![Alt text](image-5.png)
 **Figure 16.7** A secure communication over an insecure medium.2
 
 In 2001, NIST adopted a new block cipher, called the **advanced encryption standard** (**AES**), to replace DES. AES (also known as Rijndael) has been standard- ized in FIPS-197 (http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf). It can use key lengths of 128, 192, or 256 bits and works on 128-bit blocks. Gen- erally, the algorithm is compact and efficient.
@@ -483,10 +326,6 @@ In 2001, NIST adopted a new block cipher, called the **advanced encryption stand
 Block ciphers are not necessarily secure encryption schemes. In particular, they do not directly handle messages longer than their required block sizes. An alternative is stream ciphers, which can be used to securely encrypt longer messages.
 
 A **stream cipher** is designed to encrypt and decrypt a stream of bytes or bits rather than a block. This is useful when the length of a communication would make a block cipher too slow. The key is input into a pseudo–random- bit generator, which is an algorithm that attempts to produce random bits. The output of the generator when fed a key is a keystream. A **keystream** is an infinite set of bits that can be used to encrypt a plaintext stream through an XOR operation. (XOR, for “exclusive OR” is an operation that compares two input bits and generates one output bit. If the bits are the same, the result is 0. If the bits are different, the result is 1.) AES-based cipher suites include stream ciphers and are the most common today.
-
-2Lorelyn Medina/Shutterstock.  
-
-
 
 ### Asymmetric Encryption
 
@@ -508,36 +347,7 @@ We should note that the seemingly small difference in key use between asymmetric
 
 We have seen that encryption offers a way of constraining the set of possible receivers of a message. Constraining the set of potential senders of a message  
 
-
-
-message 69
-
-69
-
-695 mod 91
-
-6229 mod 91
-
-write
-
-encryption key k5,91
-
-decryption key k29,91
-
-read
-
-in s e c u re
-
-c h a n n e l
-
-p la
-
-in te
-
-x t
-
-6 2
-
+![Alt text](image-6.png)
 **Figure 16.8** Encryption and decryption using RSA asymmetric cryptography.3
 
 is called **authentication**. Authentication is thus complementary to encryption. Authentication is also useful for proving that amessage has not beenmodified. Next, we discuss authentication as a constraint on possible senders of a mes- sage. Note that this sort of authentication is similar to but distinct from user authentication, which we discuss in Section 16.5.
@@ -551,10 +361,6 @@ An authentication algorithm using symmetric keys consists of the follow- ing com
 • A set _A_ of authenticators.
 
 • A function _S_ : _K_ → (_M_ → _A_). That is, for each _k_ ∈ _K_, _Sk_ is a function for generating authenticators from messages. Both _S_ and _Sk_ for any _k_ should be efficiently computable functions.
-
-3Lorelyn Medina/Shutterstock.  
-
-
 
 • A function _V_ : _K_ → (_M_ × _A_ → _{_true, false_}_). That is, for each _k_ ∈ _K_, _Vk_ is a function for verifying authenticators on messages. Both _V_ and _Vk_ for any _k_ should be efficiently computable functions.
 
@@ -572,11 +378,7 @@ Consider as an example the RSA digital-signature algorithm. It is similar to the
 
 numbers _p_ and _q_. The verification algorithm is then _Vkv_(_m_, _a_) ? =_akv_ mod _N_ \=
 
-_H_(_m_)), where _kv_ satisfies _kvks_ mod (_p_ − 1)(_q_ − 1) = 1. Digital signatures (as is the case with many aspects of cryptography) can be used on other entities  
-
-
-
-than messages. For example creators of programs can “sign their code” via a digital signature to validate that the code has not been modified between its publication and its installation on a computer. **Code signing** has become a very common security improvement method on many systems.
+_H_(_m_)), where _kv_ satisfies _kvks_ mod (_p_ − 1)(_q_ − 1) = 1. Digital signatures (as is the case with many aspects of cryptography) can be used on other entities than messages. For example creators of programs can “sign their code” via a digital signature to validate that the code has not been modified between its publication and its installation on a computer. **Code signing** has become a very common security improvement method on many systems.
 
 Note that encryption and authentication may be used together or sepa- rately. Sometimes, for instance, we want authentication but not confidentiality. For example, a company could provide a software patch and could “sign” that patch to prove that it came from the company and that it hasn’t beenmodified.
 
@@ -592,55 +394,7 @@ Unfortunately, even the distribution of public keys requires some care. Consider
 
 The problem is one of authentication—what we need is proof of who (or what) owns a public key. One way to solve that problem involves the use of digital certificates. A **digital certificat** is a public key digitally signed by a trusted party. The trusted party receives proof of identification from some entity and certifies that the public key belongs to that entity. But how do we know we can trust the certifier? These **certificat authorities** have their public keys includedwithinweb browsers (and other consumers of certificates) before they are distributed. The certificate authorities can then vouch for other authorities (digitally signing the public keys of these other authorities), and so on, creating a web of trust. The certificates can be distributed in a standard  
 
-
-
-message m
-
-encryption algorithm
-
-E
-
-decryption algorithm
-
-D
-
-write
-
-3\. E kbad (m
-
-)
-
-message m read
-
-encryption key kbad
-
-decryption key kd
-
-decryption algorithm
-
-D
-
-decryption key kbad
-
-2 . P
-
-u b lic
-
-ke y
-
-k b
-
-a d
-
-1 . P
-
-u b lic
-
-ke y
-
-k e
-
-attacker
+![Alt text](image-7.png)
 
 **Figure 16.9** A man-in-the-middle attack on asymmetric cryptography.4
 
@@ -648,13 +402,7 @@ X.509 digital certificate format that can be parsed by computer. This scheme is 
 
 ### Implementation of Cryptography
 
-Network protocols are typically organized in **_layers_**, with each layer acting as a client of the one below it. That is, when one protocol generates a message to send to its protocol peer on another machine, it hands its message to the protocol below it in the network-protocol stack for delivery to its peer on that machine. For example, in an IP network, TCP (a **_transport-layer_** protocol) acts as a client of IP (a **_network-layer_** protocol): TCP packets are passed down to IP for delivery to the IP peer at the other end of the connection. IP encapsulates the TCP packet in an IP packet, which it similarly passes down to the **_data-link layer_** to be transmitted across the network to its peer on the destination computer. This IP peer then delivers the TCP packet up to the TCP peer on that machine. Seven
-
-4Lorelyn Medina/Shutterstock.  
-
-
-
-such layers are included in the OSI model, mentioned earlier and described in detail in Section 19.3.2.
+Network protocols are typically organized in **_layers_**, with each layer acting as a client of the one below it. That is, when one protocol generates a message to send to its protocol peer on another machine, it hands its message to the protocol below it in the network-protocol stack for delivery to its peer on that machine. For example, in an IP network, TCP (a **_transport-layer_** protocol) acts as a client of IP (a **_network-layer_** protocol): TCP packets are passed down to IP for delivery to the IP peer at the other end of the connection. IP encapsulates the TCP packet in an IP packet, which it similarly passes down to the **_data-link layer_** to be transmitted across the network to its peer on the destination computer. This IP peer then delivers the TCP packet up to the TCP peer on that machine. Seven such layers are included in the OSI model, mentioned earlier and described in detail in Section 19.3.2.
 
 Cryptography can be inserted at almost any layer in network protocol stacks. TLS (Section 16.4.3), for example, provides security at the transport layer. Network-layer security generally has been standardized on **IPSec**, which defines IP packet formats that allow the insertion of authenticators and the encryption of packet contents. IPSec uses symmetric encryption and uses the **Internet Key Exchange** (**IKE**) protocol for key exchange. IKE is based on public- key encryption. IPSec has widely used as the basis for **virtual private networks** (**VPNs**), in which all traffic between two IPSec endpoints is encrypted to make a private network out of one that would otherwise be public. Numerous proto- cols also have been developed for use by applications, such as PGP for encrypt- ing e-mail; in this type of scheme, the applications themselves must be coded to implement security.
 
@@ -667,8 +415,6 @@ Unfortunately, like many tools, encryption can be used not only for “good” b
 ### An Example: TLS
 
 **Transport Layer Security** (**TLS**) is a cryptographic protocol that enables two computers to communicate securely—that is, so that each can limit the sender and receiver of messages to the other. It is perhaps the most commonly used cryptographic protocol on the Internet today, since it is the standard protocol by which web browsers communicate securely with web servers. For completeness, we should note that TLS evolved from SSL (Secure Sock- ets Layer), which was designed by Netscape. It is described in detail in https://tools.ietf.org/html/rfc5246.  
-
-
 
 TLS is a complex protocolwithmany options.Here,we present only a single variation of it. Even then, we describe it in a very simplified and abstract form, so as to maintain focus on its use of cryptographic primitives. What we are about to see is a complex dance in which asymmetric cryptography is used so that a client and a server can establish a secure **session key** that can be used for symmetric encryption of the session between the two—all of this while avoid- ing man-in-the-middle and replay attacks. For added cryptographic strength, the session keys are forgotten once a session is completed. Another communi- cation between the two will require generation of new session keys.
 
@@ -687,45 +433,8 @@ The TLS protocol is initiated by a client _c_ to communicate securely with a ser
 In addition, prior to the protocol’s use, the client is presumed to have obtained the public verification algorithm _VkCA_ for CA. In the case of the web, the user’s browser is shipped from its vendor containing the verification algorithms and public keys of certain certification authorities. The user can delete these or add others.
 
 When _c_ connects to _s_, it sends a 28-byte randomvalue_nc_ to the server,which responds with a random value _ns_ of its own, plus its certificate cert_s_. The client verifies that _VkCA_(⟨ attrs, _Eke_, interval⟩, a) = true and that the current time is in the validity interval interval. If both of these tests are satisfied, the server has proved its identity. Then the client generates a random 46-byte **_premaster secret_** pms and sends cpms = _Eke_(pms) to the server. The server recovers pms = _Dkd_(cpms). Now both the client and the server are in possession of _nc_, _ns_, and pms, and each can compute a shared 48-byte **_master secret_** ms = _H_(_nc_, _ns_, pms). Only the server and client can compute ms, since only they know pms. Moreover, the dependence of ms on _nc_ and _ns_ ensures that ms is a **_fresh_** value —that is, a session key that has not been used in a previous communication. At this point, the client and the server both compute the following keys from the ms:
-
-• A symmetric encryption key _k����������cs_ for encrypting messages from the client to the server
-
-• Asymmetric encryption key _k����������sc_ for encrypting messages from the server to the client
-
-• AMAC generation key _k������ cs_ for generating authenticators onmessages from
-
-the client to the server  
-
-
-
-• AMAC generation key _k������ sc_ for generating authenticators onmessages from
-
-the server to the client
-
-To send a message _m_ to the server, the client sends
-
-_c_ \= _Ek����������cs_ (⟨_m_, _Sk������_
-
-_cs_ (_m_)⟩)_._
-
-Upon receiving _c_, the server recovers
-
-⟨_m_, _a_⟩ = _Dk����������cs_ (_c_)
-
-and accepts _m_ if _Vk������ cs_ (_m_, _a_) = true. Similarly, to send a message _m_ to the client,
-
-the server sends
-
-_c_ \= _Ek����������sc_ (⟨_m_, _Sk������_
-
-_sc_ (_m_)⟩)
-
-and the client recovers
-
-⟨_m_, _a_⟩ = _Dk����������sc_ (_c_)
-
-and accepts _m_ if _Vk������ sc_ (_m_, _a_) = true.
-
+![Alt text](image-23.png)
+![Alt text](image-24.png)
 This protocol enables the server to limit the recipients of its messages to the client that generated pms and to limit the senders of the messages it accepts to that same client. Similarly, the client can limit the recipients of the messages it sends and the senders of the messages it accepts to the party that knows _kd_ (that is, the party that can decrypt cpms). In many applications, such as web transactions, the client needs to verify the identity of the party that knows _kd_. This is one purpose of the certificate cert_s_. In particular, the attrs field contains information that the client can use to determine the identity—for example, the domain name—of the server with which it is communicating. For applications in which the server also needs information about the client, TLS supports an option by which a client can send a certificate to the server.
 
 In addition to its use on the Internet, TLS is being used for a wide variety of tasks. For example, we mentioned earlier that IPSec is widely used as the basis for virtual private networks, or VPNs. IPSec VPNs now have a competitor in TLS VPNs. IPSec is good for point-to-point encryption of traffic—say, between two company offices. TLS VPNs are more flexible but not as efficient, so they might be used between an individual employee working remotely and the corporate office.
@@ -733,8 +442,6 @@ In addition to its use on the Internet, TLS is being used for a wide variety of 
 ## User Authentication
 
 Our earlier discussion of authentication involves messages and sessions. But what about users? If a system cannot authenticate a user, then authenticating that amessage came from that user is pointless. Thus, amajor security problem for operating systems is **user authentication**. The protection system depends on the ability to identify the programs and processes currently executing, which in turn depends on the ability to identify each user of the system. Users normally identify themselves, but how do we determine whether a user’s identity is authentic? Generally, user authentication is based on one or more of three things: the user’s possession of something (a key or card), the user’s knowledge of something (a user identifier and password), or an attribute of the user (fingerprint, retina pattern, or signature).  
-
-
 
 ### Passwords
 
@@ -750,11 +457,7 @@ Passwords are extremely common because they are easy to understand and use. Unfo
 
 There are three common ways to guess a password. One way is for the intruder (either human or program) to know the user or to have information about the user. All too frequently, people use obvious information (such as the names of their cats or spouses) as their passwords. Another way is to use brute force, trying enumeration—or all possible combinations of valid password characters (letters, numbers, and punctuation on some systems)—until the password is found. Short passwords are especially vulnerable to this method. For example, a four-character password provides only 10,000 variations. On average, guessing 5,000 times would produce a correct hit. A program that could try a password every millisecond would take only about 5 seconds to guess a four-character password. Enumeration is less successfulwhere systems allow longer passwords that include both uppercase and lowercase letters, along with numbers and all punctuation characters. Of course, users must take advantage of the large password space and must not, for example, use only lowercase letters. The third, common method is dictionary attacks where all words, word variations, and common passwords are tried.
 
-In addition to being guessed, passwords can be exposed as a result of visual or electronic monitoring. An intruder can look over the shoulder of a user (**shoulder surfin** ) when the user is logging in and can learn the password easily by watching the keyboard. Alternatively, anyone with access to the network on which a computer resides can seamlessly add a network monitor, allowing him to **sniff**, or watch, all data being transferred on the network, including user IDs and passwords. Encrypting the data stream containing the password solves this problem. Even such a system could have passwords  
-
-
-
-stolen, however. For example, if a file is used to contain the passwords, it could be copied for off-system analysis. Or consider a Trojan-horse program installed on the system that captures every keystroke before sending it on to the application. Another common method to grab passwords, specially debit card passcodes, is installing physical devices where the codes are used and recording what the user does, for example a “skimmer” at an ATM machine or a device installed between the keyboard and the computer.
+In addition to being guessed, passwords can be exposed as a result of visual or electronic monitoring. An intruder can look over the shoulder of a user (**shoulder surfin** ) when the user is logging in and can learn the password easily by watching the keyboard. Alternatively, anyone with access to the network on which a computer resides can seamlessly add a network monitor, allowing him to **sniff**, or watch, all data being transferred on the network, including user IDs and passwords. Encrypting the data stream containing the password solves this problem. Even such a system could have passwords stolen, however. For example, if a file is used to contain the passwords, it could be copied for off-system analysis. Or consider a Trojan-horse program installed on the system that captures every keystroke before sending it on to the application. Another common method to grab passwords, specially debit card passcodes, is installing physical devices where the codes are used and recording what the user does, for example a “skimmer” at an ATM machine or a device installed between the keyboard and the computer.
 
 Exposure is a particularly severe problem if the password is written down where it can be read or lost. Some systems force users to select hard-to- remember or long passwords, or to change their password frequently, which may cause a user to record the password or to reuse it. As a result, such sys- tems provide much less security than systems that allow users to select easy passwords!
 
@@ -768,8 +471,6 @@ Several variants on these simple password schemes can be used. For exam- ple, th
 
 One problem with all these approaches is the difficulty of keeping the pass- word secret within the computer. How can the system store a password securely yet allow its use for authentication when the user presents her pass-  
 
-
-
 **_STRONG AND EASY TO REMEMBER PASSWORDS_**
 
 It is extremely important to use strong (hard to guess and hard to shoulder surf) passwords on critical systems like bank accounts. It is also important to not use the same password on lots of systems, as one less important, easily hacked system could reveal the password you use on more important systems. A good technique is to generate your password by using the first letter of each word of an easily remembered phrase using both upper and lower characters with a number or punctuation mark thrown in for good measure. For example, the phrase “My girlfriend’s name is Katherine” might yield the password “Mgn.isK!”. The password is hard to crack but easy for the user to remember. Amore secure system would allow more characters in its passwords. Indeed, a systemmight also allow passwords to include the space character, so that a user could create a **passphrase** which is easy to remember but difficult to break.
@@ -781,8 +482,6 @@ Hash functions are easy to compute, but hard (if not impossible) to invert. That
 The drawback to this method is that the system no longer has control over the passwords. Although the passwords are hashed, anyone with a copy of the password file can run fast hash routines against it—hashing each word in a dictionary, for instance, and comparing the results against the passwords. If the user has selected a password that is also a word in the dictionary, the password is cracked. On sufficiently fast computers, or even on clusters of slow computers, such a comparison may take only a few hours. Furthermore, because systems use well-known hashing algorithms, an attacker might keep a cache of passwords that have been cracked previously.
 
 For these reasons, systems include a “salt,” or recorded random number, in the hashing algorithm. The salt value is added to the password to ensure that if two plaintext passwords are the same, they result in different hash values. In addition, the salt value makes hashing a dictionary ineffective, because each dictionary term would need to be combined with each salt value for comparison to the stored passwords. Newer versions of UNIX also store the hashed password entries in a file readable only by the superuser. The programs that compare the hash to the stored value run setuid to root, so they can read this file, but other users cannot.  
-
-
 
 ### One-Time Passwords
 
@@ -796,11 +495,7 @@ One-time password systems are implemented in various ways. Commer- cial implemen
 
 Yet another variation on the use of passwords for authentication involves the use of biometricmeasures. Palm- or hand-readers are commonly used to secure physical access—for example, access to a data center. These readers match stored parameters against what is being read from hand-reader pads. The parameters can include a temperature map, as well as finger length, finger width, and line patterns. These devices are currently too large and expensive to be used for normal computer authentication.
 
-Fingerprint readers have become accurate and cost-effective. These devices read finger ridge patterns and convert them into a sequence of numbers. Over time, they can store a set of sequences to adjust for the location of the finger on the reading pad and other factors. Software can then scan a finger on the pad and compare its features with these stored sequences to determine if they match. Of course, multiple users can have profiles stored, and the scanner can differentiate among them. A very accurate two-factor authentication scheme  
-
-
-
-can result from requiring a password as well as a user name and fingerprint scan. If this information is encrypted in transit, the system can be very resistant to spoofing or replay attack.
+Fingerprint readers have become accurate and cost-effective. These devices read finger ridge patterns and convert them into a sequence of numbers. Over time, they can store a set of sequences to adjust for the location of the finger on the reading pad and other factors. Software can then scan a finger on the pad and compare its features with these stored sequences to determine if they match. Of course, multiple users can have profiles stored, and the scanner can differentiate among them. A very accurate two-factor authentication scheme can result from requiring a password as well as a user name and fingerprint scan. If this information is encrypted in transit, the system can be very resistant to spoofing or replay attack.
 
 **Multifactor authentication** is better still. Consider how strong authentica- tion can bewith a USB device that must be plugged into the system, a PIN, and a fingerprint scan. Except for having to place one’s finger on a pad and plug the USB into the system, this authentication method is no less convenient than that using normal passwords. Recall, though, that strong authentication by itself is not sufficient to guarantee the ID of the user. An authenticated session can still be hijacked if it is not encrypted.
 
@@ -816,11 +511,7 @@ Once the security policy is in place, the people it affects should know it well.
 
 ### Vulnerability Assessment
 
-How can we determine whether a security policy has been correctly imple- mented? The best way is to execute a vulnerability assessment. Such assess- ments can cover broad ground, from social engineering through risk assess- ment to port scans. **Risk assessment**, for example, attempts to value the assets of the entity in question (a program, a management team, a system, or a facil- ity) and determine the odds that a security incident will affect the entity and  
-
-
-
-decrease its value. When the odds of suffering a loss and the amount of the potential loss are known, a value can be placed on trying to secure the entity.
+How can we determine whether a security policy has been correctly imple- mented? The best way is to execute a vulnerability assessment. Such assess- ments can cover broad ground, from social engineering through risk assess- ment to port scans. **Risk assessment**, for example, attempts to value the assets of the entity in question (a program, a management team, a system, or a facil- ity) and determine the odds that a security incident will affect the entity and decrease its value. When the odds of suffering a loss and the amount of the potential loss are known, a value can be placed on trying to secure the entity.
 
 The core activity of most vulnerability assessments is a **penetration test**, in which the entity is scanned for known vulnerabilities. Because this book is concerned with operating systems and the software that runs on them, we concentrate on those aspects of vulnerability assessment.
 
@@ -852,11 +543,7 @@ Networked computers are much more susceptible to security attacks than are stand
 
 In fact, the U.S. government considers a system to be only as secure as its most far-reaching connection. For instance, a top-secret system may be accessed only from within a building also considered top-secret. The system loses its top-secret rating if any form of communication can occur outside that environment. Some government facilities take extreme security precautions. The connectors that plug a terminal into the secure computer are locked in a safe in the office when the terminal is not in use. Apersonmust have proper ID to gain access to the building and her office, must know a physical lock com- bination, and must know authentication information for the computer itself to gain access to the computer—an example of multifactor authentication.
 
-Unfortunately for system administrators and computer-security profes- sionals, it is frequently impossible to lock a machine in a room and disallow  
-
-
-
-all remote access. For instance, the Internet currently connects billions of com- puters and devices and has become a mission-critical, indispensable resource for many companies and individuals. If you consider the Internet a club, then, as in any club with millions of members, there are many good members and some badmembers. The badmembers havemany tools they can use to attempt to gain access to the interconnected computers.
+Unfortunately for system administrators and computer-security profes- sionals, it is frequently impossible to lock a machine in a room and disallow all remote access. For instance, the Internet currently connects billions of com- puters and devices and has become a mission-critical, indispensable resource for many companies and individuals. If you consider the Internet a club, then, as in any club with millions of members, there are many good members and some badmembers. The badmembers havemany tools they can use to attempt to gain access to the interconnected computers.
 
 Vulnerability scans can be applied to networks to address some of the problems with network security. The scans search a network for ports that respond to a request. If services are enabled that should not be, access to them can be blocked, or they can be disabled. The scans then determine the details of the application listening on that port and try to determine if it has any knownvulnerabilities. Testing those vulnerabilities can determine if the system is misconfigured or lacks needed patches.
 
@@ -870,11 +557,7 @@ Securing systems and facilities is intimately linked to intrusion detection and 
 
 • The types of inputs examined to detect intrusive activity. These may include user-shell commands, process system calls, and network packet headers or contents. Some forms of intrusion might be detected only by correlating information from several such sources.
 
-• The range of response capabilities. Simple forms of response include alert- ing an administrator to the potential intrusion or somehow halting the potentially intrusive activity—for example, killing a process engaged in such activity. In a sophisticated form of response, a systemmight transpar- ently divert an intruder’s activity to a **honeypot**—a false resource exposed  
-
-
-
-to the attacker. The resource appears real to the attacker and enables the system to monitor and gain information about the attack.
+• The range of response capabilities. Simple forms of response include alert- ing an administrator to the potential intrusion or somehow halting the potentially intrusive activity—for example, killing a process engaged in such activity. In a sophisticated form of response, a systemmight transpar- ently divert an intruder’s activity to a **honeypot**—a false resource exposed to the attacker. The resource appears real to the attacker and enables the system to monitor and gain information about the attack.
 
 These degrees of freedom in the design space for detecting intrusions have yielded a wide range of solutions, known as **intrusion-prevention systems** (**IPS**). IPSs act as self-modifying firewalls, passing traffic unless an intrusion is detected (at which point that traffic is blocked).
 
@@ -888,28 +571,10 @@ These different approaches yield IPSs with very different properties, how- ever.
 
 Anomalydetection is not necessarily superior to signature-baseddetection, however. Indeed, a significant challenge for systems that attempt anomaly detection is to benchmark “normal” system behavior accurately. If the sys- tem has already been penetrated when it is benchmarked, then the intrusive activity may be included in the “normal” benchmark. Even if the system is benchmarked cleanly, without influence from intrusive behavior, the bench- mark must give a fairly complete picture of normal behavior. Otherwise, the number of **false positives** (false alarms) or, worse, **false negatives** (missed intrusions) will be excessive.
 
-To illustrate the impact of even a marginally high rate of false alarms, consider an installation consisting of a hundred UNIXworkstations fromwhich  
-
-
-
-security-relevant events are recorded for purposes of intrusion detection. A small installation such as this could easily generate a million audit records per day.Only one or twomight beworthy of an administrator’s investigation. Ifwe suppose, optimistically, that each actual attack is reflected in ten audit records, we can roughly compute the rate of occurrence of audit records reflecting truly intrusive activity as follows:
-
-2 intrusionsday ⋅ 10 records intrusion
-
-106 recordsday
-
-\= 0_._00002_._
-
+To illustrate the impact of even a marginally high rate of false alarms, consider an installation consisting of a hundred UNIXworkstations from which security-relevant events are recorded for purposes of intrusion detection. A small installation such as this could easily generate a million audit records per day.Only one or twomight beworthy of an administrator’s investigation. Ifwe suppose, optimistically, that each actual attack is reflected in ten audit records, we can roughly compute the rate of occurrence of audit records reflecting truly intrusive activity as follows:
+![Alt text](image-8.png)
 Interpreting this as a “probability of occurrence of intrusive records,” we denote it as _P_(_I_); that is, event _I_ is the occurrence of a record reflecting truly intrusive behavior. Since _P_(_I_) = 0_._00002, we also know that _P_(¬_I_) = 1 − _P_(_I_) = 0_._99998\. Nowwe let_A_ denote the raising of an alarm by an IDS. An accurate IDS should maximize both _P_(_I_|_A_) and _P_(¬_I_|¬_A_)—that is, the probabilities that an alarm indicates an intrusion and that no alarm indicates no intrusion. Focusing on _P_(_I_|_A_) for the moment, we can compute it using **Bayes’ theorem**:
-
-_P_(_I_|_A_) = _P_(_I_) ⋅ _P_(_A_|_I_)
-
-_P_(_I_) ⋅ _P_(_A_|_I_) + _P_(¬_I_) ⋅ _P_(_A_|¬_I_)
-
-\= 0_._00002 ⋅ _P_(_A_|_I_)
-
-0_._00002 ⋅ _P_(_A_|_I_) + 0_._99998 ⋅ _P_(_A_|¬_I_)
-
+![Alt text](image-9.png)
 Now consider the impact of the false-alarm rate _P_(_A_|¬_I_) on _P_(_I_|_A_). Even with a very good true-alarm rate of _P_(_A_|_I_) = 0_._8, a seemingly good false- alarm rate of _P_(_A_|¬_I_) = 0_._0001 yields _P_(_I_|_A_) ≈ 0_._14\. That is, fewer than one in every seven alarms indicates a real intrusion! In systems where a security administrator investigates each alarm, a high rate of false alarms—called a “Christmas tree effect”—is exceedingly wasteful and will quickly teach the administrator to ignore alarms.
 
 This example illustrates a general principle for IPSs: for usability, theymust offer an extremely low false-alarm rate. Achieving a sufficiently low false- alarm rate is an especially serious challenge for anomaly-detection systems, as mentioned, because of the difficulties of adequately benchmarking normal system behavior. However, research continues to improve anomaly-detection techniques. Intrusion-detection software is evolving to implement signatures, anomaly algorithms, and other algorithms and to combine the results to arrive at a more accurate anomaly-detection rate.
@@ -917,8 +582,6 @@ This example illustrates a general principle for IPSs: for usability, theymust o
 ### Virus Protection
 
 As we have seen, viruses can and do wreak havoc on systems. Protection from viruses thus is an important security concern. Antivirus programs are often used to provide this protection. Some of these programs are effective against only particular known viruses. They work by searching all the programs on a system for the specific pattern of instructions known to make up the virus.  
-
-
 
 When they find a known pattern, they remove the instructions, **disinfecting** the program. Antivirus programs may have catalogs of thousands of viruses for which they search.
 
@@ -928,11 +591,7 @@ The best protection against computer viruses is prevention, or the prac- tice of
 
 Another defense is to avoid opening any e-mail attachments from unknown users. Unfortunately, history has shown that e-mail vulnerabilities appear as fast as they are fixed. For example, in 2000, the **_love bug_** virus became very widespread by traveling in e-mail messages that pretended to be love notes sent by friends of the receivers. Once a receiver opened the attached Visual Basic script, the virus propagated by sending itself to the first addresses in the receiver’s e-mail contact list. Fortunately, except for clogging e-mail systems and users’ inboxes, it was relatively harmless. It did, however, effectively negate the defensive strategy of opening attachments only from people known to the receiver. A more effective defense method is to avoid opening any e-mail attachment that contains executable code. Some companies now enforce this as policy by removing all incoming attachments to e-mail messages.
 
-Another safeguard, although it does not prevent infection, does permit early detection. A user must begin by completely reformatting the hard disk, especially the boot sector, which is often targeted for viral attack. Only secure software is uploaded, and a signature of each program is taken via a secure message-digest computation. The resulting file name and associated message- digest list must then be kept free from unauthorized access. Periodically, or each time a program is run, the operating system recomputes the signature  
-
-
-
-and compares itwith the signature on the original list; any differences serve as a warning of possible infection. This technique can be combinedwith others. For example, a high-overhead antivirus scan, such as a sandbox, can be used; and if a program passes the test, a signature can be created for it. If the signatures match the next time the program is run, it does not need to be virus-scanned again.
+Another safeguard, although it does not prevent infection, does permit early detection. A user must begin by completely reformatting the hard disk, especially the boot sector, which is often targeted for viral attack. Only secure software is uploaded, and a signature of each program is taken via a secure message-digest computation. The resulting file name and associated message- digest list must then be kept free from unauthorized access. Periodically, or each time a program is run, the operating system recomputes the signature and compares itwith the signature on the original list; any differences serve as a warning of possible infection. This technique can be combinedwith others. For example, a high-overhead antivirus scan, such as a sandbox, can be used; and if a program passes the test, a signature can be created for it. If the signatures match the next time the program is run, it does not need to be virus-scanned again.
 
 ### Auditing, Accounting, and Logging
 
@@ -948,27 +607,12 @@ In fact, a network firewall can separate a network into multiple domains. A comm
 
 Of course, a firewall itself must be secure and attack-proof. Otherwise, its ability to secure connections can be compromised. Furthermore, firewalls do not prevent attacks that **tunnel**, or travel within protocols or connections  
 
-
-
-Internet access from company’s computers
-
-company computers
-
-DMZ access from Internet firewall
-
-DMZ
-
-access between DMZ and company’s computers
-
-Internet
-
+![Alt text](image-10.png)
 **Figure 16.10** Domain separation via firewall.
 
 that the firewall allows. A buffer-overflow attack to a web server will not be stopped by the firewall, for example, because the HTTP connection is allowed; it is the contents of the HTTP connection that house the attack. Likewise, denial- of-service attacks can affect firewalls as much as any other machines. Another vulnerability of firewalls is spoofing, in which an unauthorized host pretends to be an authorized host bymeeting some authorization criterion. For example, if a firewall rule allows a connection from a host and identifies that host by its IP address, then another host could send packets using that same address and be allowed through the firewall.
 
 In addition to the most common network firewalls, there are other, newer kinds of firewalls, eachwith its pros and cons. A**personal firewal** is a software layer either included with the operating system or added as an application. Rather than limiting communication between security domains, it limits com- munication to (and possibly from) a given host. A user could add a personal firewall to her PC so that a Trojan horse would be denied access to the net- work to which the PC is connected, for example. An **application proxy fire wall** understands the protocols that applications speak across the network. For example, SMTP is used formail transfer. An application proxy accepts a connec- tion just as an SMTP server would and then initiates a connection to the original destination SMTP server. It can monitor the traffic as it forwards the message, watching for and disabling illegal commands, attempts to exploit bugs, and so on. Some firewalls are designed for one specific protocol. An **XML firewal** , for example, has the specific purpose of analyzing XML traffic and blocking disallowed or malformed XML. **System-call firewalls** sit between applications and the kernel, monitoring system-call execution. For example, in Solaris 10, the “least privilege” feature implements a list of more than fifty system calls that processes may or may not be allowed to make. A process that does not need to spawn other processes can have that ability taken away, for instance.  
-
-
 
 ### Other Solutions
 
@@ -998,8 +642,6 @@ By applying appropriate layers of defense, we can keep systems safe from all but
 
 • Only run applications from trusted sources (such as those that are code signed).  
 
-
-
 • Enable logging and auditing; review the logs periodically, or automate alerts.
 
 • Install and use antivirus software on systems susceptible to viruses, and keep the software up to date.
@@ -1022,8 +664,6 @@ The Windows 10 security model is based on the notion of **user accounts**. Windo
 
 Windows 10 uses the idea of a subject to ensure that programs run by a user do not get greater access to the system than the user is authorized to have. A **subject** is used to track and manage permissions for each program that a user runs. It is composed of the user’s access token and the program acting on behalf of the user. Since Windows 10 operates with a client–server model, two classes of subjects are used to control access: simple subjects and server subjects. An example of a **simple subject** is the typical application program that a user executes after she logs on. The simple subject is assigned a **security**  
 
-
-
 **context** based on the security access token of the user. A **server subject** is a process implemented as a protected server that uses the security context of the client when acting on the client’s behalf.
 
 As mentioned in Section 16.6.6, auditing is a useful security technique. Windows 10 has built-in auditing that allows many common security threats to be monitored. Examples include failure auditing for login and logoff events to detect random password break-ins, success auditing for login and logoff events to detect login activity at strange hours, success and failure write-access auditing for executable files to track a virus outbreak, and success and failure auditing for file access to detect access to sensitive files.
@@ -1041,8 +681,6 @@ Security attributes of an object in Windows 10 are described by a **security des
 • user maddie—no access
 
 In addition, it might have a system access-control list that tells the system to audit writes by everyone, along with an integrity label of medium that denies read, write, and execute to lower-integrity subjects.  
-
-
 
 An access-control list is composed of access-control entries that contain the security ID of the individual or group being granted access and an access mask that defines all possible actions on the object, with a value of AccessAllowedorAccessDenied for each action. Files inWindows 10mayhave the following access types: ReadData, WriteData, AppendData, Execute, ReadExtendedAttribute, WriteExtendedAttribute, ReadAttributes, and WriteAttributes. We can see how this allows a fine degree of control over access to objects.
 
@@ -1080,11 +718,7 @@ For the original article that explored buffer overflow attacks, see http://phrac
 
 \[C. Kaufman (2002)\] and \[Stallings and Brown (2011)\] explore the use of cryptography in computer systems. Discussions concerning protection of digital signatures are offered by \[Akl (1983)\], \[Davies (1983)\], \[Denning (1983)\], and \[Denning (1984)\]. Complete cryptography information is presented in \[Schneier (1996)\] and \[Katz and Lindell (2008)\].
 
-Asymmetric key encryption is discussed at https://www-ee.stanford.edu/ hellman/publications/24.pdf). The TLS cryptographic protocol is described in detail at https://tools.ietf.org/html/rfc5246. The nmap network scanning tool is from http://www.insecure.org/nmap/. For more information on port scans  
-
-
-
-and how they are hidden, see http://phrack.org/issues/49/15.html. Nessus is a commercial vulnerability scanner but can be used for free with limited targets: https://www.tenable.com/products/nessus-home.
+Asymmetric key encryption is discussed at https://www-ee.stanford.edu/ hellman/publications/24.pdf). The TLS cryptographic protocol is described in detail at https://tools.ietf.org/html/rfc5246. The nmap network scanning tool is from http://www.insecure.org/nmap/. For more information on port scans and how they are hidden, see http://phrack.org/issues/49/15.html. Nessus is a commercial vulnerability scanner but can be used for free with limited targets: https://www.tenable.com/products/nessus-home.
 
 **Bibliography**
 
@@ -1172,10 +806,6 @@ The processes in an operating systemmust be protected from one another’s activ
 
 As computer systems have become more sophisticated and pervasive in their applications, the need to protect their integrity has also grown. Protection was originally conceived as an adjunct to multiprogramming operating systems, so that untrustworthy users might safely share a common logical name space, such as a directory of files, or a common physical name space, such as memory. Modernprotection concepts have evolved to increase the reliability of any com- plex system that makes use of shared resources and is connected to insecure communications platforms such as the Internet.
 
-**667**  
-
-
-
 We need to provide protection for several reasons. The most obvious is the need to prevent the mischievous, intentional violation of an access restriction by a user. Ofmore general importance, however, is the need to ensure that each process in a system uses system resources only in ways consistent with stated policies. This requirement is an absolute one for a reliable system.
 
 Protection can improve reliability by detecting latent errors at the interfaces between component subsystems. Early detection of interface errors can often prevent contamination of a healthy subsystem by a malfunctioning subsys- tem. Also, an unprotected resource cannot defend against use (or misuse) by an unauthorized or incompetent user. A protection-oriented system provides means to distinguish between authorized and unauthorized usage.
@@ -1192,11 +822,7 @@ Frequently, a guiding principle can be used throughout a project, such as the de
 
 Consider one of the tenets of UNIX—that a user should not run as root. (In UNIX, only the root user can execute privileged commands.) Most users innately respect that, fearing an accidental delete operation for which there is no corresponding undelete. Because root is virtually omnipotent, the potential for human error when a user acts as root is grave, and its consequences far reaching.
 
-Now consider that rather than human error, damage may result from malicious attack. A virus launched by an accidental click on an attachment is one example. Another is a buffer overflow or other code-injection attack that is successfully carried out against a root-privileged process (or, in Windows,  
-
-
-
-a process with administrator privileges). Either case could prove catastrophic for the system.
+Now consider that rather than human error, damage may result from malicious attack. A virus launched by an accidental click on an attachment is one example. Another is a buffer overflow or other code-injection attack that is successfully carried out against a root-privileged process (or, in Windows, a process with administrator privileges). Either case could prove catastrophic for the system.
 
 Observing the principle of least privilege would give the system a chance to mitigate the attack—if malicious code cannot obtain root privileges, there is a chance that adequately defined **permissions** may block all, or at least some, of the damaging operations. In this sense, permissions can act like an immune system at the operating-system level.
 
@@ -1213,15 +839,7 @@ As we’ve seen, the main component of modern operating systems is the ker- nel,
 To carry out this **_privilege separation,_** hardware support is required. Indeed, all modern hardware supports the notion of separate execution levels, though implementations vary somewhat. A popular model of privilege separation is that of protection rings. In this model, fashioned after Bell –LaPadula (https://www.acsac.org/2005/papers/Bell.pdf), execution is defined as a set of concentric rings, with ring _i_ providing a subset of the functionality of ring _j_ for any _j_ < _i_. The innermost ring, ring _0_, thus provides the full set of privileges. This pattern is shown in Figure 17.1.
 
 When the system boots, it boots to the highest privilege level. Code at that level performs necessary initialization before dropping to a less privileged level. In order to return to a higher privilege level, code usually calls a special instruction, sometimes referred to as a gate, which provides a portal between rings. The syscall instruction (in Intel) is one example. Calling this instruction shifts execution fromuser to kernelmode. Aswe have seen, executing a system  
-
-
-
-ring 0
-
-ring 1
-
-ring _N_ – 1• • •
-
+![Alt text](image-11.png)
 **Figure 17.1** Protection-ring structure.
 
 call will always transfer execution to a predefined address, allowing the caller to specify only arguments (including the systemcall number), and not arbitrary kernel addresses. In this way, the integrity of the more privileged ring can generally be assured.
@@ -1235,7 +853,7 @@ The ARMprocessor’s architecture initially allowed only USR and SVCmode, for us
 Correctly employing a trusted execution environment means that, if the kernel is compromised, an attacker can’t simply retrieve the key from kernel memory. Moving cryptographic services to a separate, trusted environment  
 
 
-
+![Alt text](image-12.png)
 **Figure 17.2** Android uses of TrustZone.
 
 also makes brute-force attacks less likely to succeed. (As described in Chapter 16, these attacks involve trying all possible combinations of valid password characters until the password is found.) The various keys used by the system, from the user’s password to the system’s own, are stored in the on-chip key, which is only accessible in a trusted context. When a key—say, a password— is entered, it is verified via a request to the TrustZone environment. If a key is not known andmust be guessed, the TrustZone verifier can impose limitations —by capping the number of verification attempts, for example.
@@ -1249,7 +867,7 @@ Note that the secure monitor runs at a higher execution level than general- purp
 Rings of protection separate functions into domains and order them hierar- chically. A generalization of rings is using domains without a hierarchy. A computer system can be treated as a collection of processes and objects. By  
 
 
-
+![Alt text](image-13.png)
 **Figure 17.3** ARM architecture.
 
 **_objects,_**we mean both **hardware objects** (such as the CPU, memory segments, printers, disks, and tape drives) and **software objects** (such as files, programs, and semaphores). Each object has a unique name that differentiates it from all other objects in the system, and each can be accessed only throughwell-defined and meaningful operations. Objects are essentially abstract data types.
@@ -1259,8 +877,6 @@ The operations that are possible depend on the object. For example, on a CPU, we
 A process should be allowed to access only those objects for which it has authorization. Furthermore, at any time, a process should be able to access only those objects that it currently requires to complete its task. This second requirement, the **need-to-know principle**, is useful in limiting the amount of damage a faulty process or an attacker can cause in the system. For example, when process _p_ invokes procedure A(), the procedure should be allowed to access only its own variables and the formal parameters passed to it; it should not be able to access all the variables of process _p._ Similarly, consider the case in which process _p_ invokes a compiler to compile a particular file. The compiler should not be able to access files arbitrarily but should have access only to a well-defined subset of files (such as the source file, output object file, and so on) related to the file to be compiled. Conversely, the compiler may have private files used for accounting or optimization purposes that process _p_ should not be able to access.
 
 In comparing need-to-know with least privilege, it may be easiest to think of need-to-know as the policy and least privilege as the mechanism for achiev- ing this policy. For example, in file permissions, need-to-know might dictate that a user have read access but not write or execute access to a file. The principle of least privilege would require that the operating system provide a mechanism to allow read but not write or execute access.  
-
-
 
 ### Domain Structure
 
@@ -1274,17 +890,8 @@ If the association between processes and domains is fixed, and we want to adhere
 
 If the association is dynamic, a mechanism is available to allow **domain switching**, enabling the process to switch from one domain to another.Wemay also want to allow the content of a domain to be changed. If we cannot change the content of a domain, we can provide the same effect by creating a new domain with the changed content and switching to that new domain when we want to change the domain content.
 
-_D_1
-
-< _O_3, {read, write} > < _O_1, {read, write} > < _O_2, {execute} >
-
-< _O_1, {execute} > < _O_3, {read} >< _O_2, {write} > < _O_4, {print} >
-
-_D_2 _D_3
-
+![Alt text](image-14.png)
 **Figure 17.4** System with three protection domains.  
-
-
 
 Adomain can be realized in a variety of ways:
 
@@ -1304,11 +911,7 @@ Asnoted earlier, in UNIX, the root user can execute privileged commands,while ot
 
 The solution to this problem is the setuid bit. In UNIX, an owner identi- fication and a domain bit, known as the **_setuid bit,_** are associated with each file. The setuid bit may or may not be enabled. When the bit is enabled on an executable file (through chmod +s), whoever executes the file temporarily assumes the identity of the file owner. That means if a user manages to create a file with the user ID “root” and the setuid bit enabled, anyone who gains access to execute the file becomes user “root” for the duration of the process’s lifetime.
 
-If that strikes you as alarming, it is with good reason. Because of their potential power, setuid executable binaries are expected to be both sterile (affecting only necessary files under specific constraints) and hermetic (for example, tamperproof and impossible to subvert). Setuid programs need to  
-
-
-
-be very carefully written to make these assurances. Returning to the example of changing passwords, the passwd command is setuid-root and will indeed modify the password database, but only if first presented with the user’s valid password, and it will then restrict itself to editing the password of that user and only that user.
+If that strikes you as alarming, it is with good reason. Because of their potential power, setuid executable binaries are expected to be both sterile (affecting only necessary files under specific constraints) and hermetic (for example, tamperproof and impossible to subvert). Setuid programs need to be very carefully written to make these assurances. Returning to the example of changing passwords, the passwd command is setuid-root and will indeed modify the password database, but only if first presented with the user’s valid password, and it will then restrict itself to editing the password of that user and only that user.
 
 Unfortunately, experience has repeatedly shown that few setuid binaries, if any, fulfill both criteria successfully. Time and again, setuid binaries have been subverted—some through race conditions and others through code injection —yielding instant root access to attackers. Attackers are frequently successful in achieving privilege escalation in this way.Methods of doing so are discussed in Chapter 16. Limiting damage from bugs in setuid programs is discussed in Section 17.8.
 
@@ -1325,35 +928,7 @@ To illustrate these concepts, we consider the access matrix shown in Figure 17.5
 The access-matrix scheme provides uswith themechanism for specifying a variety of policies. The mechanism consists of implementing the access matrix and ensuring that the semantic properties we have outlined hold. More specif- ically, we must ensure that a process executing in domain _Di_ can access only those objects specified in row _i_, and then only as allowed by the access-matrix entries.
 
 The access matrix can implement policy decisions concerning protection. The policy decisions involvewhich rights should be included in the (_i_, _j_)_th_ entry.  
-
-
-
-object printer
-
-read
-
-read execute
-
-read write
-
-read write
-
-read
-
-print
-
-_F_1
-
-_D_1
-
-_D_2
-
-_D_3
-
-_D_4
-
-_F_2 _F_3 domain
-
+![Alt text](image-15.png)
 **Figure 17.5** Access matrix.
 
 We must also decide the domain in which each process executes. This last policy is usually decided by the operating system.
@@ -1368,52 +943,7 @@ Allowing controlled change in the contents of the access-matrix entries requires
 
 The ability to copy an access right from one domain (or row) of the access matrix to another is denoted by an asterisk (\*) appended to the access right. The copy right allows the access right to be copied only within the column (that is, for the object) for which the right is defined. For example, in Figure 17.7(a), a process executing in domain_D_2 can copy the read operation into any entry associated with file _F_2\. Hence, the access matrix of Figure 17.7(a) can be modified to the access matrix shown in Figure 17.7(b).  
 
-
-
-laser
-
-printer
-
-read
-
-read execute
-
-read write
-
-read write
-
-read
-
-print
-
-switch
-
-switch
-
-switch switch
-
-_F_1
-
-_D_1
-
-_D_1
-
-_D_2
-
-_D_2
-
-_D_3
-
-_D_3
-
-_D_4
-
-_D_4_F_2 _F_3
-
-object
-
-domain
-
+![Alt text](image-16.png)
 **Figure 17.6** Access matrix of Figure 17.5 with domains as objects.
 
 This scheme has two additional variants:
@@ -1423,163 +953,18 @@ This scheme has two additional variants:
 **2\.** Propagation of the copy right may be limited. That is, when the right _R_∗ is copied from access(_i_, _j_) to access(_k_, _j_), only the right _R_ (not _R_∗) is created. A process executing in domain _Dk_ cannot further copy the right _R_.
 
 A system may select only one of these three copy rights, or it may provide all three by identifying them as separate rights: copy, transfer, and limited copy.
-
-object
-
-read\*
-
-write\*execute
-
-execute execute
-
-execute
-
-_F_1
-
-_D_1
-
-_D_2
-
-_D_3
-
-_F_2 _F_3
-
-domain
-
-(a)
-
-object
-
-read\*
-
-write\*execute
-
-execute execute
-
-execute read
-
-_F_1
-
-_D_1
-
-_D_2
-
-_D_3
-
-_F_2 _F_3
-
-domain
-
-(b)
-
+![Alt text](image-17.png)
 **Figure 17.7** Access matrix with **_copy_** rights.  
-
-
 
 We also need a mechanism to allow addition of new rights and removal of some rights. The owner right controls these operations. If access(_i_, _j_) includes the owner right, then a process executing in domain _Di_ can add and remove any right in any entry in column _j_. For example, in Figure 17.8(a), domain _D_1 is the owner of _F_1 and thus can add and delete any valid right in column _F_1\. Similarly, domain _D_2 is the owner of _F_2 and _F_3 and thus can add and remove any valid right within these two columns. Thus, the access matrix of Figure 17.8(a) can be modified to the access matrix shown in Figure 17.8(b).
 
 The copy and owner rights allow a process to change the entries in a column. A mechanism is also needed to change the entries in a row. The control right is applicable only to domain objects. If access(_i_, _j_) includes the control right, then a process executing in domain _Di_ can remove any access right from row _j_. For example, suppose that, in Figure 17.6, we include the control right in access(_D_2, _D_4). Then, a process executing in domain _D_2 could modify domain _D_4, as shown in Figure 17.9.
 
 The copy and owner rights provide us with a mechanism to limit the prop- agation of access rights. However, they do not give us the appropriate tools for preventing the propagation (or disclosure) of information. The problem of guaranteeing that no information initially held in an object canmigrate outside of its execution environment is called the **confinemen problem**. This problem is in general unsolvable (see the bibliographical notes at the end of the chapter).
-
-object
-
-read\* owner
-
-write owner
-
-execute
-
-read\* owner write
-
-execute
-
-_F_1
-
-_D_1
-
-_D_2
-
-_D_3
-
-_F_2 _F_3
-
-domain
-
-(a)
-
-object
-
-owner read\* write\*
-
-write owner
-
-execute
-
-read\* owner write
-
-_F_1
-
-_D_1
-
-_D_2
-
-_D_3
-
-_F_2 _F_3
-
-domain
-
-(b)
-
-writewrite
-
+![Alt text](image-18.png)
 **Figure 17.8** Access matrix with owner rights.  
 
-
-
-laser
-
-printer
-
-read
-
-read execute
-
-write write
-
-read
-
-print
-
-switch
-
-switch
-
-switch switch control
-
-_F_1
-
-_D_1
-
-_D_1
-
-_D_2
-
-_D_2
-
-_D_3
-
-_D_3
-
-_D_4
-
-_D_4_F_2 _F_3
-
-object
-
-domain
-
+![Alt text](image-19.png)
 **Figure 17.9** Modified access matrix of Figure 17.6.
 
 These operations on the domains and the access matrix are not in them- selves important, but they illustrate the ability of the access-matrixmodel to let us implement and control dynamic protection requirements. New objects and new domains can be created dynamically and included in the access-matrix model. However, we have shown only that the basic mechanism exists. System designers andusersmustmake the policy decisions concerningwhich domains are to have access to which objects in which ways.
@@ -1596,11 +981,7 @@ This implementation suffers from several drawbacks. The table is usually large a
 
 ### Access Lists for Objects
 
-Each column in the access matrix can be implemented as an access list for one object, as described in Section 13.4.2. Obviously, the empty entries can be  
-
-
-
-discarded. The resulting list for each object consists of ordered pairs _<_domain, rights-set_\>_, which define all domains with a nonempty set of access rights for that object.
+Each column in the access matrix can be implemented as an access list for one object, as described in Section 13.4.2. Obviously, the empty entries can be discarded. The resulting list for each object consists of ordered pairs _<_domain, rights-set_\>_, which define all domains with a nonempty set of access rights for that object.
 
 This approach can be extended easily to define a list plus a **_default_** set of access rights. When an operation_M_ on an object_Oj_ is attempted in domain_Di_, we search the access list for object _Oj_, looking for an entry _<Di_, _Rk>_ with_M_ ∈ _Rk_. If the entry is found, we allow the operation; if it is not, we check the default set. If_M_ is in the default set, we allow the access. Otherwise, access is denied, and an exception condition occurs. For efficiency, we may check the default set first and then search the access list.
 
@@ -1617,8 +998,6 @@ To provide inherent protection,wemust distinguish capabilities fromother kinds o
 • Each object has a **tag** to denote whether it is a capability or accessible data. The tags themselvesmust not be directly accessible by an application program. Hardware or firmware support may be used to enforce this restriction. Although only one bit is necessary to distinguish between capabilities and other objects, more bits are often used. This extension allows all objects to be tagged with their types by the hardware. Thus, the hardware can distinguish integers, floating-point numbers, pointers, Booleans, characters, instructions, capabilities, and uninitialized values by their tags.
 
 • Alternatively, the address space associatedwith a program can be split into twoparts. One part is accessible to the programand contains the program’s normal data and instructions. The other part, containing the capability list, is accessible only by the operating system. A segmented memory space is useful to support this approach.  
-
-
 
 Several capability-based protection systems have been developed; we describe them briefly in Section 17.10. The Mach operating system also uses a version of capability-based protection; it is described in Appendix D.
 
@@ -1638,11 +1017,7 @@ The lock–key mechanism, as mentioned, is a compromise between access lists and
 
 Most systems use a combination of access lists and capabilities. When a process first tries to access an object, the access list is searched. If access is denied, an exception condition occurs. Otherwise, a capability is created and attached to the process. Additional references use the capability to demonstrate swiftly that access is allowed. After the last access, the capability is destroyed. This strategy was used in the MULTICS system and in the CAL system.
 
-As an example of how such a strategy works, consider a file system in which each file has an associated access list. When a process opens a file, the directory structure is searched to find the file, access permission is checked, and buffers are allocated. All this information is recorded in a new entry in a file table associatedwith the process. The operation returns an index into this table for the newly opened file. All operations on the file are made by specification of the index into the file table. The entry in the file table then points to the file  
-
-
-
-and its buffers. When the file is closed, the file-table entry is deleted. Since the file table is maintained by the operating system, the user cannot accidentally corrupt it. Thus, the user can access only those files that have been opened. Since access is checked when the file is opened, protection is ensured. This strategy is used in the UNIX system.
+As an example of how such a strategy works, consider a file system in which each file has an associated access list. When a process opens a file, the directory structure is searched to find the file, access permission is checked, and buffers are allocated. All this information is recorded in a new entry in a file table associatedwith the process. The operation returns an index into this table for the newly opened file. All operations on the file are made by specification of the index into the file table. The entry in the file table then points to the file and its buffers. When the file is closed, the file-table entry is deleted. Since the file table is maintained by the operating system, the user cannot accidentally corrupt it. Thus, the user can access only those files that have been opened. Since access is checked when the file is opened, protection is ensured. This strategy is used in the UNIX system.
 
 The right to access must still be checked on each access, and the file-table entry has a capability only for the allowed operations. If a file is opened for reading, then a capability for read access is placed in the file-table entry. If an attempt is made to write onto the file, the system identifies this protection violation by comparing the requested operation with the capability in the file- table entry.
 
@@ -1666,8 +1041,6 @@ Capabilities, however, present a much more difficult revocation problem, as ment
 
 • **Back-pointers**. A list of pointers is maintained with each object, pointing to all capabilities associated with that object. When revocation is required, we can follow these pointers, changing the capabilities as necessary. This scheme was adopted in the MULTICS system. It is quite general, but its implementation is costly.  
 
-
-
 • **Indirection**. The capabilities point indirectly, not directly, to the objects. Each capability points to a unique entry in a global table, which in turn points to the object.We implement revocation by searching the global table for the desired entry and deleting it. Then, when an access is attempted, the capability is found to point to an illegal table entry. Table entries can be reused for other capabilities without difficulty, since both the capability and the table entry contain the unique name of the object. The object for a capability and its table entry must match. This scheme was adopted in the CAL system. It does not allow selective revocation.
 
 • **Keys**. A key is a unique bit pattern that can be associated with a capability. This key is defined when the capability is created, and it can be neither modified nor inspected by the process that owns the capability. A **master key** is associated with each object; it can be defined or replaced with the set-key operation. When a capability is created, the current value of the master key is associated with the capability. When the capability is exercised, its key is compared with the master key. If the keys match, the operation is allowed to continue; otherwise, an exception condition is raised. Revocation replaces the master key with a new value via the set-key operation, invalidating all previous capabilities for this object.
@@ -1682,20 +1055,7 @@ In Section 13.4.2, we described how access controls can be used on files within 
 
 The idea is to advance the protection available in the operating system by explicitly adding the principle of least privilege via **role-based access control** (**RBAC**). This facility revolves around privileges. A privilege is the right to execute a system call or to use an option within that system call (such as opening a file with write access). Privileges can be assigned to processes, limiting them to exactly the access they need to perform their work. Privileges and programs can also be assigned to **roles**. Users are assigned roles or can take roles based on passwords assigned to the roles. In this way, a user can take a  
 
-
-
-user 1
-
-role 1
-
-privileges 1
-
-executes with role 1 privileges
-
-privileges 2
-
-process
-
+![Alt text](image-20.png)
 **Figure 17.10** Role-based access control in Solaris 10.
 
 role that enables a privilege, allowing the user to run a program to accomplish a specific task, as depicted in Figure 17.10. This implementation of privileges decreases the security risk associated with superusers and setuid programs.
@@ -1709,8 +1069,6 @@ Operating systems have traditionally used **discretionary access control** (**DA
 DACs, however, have proved insufficient over the years. A key weakness lies in their discretionary nature, which allows the owner of a resource to set or modify its permissions. Another weakness is the unlimited access allowed for the administrator or root user. As we have seen, this design can leave the system vulnerable to both accidental and malicious attacks and provides no defense when hackers obtain root privileges.
 
 The need arose, therefore, for a stronger form of protection, which was introduced in the form of **mandatory access control** (**MAC**). MAC is enforced as a system policy that even the root user cannot modify (unless the policy explic- itly allows modifications or the system is rebooted, usually into an alternate configuration). The restrictions imposed by MAC policy rules are more pow- erful than the capabilities of the root user and can be used to make resources inaccessible to anyone but their intended owners.  
-
-
 
 Modern operating systems all provide MAC along with DAC, although implementations differ. Solaris was among the first to introduce MAC, which was part of Trusted Solaris (2.5). FreeBSD made DAC part of its TrustedBSD implementation (FreeBSD 5.0). The FreeBSD implementation was adopted by Apple in macOS 10.5 and has served as the substrate over which most of the security features of MAC and iOS are implemented. Linux’s MAC implemen- tation is part of the SELinux project, which was devised by the NSA, and has been integrated into most distributions. Microsoft Windows joined the trend with Windows Vista’s Mandatory Integrity Control.
 
@@ -1729,13 +1087,7 @@ Linux uses capabilities to address the limitations of the UNIX model, which we d
 In essence, Linux’s capabilities “slice up” the powers of root into distinct areas, each represented by a bit in a bitmask, as shown in Figure 17.11. Fine- grained control over privileged operations can be achieved by toggling bits in the bitmask.
 
 In practice, three bitmasks are used—denoting the capabilities **_permitted, effective,_** and **_inheritable._** Bitmasks can apply on a per-process or a per-thread basis. Furthermore, once revoked, capabilities cannot be reacquired. The usual  
-
-
-
-W
-
-I C
-
+![Alt text](image-21.png)
 **Figure 17.11** Capabilities in POSIX.1e.
 
 sequence of events is that a process or thread startswith the full set of permitted capabilities and voluntarily decreases that set during execution. For example, after opening a network port, a thread might remove that capability so that no further ports can be opened.
@@ -1750,14 +1102,14 @@ The Linux capabilities model is a great improvement over the traditional UNIX mo
 
 Apple’s system protection takes the form of entitlements. Entitlements are declaratory permissions—XML property list stating which permissions are claimed as necessary by the program (see Figure 17.12). When the process attempts a privileged operation (in the figure, loading a kernel extension), its  
 
-
+```
 
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"> <plist version="1.0"> <dict>
 
 <key>com.apple.private.kernel.get-kext-info <true/> <key>com.apple.rootless.kext-management <true/>
 
 </dict> </plist>
-
+```
 **Figure 17.12** Apple Darwin entitlements
 
 entitlements are checked, and only if the needed entitlements are present is the operation allowed.
@@ -1772,11 +1124,7 @@ As the battle to protect systems from accidental and malicious damage esca- late
 
 Apple introduced in macOS 10.11 a new protection mechanism called **System Integrity Protection** (**SIP**). Darwin-based operating systems use SIP to restrict access to system files and resources in such a way that even the root user cannot tamper with them. SIP uses extended attributes on files to mark them as restricted and further protects system binaries so that they cannot be debugged or scrutinized, much less tampered with. Most importantly, only code-signed kernel extensions are permitted, and SIP can further be configured to allowonly code-signed binaries as well.
 
-Under SIP, although root is still the most powerful user in the system, it can do far less than before. The root user can still manage other users’ files, as well as install and remove programs, but not in anyway that would replace ormod- ify operating-system components. SIP is implemented as a global, inescapable  
-
-
-
-screen on all processes, with the only exceptions allowed for system bina- ries (for example, fsck, or kextload, as shown in Figure 17.12), which are specifically entitled for operations for their designated purpose.
+Under SIP, although root is still the most powerful user in the system, it can do far less than before. The root user can still manage other users’ files, as well as install and remove programs, but not in anyway that would replace ormod- ify operating-system components. SIP is implemented as a global, inescapable screen on all processes, with the only exceptions allowed for system bina- ries (for example, fsck, or kextload, as shown in Figure 17.12), which are specifically entitled for operations for their designated purpose.
 
 ### System-Call Filtering
 
@@ -1789,8 +1137,6 @@ A second form of system-call filtering goes deeper still and inspects the argume
 A challenge encountered with both approaches is keeping them as flexible as possible while at the same time avoiding the need to rebuild the kernel when changes or new filters are required—a common occurrence due to the differing needs of different processes. Flexibility is especially important given the unpredictable nature of vulnerabilities. New vulnerabilities are discovered every day and may be immediately exploitable by attackers.
 
 One approach to meeting this challenge is to decouple the filter implemen- tation from the kernel itself. The kernel need only contain a set of callouts, which can then be implemented in a specialized driver (Windows), kernel module (Linux), or extension (Darwin). Because an external, modular com- ponent provides the filtering logic, it can be updated independently of the kernel. This component commonly makes use of a specialized profiling lan- guage by including a built-in interpreter or parser. Thus, the profile itself can be decoupled from the code, providing a human-readable, editable profile and further simplifying updates. It is also possible for the filtering component to call a trusted user-mode daemon process to assist with validation logic.  
-
-
 
 ### Sandboxing
 
@@ -1807,11 +1153,16 @@ Among the major vendors, Apple was the first to implement sandboxing, which appe
 Apple’s sandboxing has evolved considerably since its inception. It is now used in the iOS variants, where it serves (along with code signing) as the chief protection against untrusted third-party code. In iOS, and starting with macOS 10.8, the macOS sandbox is mandatory and is automatically enforced for all Mac-store downloaded apps. More recently, as mentioned earlier, Apple adopted the System Integrity Protection (SIP), used in macOS 10.11 and later. SIP is, in effect, a system-wide “platform profile.” Apple enforces it starting at system boot on all processes in the system. Only those processes that are enti- tled can perform privileged operations, and those are code-signed by Apple and therefore trusted.  
 
 
-
-(version 1) (deny default) (allow file-chroot) (allow file-read-metadata (literal "/var")) (allow sysctl-read) (allow mach-per-user-lookup) (allow mach-lookup)
-
-(global-name "com.apple.system.logger")
-
+```
+(version 1)
+(deny default) 
+(allow file-chroot) 
+(allow file-read-metadata (literal "/var")) 
+(allow sysctl-read) 
+(allow mach-per-user-lookup) 
+(allow mach-lookup)
+    (global-name "com.apple.system.logger")
+```
 **Figure 17.13** A sandbox profile of a MacOS daemon denying most operations.
 
 ### Code Signing
@@ -1824,11 +1175,7 @@ Currently, code signing is the best tool in the protection arsenal for solving t
 
 To the degree that protection is provided in computer systems, it is usually achieved through an operating-system kernel, which acts as a security agent to inspect and validate each attempt to access a protected resource. Since comprehensive access validation may be a source of considerable overhead, either we must give it hardware support to reduce the cost of each validation, or we must allow the system designer to compromise the goals of protection. Satisfying all these goals is difficult if the flexibility to implement protection policies is restricted by the support mechanisms provided or if protection environments are made larger than necessary to secure greater operational efficiency.
 
-As operating systems have becomemore complex, and particularly as they have attempted to provide higher-level user interfaces, the goals of protection  
-
-
-
-have become much more refined. The designers of protection systems have drawn heavily on ideas that originated in programming languages and espe- cially on the concepts of abstract data types and objects. Protection systems are now concerned not only with the identity of a resource to which access is attempted but also with the functional nature of that access. In the newest protection systems, concern for the function to be invoked extends beyond a set of system-defined functions, such as standard file-access methods, to include functions that may be user-defined as well.
+As operating systems have becomemore complex, and particularly as they have attempted to provide higher-level user interfaces, the goals of protection have become much more refined. The designers of protection systems have drawn heavily on ideas that originated in programming languages and espe- cially on the concepts of abstract data types and objects. Protection systems are now concerned not only with the identity of a resource to which access is attempted but also with the functional nature of that access. In the newest protection systems, concern for the function to be invoked extends beyond a set of system-defined functions, such as standard file-access methods, to include functions that may be user-defined as well.
 
 Policies for resource use may also vary, depending on the application, and they may be subject to change over time. For these reasons, protection can no longer be considered a matter of concern only to the designer of an operating system. It should also be available as a tool for use by the application designer, so that resources of an application subsystem can be guarded against tampering or the influence of an error.
 
@@ -1844,11 +1191,7 @@ At this point, programming languages enter the picture. Specifying the desired c
 
 **4\.** A declarative notation is natural because access privileges are closely related to the linguistic concept of data type.
 
-A variety of techniques can be provided by a programming-language implementation to enforce protection, but any of these must depend on some degree of support from an underlying machine and its operating system. For example, suppose a language is used to generate code to run on the Cambridge CAP system (Section A.14.2). On this system, every storage reference made on the underlying hardware occurs indirectly through a capability. This restriction prevents any process from accessing a resource outside of its protection envi- ronment at any time. However, a program may impose arbitrary restrictions on how a resource can be used during execution of a particular code segment. We can implement such restrictions most readily by using the software capa- bilities provided by CAP. A language implementation might provide standard protected procedures to interpret software capabilities that would realize the protection policies that could be specified in the language. This scheme puts  
-
-
-
-policy specification at the disposal of the programmers, while freeing them from implementing its enforcement.
+A variety of techniques can be provided by a programming-language implementation to enforce protection, but any of these must depend on some degree of support from an underlying machine and its operating system. For example, suppose a language is used to generate code to run on the Cambridge CAP system (Section A.14.2). On this system, every storage reference made on the underlying hardware occurs indirectly through a capability. This restriction prevents any process from accessing a resource outside of its protection envi- ronment at any time. However, a program may impose arbitrary restrictions on how a resource can be used during execution of a particular code segment. We can implement such restrictions most readily by using the software capa- bilities provided by CAP. A language implementation might provide standard protected procedures to interpret software capabilities that would realize the protection policies that could be specified in the language. This scheme puts policy specification at the disposal of the programmers, while freeing them from implementing its enforcement.
 
 Even if a system does not provide a protection kernel as powerful as those of Hydra (Section A.14.1) or CAP, mechanisms are still available for implementing protection specifications given in a programming language. The principal distinction is that the **_security_** of this protection will not be as great as that supported by a protection kernel, because the mechanism must rely on more assumptions about the operational state of the system. A compiler can separate references for which it can certify that no protection violation could occur from those for which a violation might be possible, and it can treat them differently. The security provided by this form of protection rests on the assumption that the code generated by the compiler will not be modified prior to or during its execution.
 
@@ -1860,11 +1203,7 @@ What, then, are the relative merits of enforcement based solely on a kernel, as 
 
 • **Efficienc** . The greatest efficiency is obtainedwhen enforcement of protec- tion is supported directly by hardware (or microcode). Insofar as software support is required, language-based enforcement has the advantage that static access enforcement can be verified off-line at compile time. Also, since an intelligent compiler can tailor the enforcementmechanism tomeet the specified need, the fixed overhead of kernel calls can often be avoided.
 
-In summary, the specification of protection in a programming language allows the high-level description of policies for the allocation and use of resources. A language implementation can provide software for protection enforcement when automatic hardware-supported checking is unavailable. In  
-
-
-
-addition, it can interpret protection specifications to generate calls onwhatever protection system is provided by the hardware and the operating system.
+In summary, the specification of protection in a programming language allows the high-level description of policies for the allocation and use of resources. A language implementation can provide software for protection enforcement when automatic hardware-supported checking is unavailable. In addition, it can interpret protection specifications to generate calls onwhatever protection system is provided by the hardware and the operating system.
 
 One way of making protection available to the application program is through the use of a software capability that could be used as an object of com- putation. Inherent in this concept is the idea that certain program components might have the privilege of creating or examining these software capabilities. A capability-creating program would be able to execute a primitive operation that would seal a data structure, rendering the latter’s contents inaccessible to any program components that did not hold either the seal or the unseal privilege. Such components might copy the data structure or pass its address to other program components, but they could not gain access to its contents. The reason for introducing such software capabilities is to bring a protection mechanism into the programming language. The only problem with the con- cept as proposed is that the use of the seal and unseal operations takes a procedural approach to specifying protection. A nonprocedural or declarative notation seems a preferableway tomake protection available to the application programmer.
 
@@ -1877,8 +1216,6 @@ What is needed is a safe, dynamic access-control mechanism for distribut- ing ca
 **3\.** Specifying the order inwhich a particular processmay invoke the various operations of a resource (for example, a file must be opened before it can be read). It should be possible to give two processes different restrictions on the order in which they can invoke the operations of the allocated resource.
 
 The incorporation of protection concepts into programming languages, as a practical tool for system design, is in its infancy. Protectionwill likely become a matter of greater concern to the designers of new systems with distributed architectures and increasingly stringent requirements on data security. Then the importance of suitable language notations in which to express protection requirements will be recognized more widely.  
-
-
 
 ### Run-Time-Based Enforcement—Protection in Java
 
@@ -1894,32 +1231,7 @@ The philosophy adopted in Java is to require the library class to explicitly per
 
 This implementation approach is called **stack inspection**. Every thread in the JVM has an associated stack of its ongoing method invocations. When a caller may not be trusted, a method executes an access request within a doPrivileged block to perform the access to a protected resource directly or indirectly. doPrivileged() is a static method in the AccessController class that is passed a class with a run()method to invoke. When the doPrivileged block is entered, the stack frame for this method is annotated to indicate this fact. Then, the contents of the block are executed.When an access to a protected  
 
-
-
-untrusted applet
-
-protection domain:
-
-socket permission:
-
-class:
-
-none
-
-gui: … get(url); open(addr); …
-
-networking
-
-any
-
-open(Addr a): … checkPermission (a, connect); connect (a); …
-
-get(URL u): … doPrivileged { open(‘proxy.lucent.com:80’); } <request u from proxy> …
-
-\*.lucent.com:80, connect
-
-URL loader
-
+![Alt text](image-22.png)
 **Figure 17.14** Stack inspection.
 
 resource is subsequently requested, either by this method or a method it calls, a call to checkPermissions() is used to invoke stack inspection to determine if the request should be allowed. The inspection examines stack frames on the calling thread’s stack, starting from the most recently added frame and working toward the oldest. If a stack frame is first found that has the doPriv- ileged() annotation, then checkPermissions() returns immediately and silently, allowing the access. If a stack frame is first found for which access is disallowed based on the protection domain of the method’s class, then check- Permissions() throws an AccessControlException. If the stack inspection exhausts the stack without finding either type of frame, then whether access is allowed depends on the implementation (some implementations of the JVM may allow access, while other implementations may not).
@@ -1927,8 +1239,6 @@ resource is subsequently requested, either by this method or a method it calls, 
 Stack inspection is illustrated in Figure 17.14. Here, the gui() method of a class in the **_untrusted applet_** protection domain performs two operations, first a get() and then an open(). The former is an invocation of the get() method of a class in the **_URL loader_** protection domain, which is permitted to open() sessions to sites in the lucent.comdomain, in particular a proxy server proxy.lucent.com for retrieving URLs. For this reason, the untrusted applet’s get() invocation will succeed: the checkPermissions() call in the network- ing library encounters the stack frame of the get()method, which performed its open() in a doPrivileged block. However, the untrusted applet’s open() invocation will result in an exception, because the checkPermissions() call finds no doPrivileged annotation before encountering the stack frame of the gui()method.
 
 Of course, for stack inspection to work, a program must be unable to modify the annotations on its own stack frame or to otherwise manipulate stack inspection. This is one of the most important differences between Java and many other languages (including C++). A Java program cannot directly access memory; it can manipulate only an object for which it has a reference. References cannot be forged, and manipulations are made only through well- defined interfaces. Compliance is enforced through a sophisticated collection of load-time and run-time checks. As a result, an object cannot manipulate its run-time stack, because it cannot get a reference to the stack or other compo- nents of the protection system.  
-
-
 
 More generally, Java’s load-time and run-time checks enforce **type safety** of Java classes. Type safety ensures that classes cannot treat integers as pointers, write past the end of an array, or otherwise access memory in arbitrary ways. Rather, a program can access an object only via the methods defined on that object by its class. This is the foundation of Java protection, since it enables a class to effectively **encapsulate** and protect its data and methods from other classes loaded in the same JVM. For example, a variable can be defined as private so that only the class that contains it can access it or protected so that it can be accessed only by the class that contains it, subclasses of that class, or classes in the same package. Type safety ensures that these restrictions can be enforced.
 
@@ -1949,8 +1259,6 @@ More generally, Java’s load-time and run-time checks enforce **type safety** o
 • Real systems are much more limited than the general model. Older UNIX distributions are representative, providing discretionary access controls of read, write, and execution protection separately for the owner, group, and general public for each file. More modern systems are closer to the general model, or at least provide a variety of protection features to protect the system and its users.
 
 • Solaris 10 and beyond, among other systems, implement the principle of least privilege via role-based access control, a form of access matrix.  
-
-**Bibliography 697**
 
 Another protection extension ismandatory access control, a formof system policy enforcement.
 
@@ -1979,8 +1287,6 @@ Details on POSIX.1e and its Linux implementation are provided in https://www.use
 **\[Ganger et al. (2002)\]** G. R. Ganger, D. R. Engler, M. F. Kaashoek, H. M. Briceno, R. Hunt, and T. Pinckney, “Fast and Flexible Application-Level Networking on Exokernel Systems”,_ACMTransactions onComputer Systems_, Volume 20,Number 1 (2002), pages 49–83.
 
 **\[Iliffe and Jodeit (1962)\]** J. K. Iliffe and J. G. Jodeit, “ADynamic Storage Alloca- tion System”, _Computer Journal_, Volume 5, Number 3 (1962), pages 200–209.  
-
-
 
 **\[Kaashoek et al. (1997)\]** M. F. Kaashoek, D. R. Engler, G. R. Ganger, H. M. Briceno, R.Hunt, D.Mazieres, T. Pinckney, R.Grimm, J. Jannotti, andK.Macken- zie, “Application Performance and Flexibility on Exokernel Systems”, _Proceed- ings of the ACM Symposium on Operating Systems Principles_ (1997), pages 52–65.
 
