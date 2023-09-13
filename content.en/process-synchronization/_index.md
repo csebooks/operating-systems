@@ -4,16 +4,12 @@ weight: 3
 ---
 
   
-
-Part Three
-
 _Process Synchronization_
 
 A system typically consists of several (perhaps hundreds or even thou- sands) of threads running either concurrently or in parallel. Threads often share user data. Meanwhile, the operating system continuously updates various data structures to support multiple threads. A _race condition_ exists when access to shared data is not controlled, possibly resulting in corrupt data values.
 
 _Process synchronization_ involves using tools that control access to shared data to avoid race conditions. These tools must be used carefully, as their incorrect use can result in poor system performance, including deadlock.  
 
-_6_ **CHAPTER**
 
 # Synchronization Tools
 
@@ -59,18 +55,21 @@ Although the producer and consumer routines shown above are correct separately, 
 
 We can show that the value of count may be incorrect as follows. Note that the statement “count++” may be implemented in machine language (on a typical machine) as follows:
 
-_register_1 = count _register_1 = _register_1 + 1 count = _register_1
+_register_ 1 = count 
+_register_ 1 = _register_ 1 + 1 
+count = _register_ 1
 
 where _register_1 is one of the local CPU registers. Similarly, the statement “count- -” is implemented as follows:
 
-_register_2 = count _register_2 = _register_2 − 1 count = _register_2
+_register_ 2 = count 
+_register_ 2 = _register_ 2 − 1 
+count = _register_ 2
 
 where again _register_2 is one of the local CPU registers. Even though _register_1 and _register_2 may be the same physical register, remember that the contents of this register will be saved and restored by the interrupt handler (Section 1.2.3).
 
 The concurrent execution of “count++” and “count--” is equivalent to a sequential execution in which the lower-level statements presented previously are interleaved in some arbitrary order (but the order within each high-level statement is preserved). One such interleaving is the following:
-```
-_T_0: _producer_ execute _register_1 = count {_register_1 = 5} _T_1: _producer_ execute _register_1 = _register_1 + 1 {_register_1 = 6} _T_2: _consumer_ execute _register_2 = count {_register_2 = 5} _T_3: _consumer_ execute _register_2 = _register_2 − 1 {_register_2 = 4} _T_4: _producer_ execute count = _register_1 {_count_ = 6} _T_5: _consumer_ execute count = _register_2 {_count_ = 4}
-```
+
+![Alt text](image-31.png)
 Notice that we have arrived at the incorrect state “count == 4”, indicating that four buffers are full, when, in fact, five buffers are full. If we reversed the order of the statements at _T_4 and _T_5, we would arrive at the incorrect state “count == 6”.
 
 We would arrive at this incorrect state because we allowed both processes to manipulate the variable count concurrently. A situation like this, where several processes access and manipulate the same data concurrently and the outcome of the execution depends on the particular order in which the access takes place, is called a **race condition**. To guard against the race condition above, we need to ensure that only one process at a time can be manipulating the variable count. To make such a guarantee, we require that the processes be synchronized in some way.
@@ -112,31 +111,8 @@ Another example is illustrated in Figure 6.2. In this situation, two pro- cesses
 Other kernel data structures that are prone to possible race conditions include structures for maintaining memory allocation, for maintaining process lists, and for interrupt handling. It is up to kernel developers to ensure that the operating system is free from such race conditions.
 
 The critical-section problem could be solved simply in a single-core envi- ronment if we could prevent interrupts from occurring while a shared variable was being modified. In this way, we could be sure that the current sequence
-```
-next_available_pid = 2615
 
-pid_t child = fork ();
-
-child = 2615
-
-return 2615
-
-request pid
-
-request pid
-
-return 2615
-
-child = 2615
-
-0
-
-pid_t child = fork ();
-
-P 1P
-
-tim e
-```
+![Alt text](image-32.png)
 **Figure 6.2** Race condition when assigning a pid.  of instructions would be allowed to execute in order without preemption. No other instructions would be run, so no unexpected modifications could be made to the shared variable.
 
 Unfortunately, this solution is not as feasible in a multiprocessor environ- ment. Disabling interrupts on a multiprocessor can be time consuming, since the message is passed to all the processors. This message passing delays entry into each critical section, and system efficiency decreases. Also consider the effect on a system’s clock if the clock is kept updated by interrupts.
@@ -151,7 +127,7 @@ Why, then, would anyone favor a preemptive kernel over a nonpreemp- tive one? A 
 
 Next, we illustrate a classic software-based solution to the critical-section prob- lem known as **Peterson’s solution**. Because of the way modern computer architectures perform basic machine-language instructions, such as load and store, there are no guarantees that Peterson’s solution will work correctly on such architectures. However, we present the solution because it provides a good algorithmic description of solving the critical-section problem and illus- trates some of the complexities involved in designing software that addresses the requirements of mutual exclusion, progress, and bounded waiting.
 
-Peterson’s solution is restricted to two processes that alternate execution between their critical sections and remainder sections. The processes are num- bered _P_0 and _P_1. For convenience, when presenting _Pi_, we use _Pj_ to denote the other process; that is, j equals 1 − i.
+Peterson’s solution is restricted to two processes that alternate execution between their critical sections and remainder sections. The processes are num- bered _P_ 0 and _P_ 1. For convenience, when presenting _Pi_, we use _Pj_ to denote the other process; that is, j equals 1 − i.
 
 Peterson’s solution requires the two processes to share two data items:
 
@@ -181,7 +157,7 @@ We now prove that this solution is correct. We need to show that:
 
 **3.** The bounded-waiting requirement is met.
 
-To prove property 1, we note that each _Pi_ enters its critical section only if either flag[j] == false or turn == i. Also note that, if both processes can be executing in their critical sections at the same time, then flag[0] == flag[1] == true. These two observations imply that _P_0 and _P_1 could not have successfully executed their while statements at about the same time, since the value of turn can be either 0 or 1 but cannot be both. Hence, one of the processes—say, _Pj_—must have successfully executed the while statement, whereas _Pi_ had to execute at least one additional statement (“turn == j”). However, at that time, flag[j] == true and turn == j, and this condition will persist as long as _Pj_ is in its critical section; as a result, mutual exclusion is preserved.  
+To prove property 1, we note that each _Pi_ enters its critical section only if either flag[j] == false or turn == i. Also note that, if both processes can be executing in their critical sections at the same time, then flag[0] == flag[1] == true. These two observations imply that _P_ 0 and _P_ 1 could not have successfully executed their while statements at about the same time, since the value of turn can be either 0 or 1 but cannot be both. Hence, one of the processes—say, _Pj_—must have successfully executed the while statement, whereas _Pi_ had to execute at least one additional statement (“turn == j”). However, at that time, flag[j] == true and turn == j, and this condition will persist as long as _Pj_ is in its critical section; as a result, mutual exclusion is preserved.  
 
 Toprove properties 2 and 3,we note that a process_Pi_ can be prevented from entering the critical section only if it is stuck in the while loopwith the condition flag[j] == true and turn == j; this loop is the only one possible. If _Pj_ is not ready to enter the critical section, then flag[j] == false, and _Pi_ can enter its critical section. If _Pj_ has set flag[j] to true and is also executing in its while statement, then either turn == i or turn == j. If turn == i, then _Pi_ will enter the critical section. If turn == j, then _Pj_ will enter the critical section. However, once _Pj_ exits its critical section, it will reset flag[j] to false, allowing _Pi_ to enter its critical section. If _Pj_ resets flag[j] to true, it must also set turn to i. Thus, since _Pi_ does not change the value of the variable turn while executing the while statement, _Pi_ will enter the critical section (progress) after at most one entry by _Pj_ (bounded waiting).
 
@@ -422,10 +398,12 @@ wait(S) { while (S <= 0)
 }
 ```
 The definition of signal() is as follows:
-
+```
 signal(S) { S++;
 
-} All modifications to the integer value of the semaphore in the wait() and
+} 
+```
+All modifications to the integer value of the semaphore in the wait() and
 
 signal() operations must be executed atomically. That is, when one process modifies the semaphore value, no other process can simultaneously modify that same semaphore value. In addition, in the case of wait(S), the testing of the integer value of S (S ≤ 0), as well as its possible modification (S--), must be executed without interruption. We shall see how these operations can be implemented in Section 6.6.2. First, let’s see how semaphores can be used.
 
@@ -435,17 +413,18 @@ Operating systems often distinguish between counting and binary semaphores. The 
 
 Counting semaphores can be used to control access to a given resource consisting of a finite number of instances. The semaphore is initialized to the number of resources available. Each process that wishes to use a resource performs a wait() operation on the semaphore (thereby decrementing the count). When a process releases a resource, it performs a signal() operation (incrementing the count). When the count for the semaphore goes to 0, all resources are being used. After that, processes that wish to use a resource will block until the count becomes greater than 0.
 
-We can also use semaphores to solve various synchronization problems. For example, consider two concurrently running processes:_P_1 with a statement _S_1 and_P_2 with a statement _S_2. Supposewe require that _S_2 be executed only after _S_1 has completed. We can implement this scheme readily by letting _P_1 and _P_2 share a common semaphore synch, initialized to 0. In process _P_1, we insert the statements
+We can also use semaphores to solve various synchronization problems. For example, consider two concurrently running processes:_P_ 1 with a statement _S_ 1 and_P_ 2 with a statement _S_ 2. Supposewe require that _S_ 2 be executed only after _S_ 1 has completed. We can implement this scheme readily by letting _P_ 1 and _P_ 2 share a common semaphore synch, initialized to 0. In process _P_ 1, we insert the statements
 
-_S_1; signal(synch);  
+_S_ 1; 
+signal(synch);  
 
 
+In process _P_ 2, we insert the statements
 
-In process _P_2, we insert the statements
+wait(synch); 
+_S_ 2;
 
-wait(synch); _S_2;
-
-Because synch is initialized to 0, _P_2 will execute _S_2 only after _P_1 has invoked signal(synch), which is after statement _S_1 has been executed.
+Because synch is initialized to 0, _P_ 2 will execute _S_ 2 only after _P_ 1 has invoked signal(synch), which is after statement _S_ 1 has been executed.
 
 ### Semaphore Implementation
 
@@ -454,20 +433,20 @@ Recall that the implementation of mutex locks discussed in Section 6.5 suffers f
 Aprocess that is suspended,waiting on a semaphore S, should be restarted when some other process executes a signal() operation. The process is restarted by a wakeup() operation,which changes the process from thewaiting state to the ready state. The process is then placed in the ready queue. (The CPU may or may not be switched from the running process to the newly ready process, depending on the CPU-scheduling algorithm.)
 
 To implement semaphores under this definition, we define a semaphore as follows:
-
+```
 typedef struct { int value; struct process *list;
 
 } semaphore;
-
-Each semaphore has an integer value and a list of processes list. When a process must wait on a semaphore, it is added to the list of processes. A signal() operation removes one process from the list of waiting processes and awakens that process.
 ```
-Now, the wait() semaphore operation can be defined as
+Each semaphore has an integer value and a list of processes list. When a process must wait on a semaphore, it is added to the list of processes. A signal() operation removes one process from the list of waiting processes and awakens that process.
 
+Now, the wait() semaphore operation can be defined as
+```
 wait(semaphore *S) { S->value--; if (S->value < 0) {
 
 add this process to S->list; sleep();
 
-_} }_  
+} }  
 
 
 
@@ -477,7 +456,7 @@ signal(semaphore *S) { S->value++; if (S->value <= 0) {
 
 remove a process _P_ from S->list; wakeup(P);
 
-_} }_
+} }
 ```
 The sleep() operation suspends the process that invokes it. The wakeup(P) operation resumes the execution of a suspended process P. These two opera- tions are provided by the operating system as basic system calls.
 
@@ -555,7 +534,7 @@ function P2 ( . . . ) { . . .
 
 initialization code ( . . . ) { . . .
 
-_} }_
+} }
 ```
 **Figure 6.11** Pseudocode syntax of a monitor.  
 
@@ -587,7 +566,7 @@ Many programming languages have incorporated the idea of the monitor as describe
 We now consider a possible implementation of the monitor mechanism using semaphores. For each monitor, a binary semaphore mutex (initialized to 1) is provided to ensure mutual exclusion. A process must execute wait(mutex) before entering the monitor and must execute signal(mutex) after leaving the monitor.
 
 We will use the signal-and-wait scheme in our implementation. Since a signaling process must wait until the resumed process either leaves or waits, an additional binary semaphore, next, is introduced, initialized to 0. The signaling processes can use next to suspend themselves. An integer variable next count is also provided to count the number of processes suspended on next. Thus, each external function F is replaced by
-
+```
 wait(mutex); ...
 
 body of F ...
@@ -595,22 +574,28 @@ body of F ...
 if (next count > 0) signal(next);
 
 else signal(mutex);
-
+```
 Mutual exclusion within a monitor is ensured. We can now describe how condition variables are implemented as well.
 
 For each condition x, we introduce a binary semaphore x sem and an integer variable x count, both initialized to 0. The operation x.wait() can now be implemented as
-
-x count++; if (next count > 0)
-
+```
+x count++; 
+if (next count > 0)
 signal(next); else
-
-signal(mutex); wait(x sem); x count--;
-
+signal(mutex); 
+wait(x sem); 
+x count--;
+```
 The operation x.signal() can be implemented as
+```
+if (x count > 0) { next count++; 
+signal(x sem); 
+wait(next); 
+next count--;
 
-if (x count > 0) { next count++; signal(x sem); wait(next); next count--;
-
-} This implementation is applicable to the definitions of monitors given by
+} 
+```
+This implementation is applicable to the definitions of monitors given by
 
 both Hoare and Brinch-Hansen (see the bibliographical notes at the end of the chapter). In some cases, however, the generality of the implementation is  
 ```
@@ -632,7 +617,7 @@ void release() { busy = false; x.signal();
 
 initialization code() { busy = false;
 
-_} }_
+} }
 ```
 **Figure 6.14** A monitor to allocate a single resource.
 
@@ -694,23 +679,21 @@ The implementation of a semaphore with a waiting queue may result in a situation
 
 To illustrate this, consider a system consisting of two processes, _P_0 and _P_1, each accessing two semaphores, S and Q, set to the value 1:
 
-_P_0 _P_1
+_P_ 0         _P_ 1
 
-wait(S); wait(Q); wait(Q); wait(S);
+wait(S);     wait(Q);
+wait(Q);     wait(S);
 
-. .
+.              .
 
-. .
+.              .
 
-. . signal(S); signal(Q); signal(Q); signal(S);
+.              . 
+signal(S);   signal(Q); signal(Q);   signal(S);
 
-Suppose that _P_0 executes wait(S) and then _P_1 executes wait(Q). When _P_0 executes wait(Q), it must wait until _P_1 executes signal(Q). Similarly, when _P_1 executes wait(S), it must wait until _P_0 executes signal(S). Since these signal() operations cannot be executed, _P_0 and _P_1 are deadlocked.
+Suppose that _P_ 0 executes wait(S) and then _P_ 1 executes wait(Q). When _P_ 0 executes wait(Q), it must wait until _P_1 executes signal(Q). Similarly, when _P_ 1 executes wait(S), it must wait until _P_ 0 executes signal(S). Since these signal() operations cannot be executed, _P_ 0 and _P_ 1 are deadlocked.
 
-We say that a set of processes is in a deadlocked state when _every process in the set is waiting for an event that can be caused only by another process in the set_. The “events” with which we are mainly concerned here are the acquisition and release of resources such as mutex locks and semaphores. Other types of events may result in deadlocks, as we show in more detail in Chapter 8. In  
-
-
-
-that chapter, we describe various mechanisms for dealing with the deadlock problem, as well as other forms of liveness failures.
+We say that a set of processes is in a deadlocked state when _every process in the set is waiting for an event that can be caused only by another process in the set_. The “events” with which we are mainly concerned here are the acquisition and release of resources such as mutex locks and semaphores. Other types of events may result in deadlocks, as we show in more detail in Chapter 8. In that chapter, we describe various mechanisms for dealing with the deadlock problem, as well as other forms of liveness failures.
 
 ### Priority Inversion
 
@@ -718,7 +701,7 @@ A scheduling challenge arises when a higher-priority process needs to read or mo
 
 As an example, assume we have three processes—_L_, _M_, and _H_—whose priorities follow the order _L < M < H_. Assume that process _H_ requires a semaphore _S_, which is currently being accessed by process _L_. Ordinarily, process _H_ would wait for _L_ to finish using resource _S_. However, now suppose that process _M_ becomes runnable, thereby preempting process _L_. Indirectly, a process with a lower priority—process _M_—has affected how long process _H_ must wait for _L_ to relinquish resource _S_.
 
-This liveness problem is known as **priority inversion**, and it can occur only in systems with more than two priorities. Typically, priority inversion is avoided by implementing a **priority-inheritance protocol**. According to this protocol, all processes that are accessing resources needed by a higher-priority process inherit the higher priority until they are finished with the resources in question.When they are finished, their priorities revert to their original values. In the example above, a priority-inheritance protocol would allow process _L_ to temporarily inherit the priority of process _H_, thereby preventing process_M_ frompreempting its execution.Whenprocess _Lhadfinished_ using resource _S_, it would relinquish its inherited priority from_H_ and assume its original priority. Because resource _S_ would now be available, process _H_—not _M_—would run next.
+This liveness problem is known as **priority inversion**, and it can occur only in systems with more than two priorities. Typically, priority inversion is avoided by implementing a **priority-inheritance protocol**. According to this protocol, all processes that are accessing resources needed by a higher-priority process inherit the higher priority until they are finished with the resources in question.When they are finished, their priorities revert to their original values. In the example above, a priority-inheritance protocol would allow process _L_ to temporarily inherit the priority of process _H_, thereby preventing process _M_  frompreempting its execution.Whenprocess _Lhadfinished_ using resource _S_, it would relinquish its inherited priority from _H_ and assume its original priority. Because resource _S_ would now be available, process _H_—not _M_—would run next.
 
 ## Evaluation
 
@@ -886,7 +869,7 @@ for j = 1 to log 2(N) { for k = 1 to N {
 
 if ((k + 1) % pow(2,j) == 0) { values[k] += values[k - pow(2,(j-1))]
 
-_} }_
+} }
 
 }
 ```
@@ -938,7 +921,7 @@ A suggested alternative approach is to use the “compare and compare- and-swap�
 
 compare and swap() operation. (The rationale behind this approach is to invoke compare and swap()only if the lock is currently available.) This strategy is shown below:
 ```
-void lock spinlock(int *lock) _{ {_
+void lock spinlock(int *lock) { {
 
 while (true) { if (*lock == 0) {
 
@@ -948,7 +931,7 @@ if (!compare and swap(lock, 0, 1)) break;
 
 _} }_
 
-}
+}}
 ``` 
 Does this “compare and compare-and-swap” idiom work appropriately for implementing spinlocks? If so, explain. If not, illustrate how the integrity of the lock is compromised.
 
@@ -1012,7 +995,7 @@ Be sure to include any initialization that may be necessary.
 ```
 while (true) { while (true) {
 
-flag[i] = want in; j = turn;
+flag[i] = want in; j = turn;}
 
 while (j != i) { if (flag[j] != idle) {
 
@@ -1197,11 +1180,8 @@ decrease count(count);
 
 The process will return from this function call only when sufficient resources are available.
 
-**P-33**  
 
-_7_ **CHAPTER**
-
-# Synchronization Examples_
+# Synchronization Examples
 
 In Chapter 6, we presented the critical-section problem and focused on how race conditions can occur when multiple concurrent processes share data. We went on to examine several tools that address the critical-section problem by preventing race conditions from occurring. These tools ranged from low-level hardware solutions (such asmemory barriers and the compare-and-swap oper- ation) to increasingly higher-level tools (from mutex locks to semaphores to monitors). We also discussed various challenges in designing applications that are free from race conditions, including liveness hazards such as deadlocks. In this chapter, we apply the tools presented in Chapter 6 to several classic synchronization problems. We also explore the synchronization mechanisms used by the Linux, UNIX, and Windows operating systems, and we describe API details for both Java and POSIX systems.
 
@@ -1241,9 +1221,11 @@ traditional way to present such solutions. However, actual implementations of th
 The **_bounded-buffer problem_**was introduced in Section 6.1; it is commonly used to illustrate the power of synchronization primitives. Here, we present a gen- eral structure of this scheme without committing ourselves to any particular implementation. We provide a related programming project in the exercises at the end of the chapter.
 
 In our problem, the producer and consumer processes share the following data structures:
-
-int n; semaphore mutex = 1; semaphore empty = n; semaphore full = 0
-
+```
+int n; semaphore mutex = 1; 
+semaphore empty = n;  
+semaphore full = 0
+```
 We assume that the pool consists of n buffers, each capable of holding one item. The mutex binary semaphore provides mutual exclusion for accesses to the buffer pool and is initialized to the value 1. The empty and full semaphores count the number of empty and full buffers. The semaphore empty is initialized to the value n; the semaphore full is initialized to the value 0.
 
 The code for the producer process is shown in Figure 7.1, and the code for the consumer process is shown in Figure 7.2. Note the symmetry between the producer and the consumer. We can interpret this code as the producer producing full buffers for the consumer or as the consumer producing empty buffers for the producer.
@@ -1275,9 +1257,9 @@ The readers–writers problem has several variations, all involving priori- ties
 A solution to either problem may result in starvation. In the first case, writers may starve; in the second case, readers may starve. For this reason, other variants of the problem have been proposed. Next, we present a solution to the first readers–writers problem. See the bibliographical notes at the end of the chapter for references describing starvation-free solutions to the second readers–writers problem.
 
 In the solution to the first readers–writers problem, the reader processes share the following data structures:
-
+```
 semaphore rw mutex = 1; semaphore mutex = 1; int read count = 0;
-
+```
 The binary semaphores mutex and rw mutex are initialized to 1; read count is a counting semaphore initialized to 0. The semaphore rw mutex  
 
 
@@ -1345,9 +1327,9 @@ to allocate several resources among several processes in a deadlock-free and sta
 #### Semaphore Solution
 
 One simple solution is to represent each chopstick with a semaphore. A philosopher tries to grab a chopstick by executing a wait() operation on that semaphore. She releases her chopsticks by executing the signal() operation on the appropriate semaphores. Thus, the shared data are
-
+```
 semaphore chopstick[5];
-
+```
 where all the elements of chopstick are initialized to 1. The structure of philosopher _i_ is shown in Figure 7.6.
 
 Although this solution guarantees that no two neighbors are eating simul- taneously, it nevertheless must be rejected because it could create a deadlock. Suppose that all five philosophers become hungry at the same time and each grabs her left chopstick. All the elements of chopstick will now be equal to 0. When each philosopher tries to grab her right chopstick, she will be delayed forever.
@@ -1377,11 +1359,11 @@ condition self[5];
 This allows philosopher _i_ to delay herself when she is hungry but is unable to obtain the chopsticks she needs.
 
 We are now in a position to describe our solution to the dining- philosophers problem. The distribution of the chopsticks is controlled by the monitor DiningPhilosophers, whose definition is shown in Figure 7.7. Each philosopher, before starting to eat, must invoke the operation pickup(). This act may result in the suspension of the philosopher process. After the successful completion of the operation, the philosopher may eat. Following this, the philosopher invokes the putdown() operation. Thus, philosopher _i_ must invoke the operations pickup() and putdown() in the following sequence:
-
+```
 DiningPhilosophers.pickup(i); ... eat ...
 
 DiningPhilosophers.putdown(i);
-
+```
 It is easy to show that this solution ensures that no two neighbors are eating simultaneously and that no deadlocks will occur. As we already noted, however, it is possible for a philosopher to starve to death. We do not present a solution to this problem but rather leave it as an exercise for you.
 
 ## Synchronization within the Kernel
@@ -1406,7 +1388,7 @@ void test(int i) { if ((state[(i + 4) % 5] != EATING) && (state[i] == HUNGRY) &&
 
 state[i] = EATING; self[i].signal();
 
-_} }_
+} }
 
 initialization code() { for (int i = 0; i < 5; i++)
 
@@ -1431,6 +1413,7 @@ A relationship exists between the state of a dispatcher object and the state of 
 We can use a mutex lock as an illustration of dispatcher objects and thread states. If a thread tries to acquire a mutex dispatcher object that is in a nonsignaled state, that threadwill be suspended and placed in awaiting queue for the mutex object. When the mutex moves to the signaled state (because another thread has released the lock on the mutex), the thread waiting at the front of the queue will be moved from the waiting state to the ready state and will acquire the mutex lock.
 
 A **critical-section object** is a user-mode mutex that can often be acquired and released without kernel intervention. On a multiprocessor system, a critical-section object first uses a spinlock while waiting for the other thread to release the object. If it spins too long, the acquiring thread will then allocate a kernelmutex and yield its CPU. Critical-section objects are particularly efficient because the kernel mutex is allocated only when there is contention for the object. In practice, there is very little contention, so the savings are significant.
+
 ![Alt text](image-5.png)
 **Figure 7.8** Mutex dispatcher object.  
 We provide a programming project at the end of this chapter that uses mutex locks and semaphores in the Windows API.
@@ -1441,7 +1424,8 @@ Prior to Version 2.6, Linuxwas a nonpreemptive kernel, meaning that a process ru
 
 Linux provides several different mechanisms for synchronization in the kernel. As most computer architectures provide instructions for atomic versions of simple math operations, the simplest synchronization technique within the Linux kernel is an atomic integer, which is represented using the opaque data type atomic t. As the name implies, all math operations using atomic integers are performed without interruption. To illustrate, consider a program that consists of an atomic integer counter and an integer value.
 
-atomic t counter; int value;
+atomic_t counter; 
+int value;
 
 The following code illustrates the effect of performing various atomic opera- tions:
 ![Alt text](image-30.png)
@@ -1450,7 +1434,7 @@ Atomic integers are particularly efficient in situations where an integer variab
 Mutex locks are available in Linux for protecting critical sectionswithin the kernel. Here, a task must invoke the mutex lock() function prior to entering a critical section and the mutex unlock() function after exiting the critical section. If themutex lock is unavailable, a task calling mutex lock() is put into a sleep state and is awakenedwhen the lock’s owner invokes mutex unlock().
 
 Linux also provides spinlocks and semaphores (as well as reader–writer versions of these two locks) for locking in the kernel. On SMPmachines, the fun- damental locking mechanism is a spinlock, and the kernel is designed so that the spinlock is held only for short durations. On single-processor machines, such as embedded systems with only a single processing core, spinlocks are inappropriate for use and are replaced by enabling and disabling kernel pre- emption. That is, on systems with a single processing core, rather than holding a spinlock, the kernel disables kernel preemption; and rather than releasing the spinlock, it enables kernel preemption. This is summarized below:  
-![Alt text](image-6.png)
+![Alt text](image-33.png)
 In the Linux kernel, both spinlocks and mutex locks are **_nonrecursive_**, which means that if a thread has acquired one of these locks, it cannot acquire the same lock a second time without first releasing the lock. Otherwise, the second attempt at acquiring the lock will block.
 
 Linux uses an interesting approach to disable and enable kernel preemp- tion. It provides two simple system calls—preempt disable() and pre- empt enable()—for disabling and enabling kernel preemption. The kernel is not preemptible, however, if a task running in the kernel is holding a lock. To enforce this rule, each task in the system has a thread-info structure contain- ing a counter, preempt count, to indicate the number of locks being held by the task. When a lock is acquired, preempt count is incremented. It is decre- mented when a lock is released. If the value of preempt count for the task currently running in the kernel is greater than 0, it is not safe to preempt the ker- nel, as this task currently holds a lock. If the count is 0, the kernel can safely be interrupted (assuming there are no outstanding calls to preempt disable()).
@@ -1476,14 +1460,14 @@ pthread mutex t mutex;
 /* create and initialize the mutex lock */ **pthread mutex init**(&mutex,NULL);
 ```
 The mutex is acquired and released with the pthread mutex lock() and pthread mutex unlock() functions. If the mutex lock is unavailable when pthread mutex lock() is invoked, the calling thread is blocked until the owner invokes pthread mutex unlock(). The following code illustrates pro- tecting a critical section with mutex locks:
-
+```
 /* acquire the mutex lock */ **pthread mutex lock**(&mutex);
 
 /* critical section */
 
 /* release the mutex lock */ **pthread mutex unlock**(&mutex);
-
-Allmutex functions return a value of 0with correct operation; if an error occurs, these functions return a nonzero error code.
+```
+All mutex functions return a value of 0with correct operation; if an error occurs, these functions return a nonzero error code.
 
 ### POSIX Semaphores
 
@@ -1502,13 +1486,13 @@ In this instance, we are naming the semaphore SEM. The O CREAT flag indicates th
 The advantage of named semaphores is that multiple unrelated processes can easily use a common semaphore as a synchronization mechanism by simply referring to the semaphore’s name. In the example above, once the semaphore SEM has been created, subsequent calls to sem open() (with the same parameters) by other processes return a descriptor to the existing semaphore.
 
 In Section 6.6, we described the classic wait() and signal() semaphore operations. POSIX declares these operations sem wait() and sem post(), respectively. The following code sample illustrates protecting a critical section using the named semaphore created above:
-
+```
 /* acquire the semaphore */ **sem wait**(sem);
 
 /* critical section */
 
 /* release the semaphore */ **sem post**(sem);
-
+```
 Both Linux and macOS systems provide POSIX named semaphores.
 
 #### POSIX Unnamed Semaphores
@@ -1532,13 +1516,13 @@ In this example, by passing the flag 0, we are indicating that this semaphore ca
 POSIX unnamed semaphores use the same sem wait() and sem post() operations as named semaphores. The following code sample illustrates pro- tecting a critical section using the unnamed semaphore created above:  
 
 
-
+```
 /* acquire the semaphore */ sem wait(&sem);
 
 /* critical section */
 
 /* release the semaphore */ sem post(&sem);
-
+```
 Just like mutex locks, all semaphore functions return 0 when successful and nonzero when an error condition occurs.
 
 ### POSIX Condition Variables
@@ -1546,25 +1530,25 @@ Just like mutex locks, all semaphore functions return 0 when successful and nonz
 Condition variables in Pthreads behave similarly to those described in Section 6.7. However, in that section, condition variables are used within the context of a monitor, which provides a locking mechanism to ensure data integrity. Since Pthreads is typically used in C programs—and since C does not have a monitor— we accomplish locking by associating a condition variable with a mutex lock.
 
 Condition variables in Pthreads use the pthread cond t data type and are initialized using the pthread cond init() function. The following code creates and initializes a condition variable as well as its associated mutex lock:
-
+```
 pthread mutex t mutex; pthread cond t cond var;
 
 pthread mutex init(&mutex,NULL); **pthread cond init**(&cond var,NULL);
-
+```
 The pthread cond wait() function is used for waiting on a condition variable. The following code illustrates how a thread canwait for the condition a == b to become true using a Pthread condition variable:
-
+```
 pthread mutex lock(&mutex); while (a != b)
 
 **pthread cond wait**(&cond var, &mutex);
 
 pthread mutex unlock(&mutex);
-
+```
 The mutex lock associated with the condition variable must be locked before the pthread cond wait() function is called, since it is used to protect the data in the conditional clause from a possible race condition. Once this lock is acquired, the thread can check the condition. If the condition is not true, the thread then invokes pthread cond wait(), passing the mutex lock and the condition variable as parameters. Calling pthread cond wait() releases the mutex lock, thereby allowing another thread to access the shared data and possibly update its value so that the condition clause evaluates to true. (To protect against program errors, it is important to place the conditional clause within a loop so that the condition is rechecked after being signaled.)  
 
-Athread thatmodifies the shareddata can invoke the pthread cond signal() function, thereby signaling one thread waiting on the condition variable. This is illustrated below:
-
+A thread that modifies the shared data can invoke the pthread cond signal() function, thereby signaling one thread waiting on the condition variable. This is illustrated below:
+```
 pthread mutex lock(&mutex); a = b; **pthread cond signal**(&cond var); pthread mutex unlock(&mutex);
-
+```
 It is important to note that the call to pthread cond signal() does not release the mutex lock. It is the subsequent call to pthread mutex unlock() that releases the mutex. Once the mutex lock is released, the signaled thread becomes the owner of the mutex lock and returns control from the call to pthread cond wait().
 
 We provide several programming problems and projects at the end of this chapter that use Pthreadsmutex locks and condition variables, as well as POSIX semaphores.
@@ -1579,11 +1563,11 @@ Java provides a monitor-like concurrency mechanism for thread synchroniza- tion.
 
 Every object in Java has associated with it a single lock. When a method is declared to be synchronized, calling the method requires owning the lock for the object. We declare a synchronizedmethod by placing the synchronized keyword in the method definition, such as with the insert() and remove() methods in the BoundedBuffer class.
 
-Invoking a synchronized method requires owning the lock on an object instance of BoundedBuffer. If the lock is already owned by another thread, the thread calling the synchronizedmethod blocks and is placed in the **entry set** for the object’s lock. The entry set represents the set of threads waiting for the lock to become available. If the lock is available when a synchronized method is called, the calling thread becomes the owner of the object’s lock and can enter the method. The lock is released when the thread exits the method. If the entry set for the lock is not empty when the lock is released, the JVM  
+Invoking a synchronized method requires owning the lock on an object instance of Bounded Buffer. If the lock is already owned by another thread, the thread calling the synchronizedmethod blocks and is placed in the **entry set** for the object’s lock. The entry set represents the set of threads waiting for the lock to become available. If the lock is available when a synchronized method is called, the calling thread becomes the owner of the object’s lock and can enter the method. The lock is released when the thread exits the method. If the entry set for the lock is not empty when the lock is released, the JVM  
 
 
 ```
-public class BoundedBuffer<E_> {_
+public class BoundedBuffer<E> {
 
 private static final int BUFFER SIZE = 5;
 
@@ -1636,7 +1620,7 @@ When a thread calls the wait()method, the following happens:
 
 Consider the example in Figure 7.11. If the producer calls the insert() method and sees that the buffer is full, it calls the wait() method. This call releases the lock, blocks the producer, and puts the producer in the wait set for the object. Because the producer has released the lock, the consumer ultimately enters the remove()method,where it frees space in the buffer for the producer. Figure 7.12 illustrates the entry and wait sets for a lock. (Note that although wait() can throw an InterruptedException, we choose to ignore it for code clarity and simplicity.)
 
-Howdoes the consumer thread signal that the producermay nowproceed? Ordinarily, when a thread exits a synchronizedmethod, the departing thread releases only the lock associated with the object, possibly removing a thread from the entry set and giving it ownership of the lock. However, at the end of the insert() and remove()methods, we have a call to the method notify(). The call to notify():
+How does the consumer thread signal that the producermay nowproceed? Ordinarily, when a thread exits a synchronizedmethod, the departing thread releases only the lock associated with the object, possibly removing a thread from the entry set and giving it ownership of the lock. However, at the end of the insert() and remove()methods, we have a call to the method notify(). The call to notify():
 
 **1.** Picks an arbitrary thread T from the list of threads in the wait set  
 
@@ -1660,7 +1644,7 @@ E item;
 
 while (count == 0) { try {
 
-**wait();** } catch (InterruptedException ie) _{ }_
+**wait();** } catch (InterruptedException ie) { }
 
 }
 
@@ -1740,9 +1724,10 @@ Notice that we place the call to release() in the finally clause to ensure that 
 The last utility we cover in the Java API is the condition variable. Just as the ReentrantLock is similar to Java’s synchronized statement, condition variables provide functionality similar to the wait() and notify()methods. Therefore, to providemutual exclusion, a condition variablemust be associated with a reentrant lock.
 
 We create a condition variable by first creating a ReentrantLock and invoking its newCondition()method, which returns a Condition object rep- resenting the condition variable for the associated ReentrantLock. This is illustrated in the following statements:
-
-Lock key = new ReentrantLock(); Condition condVar = key.newCondition();
-
+```
+Lock key = new ReentrantLock();
+Condition condVar = key.newCondition();
+```
 Once the condition variable has been obtained, we can invoke its await() and signal() methods, which function in the same way as the wait() and signal() commands described in Section 6.7.
 
 Recall that with monitors as described in Section 6.7, the wait() and signal() operations can be applied to **_named_** condition variables, allowing a thread towait for a specific condition or to be notifiedwhen a specific condition has been met. At the language level, Java does not provide support for named condition variables. Each Java monitor is associated with just one unnamed condition variable, and the wait() and notify() operations described in Section 7.4.1 apply only to this single condition variable. When a Java thread is awakened via notify(), it receives no information as towhy it was awakened; it is up to the reactivated thread to check for itself whether the condition for which it was waiting has been met. Condition variables remedy this by allowing a specific thread to be notified.
@@ -1774,18 +1759,14 @@ lock.unlock(); }
 **Figure 7.13** Example using Java condition variables.
 
 We also must create a ReentrantLock and five condition variables (repre- senting the conditions the threads are waiting for) to signal the thread whose turn is next. This is shown below:
-
-Lock lock = new ReentrantLock(); Condition[] condVars = new Condition[5];
-
+```
+Lock lock = new ReentrantLock(); 
+Condition[] condVars = new Condition[5];
 for (int i = 0; i < 5; i++) condVars[i] = lock.newCondition();
-
+```
 When a thread enters doWork(), it invokes the await() method on its associated condition variable if its threadNumber is not equal to turn, only to resume when it is signaled by another thread. After a thread has completed itswork, it signals the condition variable associatedwith the threadwhose turn follows.
 
-It is important to note that doWork() does not need to be declared syn- chronized, as the ReentrantLock provides mutual exclusion. When a thread  
-
-
-
-invokes await() on the condition variable, it releases the associated Reen- trantLock, allowing another thread to acquire the mutual exclusion lock. Similarly, when signal() is invoked, only the condition variable is signaled; the lock is released by invoking unlock().
+It is important to note that doWork() does not need to be declared syn- chronized, as the ReentrantLock provides mutual exclusion. When a thread invokes await() on the condition variable, it releases the associated Reen- trantLock, allowing another thread to acquire the mutual exclusion lock. Similarly, when signal() is invoked, only the condition variable is signaled; the lock is released by invoking unlock().
 
 ## Alternative Approaches
 
@@ -1807,17 +1788,13 @@ release(); }
 ```
 However, using synchronization mechanisms such as mutex locks and semaphores involves many potential problems, including deadlock. Additionally, as the number of threads increases, traditional locking doesn’t scale as well, because the level of contention among threads for lock ownership becomes very high.
 
-As an alternative to traditional locking methods, new features that take advantage of transactional memory can be added to a programming language. In our example, suppose we add the construct atomic{S}, which ensures that  
-
-
-
-the operations in S execute as a transaction. This allows us to rewrite the update() function as follows:
+As an alternative to traditional locking methods, new features that take advantage of transactional memory can be added to a programming language. In our example, suppose we add the construct atomic{S}, which ensures that the operations in S execute as a transaction. This allows us to rewrite the update() function as follows:
 ```
 void update () {
 
 atomic {*/ *modify shared data */
 
-_} }_
+} }
 ```
 The advantage of using such a mechanism rather than locks is that the transactional memory system—not the developer—is responsible for guar- anteeing atomicity. Additionally, because no locks are involved, deadlock is not possible. Furthermore, a transactional memory system can identify which statements in atomic blocks can be executed concurrently, such as concurrent read access to a shared variable. It is, of course, possible for a programmer to identify these situations and use reader–writer locks, but the task becomes increasingly difficult as the number of threads within an application grows.
 
@@ -1859,7 +1836,7 @@ An advantage of using the critical-section compiler directive in OpenMP is that 
 
 Most well-known programming languages—such as C, C++, Java, and C#— are known as **imperative** (or **procedural**) languages. Imperative languages are used for implementing algorithms that are state-based. In these languages, the flow of the algorithm is crucial to its correct operation, and state is represented with variables and other data structures. Of course, program state is mutable, as variables may be assigned different values over time.
 
-With the current emphasis on concurrent and parallel programming for multicore systems, there has been greater focus on **functional** programming languages, which follow a programming paradigm much different from that offered by imperative languages. The fundamental difference between imper- ative and functional languages is that functional languages do not maintain state. That is, once a variable has been defined and assigned a value, its value is immutable—it cannot change. Because functional languages disallowmuta- ble state, they need not be concerned with issues such as race conditions and deadlocks. Essentially, most of the problems addressed in this chapter are nonexistent in functional languages.
+With the current emphasis on concurrent and parallel programming for multicore systems, there has been greater focus on **functional** programming languages, which follow a programming paradigm much different from that offered by imperative languages. The fundamental difference between imper- ative and functional languages is that functional languages do not maintain state. That is, once a variable has been defined and assigned a value, its value is immutable—it cannot change. Because functional languages disallowmuta- ble state, they need not be concerned with issues such as race conditions and deadlocks. Essentially, most of the problems addressed in this chapter are non existent in functional languages.
 
 Several functional languages are presently in use, and we briefly mention two of them here: Erlang and Scala. The Erlang language has gained significant attention because of its support for concurrency and the ease with which it can be used to develop applications that run on parallel systems. Scala is a func- tional language that is also object-oriented. In fact, much of the syntax of Scala is similar to the popular object-oriented languages Java and C#. Readers inter- ested in Erlang and Scala, and in further details about functional languages in general, are encouraged to consult the bibliography at the end of this chapter for additional references.
 
@@ -1890,9 +1867,14 @@ Several functional languages are presently in use, and we briefly mention two of
 **7.5** Explain the difference between signaled and non-signaled states with Windows dispatcher objects.
 
 **7.6** Assume val is an atomic integer in a Linux system. What is the value of val after the following operations have been completed?
-
-atomic set(&val,10); atomic sub(8,&val); atomic inc(&val); atomic inc(&val); atomic add(6,&val); atomic sub(3,&val);
-
+```
+atomic set(&val,10);       
+atomic sub(8,&val); 
+atomic inc(&val); 
+atomic inc(&val); 
+atomic add(6,&val); 
+atomic sub(3,&val);
+```
 **Further Reading**
 
 Details of Windows synchronization can be found in [Solomon and Russi- novich (2000)]. [Love (2010)] describes synchronization in the Linux kernel. [Hart (2005)] describes thread synchronization using Windows. [Breshears (2009)] and [Pacheco (2011)] provide detailed coverage of synchronization issues in relation to parallel programming. Details on using OpenMP can be found at http://openmp.org. Both [Oaks (2014)] and [Goetz et al. (2006)] con- trast traditional synchronization and CAS-based strategies in Java.
@@ -2274,9 +2256,6 @@ ReleaseSemaphore(Sem, 1, NULL);
 
 Both ReleaseSemaphore() and ReleaseMutex() return a nonzero value if successful and 0 otherwise.
 
-**P-44**  
-
-_8_ **CHAPTER**
 
 # Deadlocks
 
@@ -2324,7 +2303,7 @@ Under the normal mode of operation, a thread may utilize a resource in only the 
 
 The request and release of resources may be system calls, as explained in Chapter 2. Examples are the request() and release() of a device, open() and close() of a file, and allocate() and free() memory system calls. Similarly, as we saw in Chapter 6, request and release can be accomplished through the wait() and signal() operations on semaphores and through acquire() and release() of a mutex lock. For each use of a kernel-managed resource by a thread, the operating system checks to make sure that the thread has requested and has been allocated the resource. A system table records whether each resource is free or allocated. For each resource that is allocated, the table also records the thread to which it is allocated. If a thread requests a resource that is currently allocated to another thread, it can be added to a queue of threads waiting for this resource.
 
-Aset of threads is in a deadlocked statewhen every thread in the set iswait- ing for an event that can be caused only by another thread in the set. The events with which we are mainly concerned here are resource acquisition and release. The resources are typically logical (for example, mutex locks, semaphores, and files); however, other types of events may result in deadlocks, including read- ing from a network interface or the IPC (interprocess communication) facilities discussed in Chapter 3.
+A set of threads is in a deadlocked statewhen every thread in the set iswait- ing for an event that can be caused only by another thread in the set. The events with which we are mainly concerned here are resource acquisition and release. The resources are typically logical (for example, mutex locks, semaphores, and files); however, other types of events may result in deadlocks, including read- ing from a network interface or the IPC (interprocess communication) facilities discussed in Chapter 3.
 
 To illustrate a deadlocked state, we refer back to the dining-philosophers problem from Section 7.1.3. In this situation, resources are represented by chopsticks. If all the philosophers get hungry at the same time, and each philosopher grabs the chopstick on her left, there are no longer any available chopsticks. Each philosopher is then blocked waiting for her right chopstick to become available.
 
@@ -2334,12 +2313,12 @@ Developers of multithreaded applications must remain aware of the pos- sibility 
 
 Prior to examining how deadlock issues can be identified and man- aged, we first illustrate how deadlock can occur in a multithreaded Pthread program using POSIX mutex locks. The pthread mutex init() function initializes an unlocked mutex. Mutex locks are acquired and released using pthread mutex lock() and pthread mutex unlock(), respectively. If a thread attempts to acquire a locked mutex, the call to pthread mutex lock() blocks the thread until the owner of the mutex lock invokes pthread mutex unlock().
 
-Twomutex locks are created and initialized in the following code example:
-
+Two mutex locks are created and initialized in the following code example:
+```
 pthread mutex t first mutex; pthread mutex t second mutex;
 
 pthread mutex init(&first mutex,NULL); pthread mutex init(&second mutex,NULL);
-
+```
 Next, two threads—thread one and thread two—are created, and both these threads have access to both mutex locks. thread one and thread two run in the functions do work one() and do work two(), respectively, as shown in Figure 8.1.
 
 In this example, thread one attempts to acquire the mutex locks in the order (1) first mutex, (2) second mutex. At the same time, thread two attempts to acquire the mutex locks in the order (1) second mutex, (2) first mutex. Deadlock is possible if thread one acquires first mutex while thread two acquires second mutex.  
@@ -2390,7 +2369,7 @@ Adeadlock situation can arise if the following four conditions hold simultane- o
 
 **3. No preemption**. Resources cannot be preempted; that is, a resource can be released only voluntarily by the thread holding it, after that thread has completed its task.
 
-**4. Circular wait**. A set _{T_0, _T_1, ..., _Tn}_ of waiting threadsmust exist such that _T_0 is waiting for a resource held by _T_1, _T_1 is waiting for a resource held by _T_2, ..., _Tn_−1 is waiting for a resource held by _Tn_, and _Tn_ is waiting for a resource held by _T_0.
+**4. Circular wait**. A set _{T_ 0, _T_ 1, ..., _Tn}_ of waiting threadsmust exist such that _T_ 0 is waiting for a resource held by _T_ 1, _T_ 1 is waiting for a resource held by _T_ 2, ..., _Tn_−1 is waiting for a resource held by _Tn_, and _Tn_ is waiting for a resource held by _T_ 0.
 
 We emphasize that all four conditions must hold for a deadlock to occur. The circular-wait condition implies the hold-and-wait condition, so the four  
 
@@ -2437,7 +2416,7 @@ conditions are not completely independent. We shall see in Section 8.5, how- eve
 
 ### Resource-Allocation Graph
 
-Deadlocks can be described more precisely in terms of a directed graph called a **system resource-allocation graph**. This graph consists of a set of vertices _V_ and a set of edges _E_. The set of vertices_V_ is partitioned into two different types of nodes: _T_ = _{T_1, _T_2, ..., _Tn}_, the set consisting of all the active threads in the system, and _R_ = _{R_1, _R_2, ..., _Rm}_, the set consisting of all resource types in the system.
+Deadlocks can be described more precisely in terms of a directed graph called a **system resource-allocation graph**. This graph consists of a set of vertices _V_ and a set of edges _E_. The set of vertices_V_ is partitioned into two different types of nodes: _T_ = _{T_ 1, _T_ 2, ..., _Tn}_, the set consisting of all the active threads in the system, and _R_ = _{R_ 1, _R_ 2, ..., _Rm}_, the set consisting of all resource types in the system.
 
 A directed edge from thread _Ti_ to resource type _Rj_ is denoted by _Ti_ → _Rj_; it signifies that thread _Ti_ has requested an instance of resource type _Rj_ and is currently waiting for that resource. A directed edge from resource type _Rj_ to thread _Ti_ is denoted by _Rj_ → _Ti_; it signifies that an instance of resource type _Rj_ has been allocated to thread _Ti_. A directed edge _Ti_ → _Rj_ is called a **request edge**; a directed edge _Rj_ → _Ti_ is called an **assignment edge**.
 
@@ -2449,29 +2428,29 @@ The resource-allocation graph shown in Figure 8.4 depicts the following situatio
 
 • The sets _T, R,_ and _E_:
 
-◦ _T_ = _{T_1, _T_2, _T_3} ◦ _R_ = _{R_1, _R_2, _R_3, _R_4}  
+◦ _T_ = _{T_ 1, _T_ 2, _T_ 3} ◦ _R_ = _{R_ 1, _R_ 2, _R_ 3, _R_ 4}  
 
 
 ![Alt text](image-10.png)
 **Figure 8.4** Resource-allocation graph.
 
-◦ _E_ = _{T_1 → _R_1, _T_2 → _R_3, _R_1 → _T_2, _R_2 → _T_2, _R_2 → _T_1, _R_3 → _T_3} • Resource instances:
+◦ _E_ = _{T_ 1 → _R_ 1, _T_ 2 → _R_ 3, _R_ 1 → _T_ 2, _R_ 2 → _T_ 2, _R_ 2 → _T_ 1, _R_ 3 → _T_ 3} • Resource instances:
 
-◦ One instance of resource type _R_1
+◦ One instance of resource type _R_ 1
 
-◦ Two instances of resource type _R_2
+◦ Two instances of resource type _R_ 2
 
-◦ One instance of resource type _R_3
+◦ One instance of resource type _R_ 3
 
-◦ Three instances of resource type _R_4
+◦ Three instances of resource type _R_ 4
 
 • Thread states:
 
-◦ Thread _T_1 is holding an instance of resource type _R_2 and is waiting for an instance of resource type _R_1.
+◦ Thread _T_ 1 is holding an instance of resource type _R_ 2 and is waiting for an instance of resource type _R_ 1.
 
-◦ Thread _T_2 is holding an instance of _R_1 and an instance of _R_2 and is waiting for an instance of _R_3.
+◦ Thread _T_ 2 is holding an instance of _R_ 1 and an instance of _R_ 2 and is waiting for an instance of _R_ 3.
 
-◦ Thread _T_3 is holding an instance of _R_3.
+◦ Thread _T_ 3 is holding an instance of _R_ 3.
 
 Given the definition of a resource-allocation graph, it can be shown that, if the graph contains no cycles, then no thread in the system is deadlocked. If the graph does contain a cycle, then a deadlock may exist.
 
@@ -2479,17 +2458,17 @@ If each resource type has exactly one instance, then a cycle implies that a dead
 
 If each resource type has several instances, then a cycle does not necessarily imply that a deadlock has occurred. In this case, a cycle in the graph is a necessary but not a sufficient condition for the existence of deadlock.
 
-To illustrate this concept, we return to the resource-allocation graph depicted in Figure 8.4. Suppose that thread _T_3 requests an instance of resource type _R_2. Since no resource instance is currently available, we add a request  
+To illustrate this concept, we return to the resource-allocation graph depicted in Figure 8.4. Suppose that thread _T_ 3 requests an instance of resource type _R_ 2. Since no resource instance is currently available, we add a request  
 
 
 ![Alt text](image-11.png)
 **Figure 8.5** Resource-allocation graph with a deadlock.
 
-edge _T_3 → _R_2 to the graph (Figure 8.5). At this point, two minimal cycles exist in the system:
+edge _T_ 3 → _R_ 2 to the graph (Figure 8.5). At this point, two minimal cycles exist in the system:
 
-_T_1 → _R_1 → _T_2 → _R_3 → _T_3 → _R_2 → _T_1 _T_2 → _R_3 → _T_3 → _R_2 → _T_2
+_T_ 1 → _R_ 1 → _T_ 2 → _R_ 3 → _T_ 3 → _R_ 2 → _T_ 1 _T_ 2 → _R_ 3 → _T_ 3 → _R_ 2 → _T_ 2
 
-Threads _T_1, _T_2, and _T_3 are deadlocked. Thread _T_2 is waiting for the resource _R_3, which is held by thread _T_3. Thread _T_3 is waiting for either thread _T_1 or thread _T_2 to release resource _R_2. In addition, thread _T_1 is waiting for thread _T_2 to release resource _R_1.
+Threads _T_ 1, _T_ 2, and _T_ 3 are deadlocked. Thread _T_ 2 is waiting for the resource _R_ 3, which is held by thread _T_ 3. Thread _T_ 3 is waiting for either thread _T_ 1 or thread _T_ 2 to release resource _R_ 2. In addition, thread _T_ 1 is waiting for thread _T_ 2 to release resource _R_ 1.
 
 Now consider the resource-allocation graph in Figure 8.6. In this example, we also have a cycle:
 ![Alt text](image-12.png)
@@ -2497,7 +2476,7 @@ Now consider the resource-allocation graph in Figure 8.6. In this example, we al
 
 
 
-However, there is no deadlock. Observe that thread _T_4 may release its instance of resource type _R_2. That resource can then be allocated to _T_3, breaking the cycle.
+However, there is no deadlock. Observe that thread _T_ 4 may release its instance of resource type _R_ 2. That resource can then be allocated to _T_ 3, breaking the cycle.
 
 In summary, if a resource-allocation graph does not have a cycle, then the system is **_not_** in a deadlocked state. If there is a cycle, then the system **_may_** or **_may not_** be in a deadlocked state. This observation is important when we deal with the deadlock problem.
 
@@ -2519,11 +2498,7 @@ To ensure that deadlocks never occur, the system can use either a deadlock- prev
 
 **Deadlock avoidance** requires that the operating system be given addi- tional information in advance concerningwhich resources a threadwill request and use during its lifetime. With this additional knowledge, the operating sys- tem can decide for each request whether or not the thread should wait. To decide whether the current request can be satisfied or must be delayed, the systemmust consider the resources currently available, the resources currently allocated to each thread, and the future requests and releases of each thread. We discuss these schemes in Section 8.6.
 
-If a system does not employ either a deadlock-prevention or a deadlock- avoidance algorithm, then a deadlock situationmay arise. In this environment, the system can provide an algorithm that examines the state of the system to determine whether a deadlock has occurred and an algorithm to recover from  
-
-
-
-the deadlock (if a deadlock has indeed occurred). We discuss these issues in Section 8.7 and Section 8.8.
+If a system does not employ either a deadlock-prevention or a deadlock- avoidance algorithm, then a deadlock situationmay arise. In this environment, the system can provide an algorithm that examines the state of the system to determine whether a deadlock has occurred and an algorithm to recover from the deadlock (if a deadlock has indeed occurred). We discuss these issues in Section 8.7 and Section 8.8.
 
 In the absence of algorithms to detect and recover from deadlocks, wemay arrive at a situation in which the system is in a deadlocked state yet has no way of recognizing what has happened. In this case, the undetected deadlock will cause the system’s performance to deteriorate, because resources are being held by threads that cannot run and because more and more threads, as they make requests for resources, will enter a deadlocked state. Eventually, the system will stop functioning and will need to be restarted manually.
 
@@ -2541,11 +2516,7 @@ The mutual-exclusion condition must hold. That is, at least one resource must be
 
 ### Hold and Wait
 
-To ensure that the hold-and-wait condition never occurs in the system,wemust guarantee that, whenever a thread requests a resource, it does not hold any other resources. One protocol that we can use requires each thread to request and be allocated all its resources before it begins execution. This is, of course,  
-
-
-
-impractical for most applications due to the dynamic nature of requesting resources.
+To ensure that the hold-and-wait condition never occurs in the system,wemust guarantee that, whenever a thread requests a resource, it does not hold any other resources. One protocol that we can use requires each thread to request and be allocated all its resources before it begins execution. This is, of course,impractical for most applications due to the dynamic nature of requesting resources.
 
 An alternative protocol allows a thread to request resources only when it has none. A thread may request some resources and use them. Before it can request any additional resources, it must release all the resources that it is currently allocated.
 
@@ -2563,17 +2534,11 @@ This protocol is often applied to resources whose state can be easily saved and 
 
 The three options presented thus far for deadlock prevention are generally impractical in most situations. However, the fourth and final condition for deadlocks — the circular-wait condition — presents an opportunity for a practical solution by invalidating one of the necessary conditions. One way to ensure that this condition never holds is to impose a total ordering of all resource types and to require that each thread requests resources in an increasing order of enumeration.
 
-To illustrate, we let _R_ = _{R_1, _R_2, ..., _Rm}_ be the set of resource types. We assign to each resource type a unique integer number, which allows us to  
-
-
-
-compare two resources and to determine whether one precedes another in our ordering. Formally,we define a one-to-one function _F_:_R_→_N,_where_N_ is the set of natural numbers. We can accomplish this scheme in an application program by developing an ordering among all synchronization objects in the system. For example, the lock ordering in the Pthread program shown in Figure 8.1 could be
-
-_F_(first mutex) = 1 _F_(second mutex) = 5
+To illustrate, we let _R_ = _{R_ 1, _R_ 2, ..., _Rm}_ be the set of resource types. We assign to each resource type a unique integer number, which allows us to compare two resources and to determine whether one precedes another in our ordering. Formally,we define a one-to-one function _F_:_R_→_N,_where_N_ is the set of natural numbers. We can accomplish this scheme in an application program by developing an ordering among all synchronization objects in the system. For example, the lock ordering in the Pthread program shown in Figure 8.1 could be _F_(first mutex) = 1 _F_(second mutex) = 5
 
 We can now consider the following protocol to prevent deadlocks: Each thread can request resources only in an increasing order of enumeration. That is, a thread can initially request an instance of a resource—say, _Ri_. After that, the thread can request an instance of resource _Rj_ if and only if _F_(_Rj_) _> F_(_Ri_). For example, using the function defined above, a thread that wants to use both first mutex and second mutex at the same time must first request first mutex and then second mutex. Alternatively, we can require that a thread requesting an instance of resource _Rj_ must have released any resources _Ri_ such that _F_(_Ri_)≥ _F_(_Rj_). Note also that if several instances of the same resource type are needed, a **_single_** request for all of them must be issued.
 
-If these two protocols are used, then the circular-wait condition cannot hold. We can demonstrate this fact by assuming that a circular wait exists (proof by contradiction). Let the set of threads involved in the circular wait be _{T_0, _T_1, ..., _Tn}_, where _Ti_ is waiting for a resource _Ri_, which is held by thread _Ti_+1. (Modulo arithmetic is used on the indexes, so that _Tn_ is waiting for a resource _Rn_ held by _T_0.) Then, since thread _Ti_+1 is holding resource _Ri_ while requesting resource _Ri_+1, we must have _F_(_Ri_) _< F_(_Ri_+1) for all _i._ But this condi- tionmeans that _F_(_R_0)_< F_(_R_1)< ..._< F_(_Rn_)_< F_(_R_0). By transitivity, _F_(_R_0) _< F_(_R_0), which is impossible. Therefore, there can be no circular wait.
+If these two protocols are used, then the circular-wait condition cannot hold. We can demonstrate this fact by assuming that a circular wait exists (proof by contradiction). Let the set of threads involved in the circular wait be _{T_ 0, _T_ 1, ..., _Tn}_, where _Ti_ is waiting for a resource _Ri_, which is held by thread _Ti_+1. (Modulo arithmetic is used on the indexes, so that _Tn_ is waiting for a resource _Rn_ held by _T_ 0.) Then, since thread _Ti_+1 is holding resource _Ri_ while requesting resource _Ri_+1, we must have _F_(_Ri_) _< F_(_Ri_+1) for all _i._ But this condi- tionmeans that _F_(_R_ 0)_< F_(_R_ 1)< ..._< F_(_Rn_)_< F_(_R_ 0). By transitivity, _F_(_R_ 0) _< F_(_R_ 0), which is impossible. Therefore, there can be no circular wait.
 
 Keep in mind that developing an ordering, or hierarchy, does not in itself prevent deadlock. It is up to application developers to write programs that follow the ordering. However, establishing a lock ordering can be difficult, especially on a system with hundreds—or thousands—of locks. To address this challenge, many Java developers have adopted the strategy of using the method System.identityHashCode(Object) (which returns the default hash code value of the Object parameter it has been passed) as the function for ordering lock acquisition.
 
@@ -2605,7 +2570,7 @@ release(lock2); release(lock1);
 
 Deadlock-prevention algorithms, as discussed in Section 8.5, prevent dead- locks by limiting how requests can be made. The limits ensure that at least one of the necessary conditions for deadlock cannot occur. Possible side effects of preventing deadlocks by this method, however, are low device utilization and reduced system throughput.
 
-An alternative method for avoiding deadlocks is to require additional information about how resources are to be requested. For example, in a system with resources _R_1 and _R_2, the system might need to know that thread _P_ will request first _R_1 and then _R_2 before releasing both resources, whereas thread _Q_ will request _R_2 and then _R_1. With this knowledge of the complete sequence of requests and releases for each thread, the system can decide for each request whether or not the thread should wait in order to avoid a possible future deadlock. Each request requires that in making this decision the system consider the resources currently available, the resources currently allocated to each thread, and the future requests and releases of each thread.
+An alternative method for avoiding deadlocks is to require additional information about how resources are to be requested. For example, in a system with resources _R_ 1 and _R_ 2, the system might need to know that thread _P_ will request first _R_ 1 and then _R_ 2 before releasing both resources, whereas thread _Q_ will request _R_ 2 and then _R_ 1. With this knowledge of the complete sequence of requests and releases for each thread, the system can decide for each request whether or not the thread should wait in order to avoid a possible future deadlock. Each request requires that in making this decision the system consider the resources currently available, the resources currently allocated to each thread, and the future requests and releases of each thread.
 
 The various algorithms that use this approach differ in the amount and type of information required. The simplest andmost usefulmodel requires that each thread declare the**_maximum number_** of resources of each type that it may need. Given this a priori information, it is possible to construct an algorithm that ensures that the system will never enter a deadlocked state. A deadlock- avoidance algorithm dynamically examines the resource-allocation state to ensure that a circular-wait condition can never exist. The resource-allocation **_state_** is defined by the number of available and allocated resources and the maximum demands of the threads. In the following sections, we explore two deadlock-avoidance algorithms.  
 
@@ -2623,7 +2588,7 @@ lockdep was developed to be used as a tool in developing or modifying code in th
 
 ### Safe State
 
-A state is _safe_ if the system can allocate resources to each thread (up to its maximum) in some order and still avoid a deadlock. More formally, a system is in a safe state only if there exists a **safe sequence**. A sequence of threads _<T_1, _T_2, ..., _Tn>_ is a safe sequence for the current allocation state if, for each _Ti_, the resource requests that _Ti_ can still make can be satisfied by the currently available resources plus the resources held by all _Tj_, with _j < i._ In this situation, if the resources that _Ti_ needs are not immediately available, then _Ti_ can wait until all _Tj_ have finished. When they have finished, _Ti_ can obtain all of its  
+A state is _safe_ if the system can allocate resources to each thread (up to its maximum) in some order and still avoid a deadlock. More formally, a system is in a safe state only if there exists a **safe sequence**. A sequence of threads _<T_ 1, _T_ 2, ..., _Tn>_ is a safe sequence for the current allocation state if, for each _Ti_, the resource requests that _Ti_ can still make can be satisfied by the currently available resources plus the resources held by all _Tj_, with _j < i._ In this situation, if the resources that _Ti_ needs are not immediately available, then _Ti_ can wait until all _Tj_ have finished. When they have finished, _Ti_ can obtain all of its  
 
 
 ![Alt text](image-13.png)
@@ -2633,11 +2598,11 @@ needed resources, complete its designated task, return its allocated resources, 
 
 A safe state is not a deadlocked state. Conversely, a deadlocked state is an unsafe state. Not all unsafe states are deadlocks, however (Figure 8.8). An unsafe state **_may_** lead to a deadlock. As long as the state is safe, the operating system can avoid unsafe (and deadlocked) states. In an unsafe state, the operating system cannot prevent threads from requesting resources in such away that a deadlock occurs. The behavior of the threads controls unsafe states.
 
-To illustrate, consider a system with twelve resources and three threads: _T_0, _T_1, and _T_2. Thread _T_0 requires ten resources, thread _T_1 may need as many as four, and thread _T_2 may need up to nine resources. Suppose that, at time _t_0, thread _T_0 is holding five resources, thread _T_1 is holding two resources, and thread _T_2 is holding two resources. (Thus, there are three free resources.)
+To illustrate, consider a system with twelve resources and three threads: _T_ 0, _T_ 1, and _T_ 2. Thread _T_ 0 requires ten resources, thread _T_ 1 may need as many as four, and thread _T_ 2 may need up to nine resources. Suppose that, at time _t_ 0, thread _T_ 0 is holding five resources, thread _T_ 1 is holding two resources, and thread _T_ 2 is holding two resources. (Thus, there are three free resources.)
 ![Alt text](image-15.png)
-At time _t_0, the system is in a safe state. The sequence _<T_1, _T_0, _T_2_>_ satisfies the safety condition. Thread _T_1 can immediately be allocated all its resources and then return them (the systemwill then have five available resources); then thread_T_0 can get all its resources and return them (the systemwill then have ten available resources); and finally thread _T_2 can get all its resources and return them (the system will then have all twelve resources available).
+At time _t_0, the system is in a safe state. The sequence _<T_ 1, _T_ 0, _T_ 2_> satisfies the safety condition. Thread _T_ 1 can immediately be allocated all its resources and then return them (the systemwill then have five available resources); then thread_T_ 0 can get all its resources and return them (the systemwill then have ten available resources); and finally thread _T_ 2 can get all its resources and return them (the system will then have all twelve resources available).
 
-Asystem can go from a safe state to an unsafe state. Suppose that, at time _t_1, thread _T_2 requests and is allocated one more resource. The system is no longer in a safe state. At this point, only thread _T_1 can be allocated all its resources. When it returns them, the system will have only four available resources. Since thread _T_0 is allocated five resources but has a maximum of ten, it may request five more resources. If it does so, it will have to wait, because they are unavailable. Similarly, thread _T_2 may request six additional resources and have to wait, resulting in a deadlock. Our mistake was in granting the request from thread_T_2 for onemore resource. If we hadmade_T_2 wait until either of the other  
+Asystem can go from a safe state to an unsafe state. Suppose that, at time _t_ 1, thread _T_ 2 requests and is allocated one more resource. The system is no longer in a safe state. At this point, only thread _T_ 1 can be allocated all its resources. When it returns them, the system will have only four available resources. Since thread _T_ 0 is allocated five resources but has a maximum of ten, it may request five more resources. If it does so, it will have to wait, because they are unavailable. Similarly, thread _T_ 2 may request six additional resources and have to wait, resulting in a deadlock. Our mistake was in granting the request from thread_T_ 2 for onemore resource. If we hadmade_T_ 2 wait until either of the other  
 threads had finished and released its resources, then we could have avoided the deadlock.
 
 Given the concept of a safe state, we can define avoidance algorithms that ensure that the systemwill never deadlock. The idea is simply to ensure that the system will always remain in a safe state. Initially, the system is in a safe state. Whenever a thread requests a resource that is currently available, the system must decide whether the resource can be allocated immediately or the thread must wait. The request is granted only if the allocation leaves the system in a safe state.
@@ -2650,11 +2615,11 @@ If we have a resource-allocation systemwith only one instance of each resource t
 
 Note that the resources must be claimed a priori in the system. That is, before thread _Ti_ starts executing, all its claim edges must already appear in the resource-allocation graph.We can relax this condition by allowing a claim edge _Ti_ → _Rj_ to be added to the graph only if all the edges associated with thread _Ti_ are claim edges.
 
-Now suppose that thread _Ti_ requests resource _Rj_. The request can be granted only if converting the request edge _Ti_ → _Rj_ to an assignment edge _Rj_ → _Ti_ does not result in the formation of a cycle in the resource-allocation graph. We check for safety by using a cycle-detection algorithm. An algorithm for detecting a cycle in this graph requires an order of _n_2 operations, where _n_ is the number of threads in the system.
+Now suppose that thread _Ti_ requests resource _Rj_. The request can be granted only if converting the request edge _Ti_ → _Rj_ to an assignment edge _Rj_ → _Ti_ does not result in the formation of a cycle in the resource-allocation graph. We check for safety by using a cycle-detection algorithm. An algorithm for detecting a cycle in this graph requires an order of _n_ 2 operations, where _n_ is the number of threads in the system.
 
 If no cycle exists, then the allocation of the resource will leave the system in a safe state. If a cycle is found, then the allocation will put the system in an unsafe state. In that case, thread _Ti_ will have to wait for its requests to be satisfied.
 
-To illustrate this algorithm, we consider the resource-allocation graph of Figure 8.9. Suppose that _T_2 requests _R_2. Although _R_2 is currently free, we cannot allocate it to _T_2, since this action will create a cycle in the graph (Figure 8.10). A cycle, as mentioned, indicates that the system is in an unsafe state. If _T_1 requests _R_2, and _T_2 requests _R_1, then a deadlock will occur.
+To illustrate this algorithm, we consider the resource-allocation graph of Figure 8.9. Suppose that _T_ 2 requests _R_ 2. Although _R_ 2 is currently free, we cannot allocate it to _T_ 2, since this action will create a cycle in the graph (Figure 8.10). A cycle, as mentioned, indicates that the system is in an unsafe state. If _T_ 1 requests _R_ 2, and _T_ 2 requests _R_ 1, then a deadlock will occur.
 
 ### Banker’s Algorithm
 
@@ -2724,17 +2689,17 @@ If the resulting resource-allocation state is safe, the transaction is com- plet
 
 #### An Illustrative Example
 
-To illustrate the use of the banker’s algorithm, consider a system with five threads _T_0 through _T_4 and three resource types _A, B,_ and _C._ Resource type _A_ has ten instances, resource type _B_ has five instances, and resource type _C_ has seven instances. Suppose that the following snapshot represents the current state of the system:
+To illustrate the use of the banker’s algorithm, consider a system with five threads _T_ 0 through _T_ 4 and three resource types _A, B,_ and _C._ Resource type _A_ has ten instances, resource type _B_ has five instances, and resource type _C_ has seven instances. Suppose that the following snapshot represents the current state of the system:
 ![Alt text](image-17.png)
 The content of the matrix **_Need_** is defined to be **_Max_** − **_Allocation_** and is as follows:
 ![Alt text](image-18.png)
-We claim that the system is currently in a safe state. Indeed, the sequence _<T_1, _T_3, _T_4, _T_2, _T_0_>_ satisfies the safety criteria. Suppose now that thread _T_1 requests one additional instance of resource type _A_ and two instances of resource type _C,_ so **_Request_**1 = (1,0,2). To decide whether this request can be immediately granted, we first check that **_Request_**1 ≤ **_Available_**—that is, that  (1,0,2) ≤ (3,3,2), which is true. We then pretend that this request has been fulfilled, and we arrive at the following new state:
+We claim that the system is currently in a safe state. Indeed, the sequence _<T_ 1, _T_ 3, _T_ 4, _T_ 2, _T_ 0_>_ satisfies the safety criteria. Suppose now that thread _T_ 1 requests one additional instance of resource type _A_ and two instances of resource type _C,_ so **_Request_**1 = (1,0,2). To decide whether this request can be immediately granted, we first check that **_Request_**1 ≤ **_Available_**—that is, that  (1,0,2) ≤ (3,3,2), which is true. We then pretend that this request has been fulfilled, and we arrive at the following new state:
 ![Alt text](image-19.png)
-We must determine whether this new system state is safe. To do so, we execute our safety algorithm and find that the sequence _<T_1, _T_3, _T_4, _T_0, _T_2_>_
+We must determine whether this new system state is safe. To do so, we execute our safety algorithm and find that the sequence _<T_ 1, _T_ 3, _T_ 4, _T_ 0, _T_ 2>
 
-satisfies the safety requirement. Hence, we can immediately grant the request of thread _T_1.
+satisfies the safety requirement. Hence, we can immediately grant the request of thread _T_ 1.
 
-You should be able to see, however, that when the system is in this state, a request for (3,3,0) by _T_4 cannot be granted, since the resources are not available. Furthermore, a request for (0,2,0) by _T_0 cannot be granted, even though the resources are available, since the resulting state is unsafe.
+You should be able to see, however, that when the system is in this state, a request for (3,3,0) by _T_ 4 cannot be granted, since the resources are not available. Furthermore, a request for (0,2,0) by _T_ 0 cannot be granted, even though the resources are available, since the resulting state is unsafe.
 
 We leave it as a programming exercise for students to implement the banker’s algorithm.
 
@@ -2758,7 +2723,7 @@ More precisely, an edge from _Ti_ to _Tj_ in a wait-for graph implies that threa
 
 exists in a wait-for graph if and only if the corresponding resource-allocation graph contains two edges _Ti_ → _Rq_ and _Rq_ → _Tj_ for some resource _Rq_. In Figure 8.11, we present a resource-allocation graph and the corresponding wait-for graph.
 
-As before, a deadlock exists in the system if and only if the wait-for graph contains a cycle. To detect deadlocks, the system needs to **_maintain_** the wait- for graph and periodically **_invoke an algorithm_** that searches for a cycle in the graph. An algorithm to detect a cycle in a graph requires _O_(_n_2) operations, where _n_ is the number of vertices in the graph.
+As before, a deadlock exists in the system if and only if the wait-for graph contains a cycle. To detect deadlocks, the system needs to **_maintain_** the wait- for graph and periodically **_invoke an algorithm_** that searches for a cycle in the graph. An algorithm to detect a cycle in a graph requires _O_(_n_ 2) operations, where _n_ is the number of vertices in the graph.
 
 The BCC toolkit described in Section 2.10.4 provides a tool that can detect potential deadlocks with Pthreads mutex locks in a user process running on a Linux system. The BCC tool deadlock detector operates by inserting probes which trace calls to the pthread mutex lock() and pthread mutex unlock() functions. When the specified process makes a call to either function, deadlock detector constructs a wait-for graph of mutex locks in that process, and reports the possibility of deadlock if it detects a cycle in the graph.
 
@@ -2801,13 +2766,13 @@ If no such _i_ exists, go to step 4.
 This algorithm requires an order of _m_ × _n_2 operations to detect whether the system is in a deadlocked state.  
 You may wonder why we reclaim the resources of thread _Ti_ (in step 3) as soon as we determine that **_Request_**_i_ ≤ **_Work_** (in step 2b). We know that _Ti_ is currently **_not_** involved in a deadlock (since **_Request_**_i_ ≤ **_Work_**). Thus, we take an optimistic attitude and assume that _Ti_ will require no more resources to complete its task; it will thus soon return all currently allocated resources to the system. If our assumption is incorrect, a deadlock may occur later. That deadlock will be detected the next time the deadlock-detection algorithm is invoked.
 
-To illustrate this algorithm, we consider a system with five threads _T_0 through _T_4 and three resource types _A, B,_ and _C._ Resource type _A_ has seven instances, resource type _B_ has two instances, and resource type _C_ has six instances. The following snapshot represents the current state of the system:
+To illustrate this algorithm, we consider a system with five threads _T_ 0 through _T_ 4 and three resource types _A, B,_ and _C._ Resource type _A_ has seven instances, resource type _B_ has two instances, and resource type _C_ has six instances. The following snapshot represents the current state of the system:
 ![Alt text](image-21.png)
-We claim that the system is not in a deadlocked state. Indeed, if we execute our algorithm, we will find that the sequence _<T_0, _T_2, _T_3, _T_1, _T_4_>_ results in **_Finish_**[_i_] == _true_ for all _i._
+We claim that the system is not in a deadlocked state. Indeed, if we execute our algorithm, we will find that the sequence _<T_ 0, _T_ 2, _T_ 3, _T_ 1, _T_ 4> results in **_Finish_**[_i_] == _true_ for all _i._
 
 Suppose now that thread _T_2 makes one additional request for an instance of type _C._ The **_Request_** matrix is modified as follows:
 ![Alt text](image-22.png)
-We claim that the system is now deadlocked. Although we can reclaim the resources held by thread _T_0, the number of available resources is not sufficient to fulfill the requests of the other threads. Thus, a deadlock exists, consisting of threads _T_1, _T_2, _T_3, and _T_4.
+We claim that the system is now deadlocked. Although we can reclaim the resources held by thread _T_ 0, the number of available resources is not sufficient to fulfill the requests of the other threads. Thus, a deadlock exists, consisting of threads _T_ 1, _T_ 2, _T_ 3, and _T_ 4.
 
 ### Detection-Algorithm Usage
 
@@ -2816,7 +2781,6 @@ When should we invoke the detection algorithm? The answer depends on two factors
 **1.** How **_often_** is a deadlock likely to occur?
 
 **2.** How **_many_** threads will be affected by deadlock when it happens?  
-
 
 
 **_MANAGING DEADLOCK IN DATABASES_**
@@ -3143,5 +3107,3 @@ Similarly, if customer 4 were to release the resources (1, 2, 3, 1), the user wo
 RL 4 1 2 3 1
 
 Finally, if the command ‘*’ is entered, your program would output the values of the available, maximum, allocation, and need arrays.
-
-**P-47**
