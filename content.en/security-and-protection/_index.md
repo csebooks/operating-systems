@@ -3,9 +3,6 @@ title: 'SECURITY AND PROTECTION'
 weight: 7
 ---
 
-  
-
-Part Seven
 
 **_Security and Protection_**
 
@@ -53,9 +50,7 @@ Security violations (or misuse) of the system can be categorized as inten- tiona
 
 • **Denial of service**. This violation involves preventing legitimate use of the system. **Denial-of-service** (**DOS**) attacks are sometimes accidental. The original Internet worm turned into a DOS attack when a bug failed to delay its rapid spread. We discuss DOS attacks further in Section 16.3.2.
 
-Attackers use several standard methods in their attempts to breach secu- rity. Themost common is**masquerading**, inwhich one participant in a commu- nication pretends to be someone else (another host or another person). Bymas- querading, attackers breach **authentication**, the correctness of identification; they can then gain access that they would not normally be allowed. Another common attack is to replay a captured exchange of data. A **replay attack** consists of the malicious or fraudulent repeat of a valid data transmission. Sometimes the replay comprises the entire attack—for example, in a repeat of a request to transfer money. But frequently it is done along with **message**  
-
-**modificatio** , in which the attacker changes data in a communication without the sender’s knowledge. Consider the damage that could be done if a request for authentication had a legitimate user’s information replaced with an unau- thorized user’s. Yet another kind of attack is the **man-in-the-middle attack**, in which an attacker sits in the data flow of a communication, masquerading as the sender to the receiver, and vice versa. In a network communication, a man-in-the-middle attack may be preceded by a **session hijacking**, in which an active communication session is intercepted.
+Attackers use several standard methods in their attempts to breach secu- rity. Themost common is **masquerading**, inwhich one participant in a commu- nication pretends to be someone else (another host or another person). Bymas- querading, attackers breach **authentication**, the correctness of identification; they can then gain access that they would not normally be allowed. Another common attack is to replay a captured exchange of data. A **replay attack** consists of the malicious or fraudulent repeat of a valid data transmission. Sometimes the replay comprises the entire attack—for example, in a repeat of a request to transfer money. But frequently it is done along with **message** **modificatio** , in which the attacker changes data in a communication without the sender’s knowledge. Consider the damage that could be done if a request for authentication had a legitimate user’s information replaced with an unau- thorized user’s. Yet another kind of attack is the **man-in-the-middle attack**, in which an attacker sits in the data flow of a communication, masquerading as the sender to the receiver, and vice versa. In a network communication, a man-in-the-middle attack may be preceded by a **session hijacking**, in which an active communication session is intercepted.
 
 Another broad class of attacks is aimed at **privilege escalation**. Every system assigns privileges to users, even if there is just one user and that user is the administrator. Generally, the system includes several sets of privileges, one for each user account and some for the system. Frequently, privileges are also assigned to nonusers of the system (such as users from across the Internet accessing a web page without logging in or anonymous users of services such as file transfer). Even a sender of email to a remote system can be considered to have privileges—the privilege of sending an email to a receiving user on that system. Privilege escalation gives attackers more privileges than they are supposed to have. For example, an email containing a script or macro that is executed exceeds the email sender’s privileges. Masquerading and message modification, mentioned above, are often done to escalate privileges. There are many more examples, as this is a very common type of attack. Indeed, it is difficult to detect and prevent all of the various attacks in this category.
 
@@ -124,15 +119,19 @@ Trap doors pose a difficult problem because, to detect them, we have to analyze 
 
 ```
 
-#include _<_stdio.h_\>_ #define BUFFER SIZE 0
+#include <stdio.h> 
+#define BUFFER SIZE 0
 
-int main(int argc, char \*argv\[\]) _{_
-
-int j = 0; char buffer\[BUFFER SIZE\]; int k = 0; if (argc < 2) _{_return -1;_}_
-
-strcpy(buffer,argv\[1\]); printf("K is %d, J is %d, buffer is %s∖n", j,k,buffer); return 0; _}_
-
-_}_
+int main(int argc, char *argv[]) 
+{
+int j = 0; char buffer[BUFFER SIZE]; 
+int k = 0; 
+if (argc < 2) 
+{return -1;}
+strcpy(buffer,argv[1]); 
+printf("K is %d, J is %d, buffer is %s∖n", j,k,buffer); 
+return 0; 
+}
 
 ```
 **Figure 16.2** C program with buffer-overflow condition.
@@ -163,7 +162,7 @@ in ways that affect the outcome: optimizations often involve adjustments to memo
 
 **3\.** If the overflow greatly exceeds the padding, all of the current function’s stack frame is overwritten. At the very top of the frame is the function’s return address, which is accessed when the function returns. The flow of the program is subverted and can be redirected by the attacker to another region of memory, including memory controlled by the attacker (for example, the input buffer itself, or the stack or the heap). The injected code is then executed, allowing the attacker to run arbitrary code as the processes’ effective ID.
 
-Note that a careful programmer could have performed bounds checking on the size of argv\[1\] by using the strncpy() function rather than strcpy(), replacing the line “strcpy(buffer, argv\[1\]);” with “strncpy(buffer, argv\[1\], sizeof(buffer)-1);”. Unfortunately, good bounds checking is the exception rather than the norm. strcpy() is one of a known class of vulner- able functions, which include sprintf(), gets(), and other functions with no regard to buffer sizes. But even size-aware variants can harbor vulnerabilities when coupled with arithmetic operations over finite-length integers, which may lead to an integer overflow.
+Note that a careful programmer could have performed bounds checking on the size of argv[1] by using the strncpy() function rather than strcpy(), replacing the line “strcpy(buffer, argv[1]);” with “strncpy(buffer, argv[1], sizeof(buffer)-1);”. Unfortunately, good bounds checking is the exception rather than the norm. strcpy() is one of a known class of vulner- able functions, which include sprintf(), gets(), and other functions with no regard to buffer sizes. But even size-aware variants can harbor vulnerabilities when coupled with arithmetic operations over finite-length integers, which may lead to an integer overflow.
 
 At this point, the dangers inherent in a simple oversight in maintaining a buffer should be clearly evident. Brian Kerningham and Dennis Ritchie (in their book **_The C Programming Language_**) referred to the possible outcome as “undefined behavior,” but perfectly predictable behavior can be coerced by an attacker, as was first demonstrated by the Morris Worm (and documented in RFC1135: https://tools.ietf.org/html/rfc1135). It was not until several years later, however, that an article in issue 49 of **_Phrack_** magazine (“Smashing the Stack for Fun and Profit” http://phrack.org/issues/49/14.html) introduced the exploitation technique to the masses, unleashing a deluge of exploits.
 
@@ -782,9 +781,6 @@ c. Authentication and secrecy: only the receiver can decrypt the message, and th
 
 **16.14** Mobile operating systems such as iOS and Android place the user data and the system files into two separate partitions. Aside from security, what is an advantage of that separation?
 
-**EX-53**  
-
-_17_ **CHAPTER**
 
 # Protection
 
@@ -880,9 +876,9 @@ In comparing need-to-know with least privilege, it may be easiest to think of ne
 
 ### Domain Structure
 
-To facilitate the sort of scheme just described, a process may operate within a **protection domain**, which specifies the resources that the process may access. Each domain defines a set of objects and the types of operations that may be invoked on each object. The ability to execute an operation on an object is an **access right**. A domain is a collection of access rights, each of which is an orderedpair_<_object-name, rights-set_\>_. For example, if domain_D_has the access right _<_file _F_, _{_read,write_}>_, then a process executing in domain _D_ can both read and write file _F._ It cannot, however, perform any other operation on that object.
+To facilitate the sort of scheme just described, a process may operate within a **protection domain**, which specifies the resources that the process may access. Each domain defines a set of objects and the types of operations that may be invoked on each object. The ability to execute an operation on an object is an **access right**. A domain is a collection of access rights, each of which is an orderedpair _<_ object-name, rights-set _>_ . For example, if domain _D_ has the access right _<_ file _F_, _{_read,write_}>_, then a process executing in domain _D_ can both read and write file _F._ It cannot, however, perform any other operation on that object.
 
-Domains may share access rights. For example, in Figure 17.4, we have three domains: _D_1, _D_2, and _D_3\. The access right _<O_4, _{_print_}>_ is shared by _D_2 and _D_3, implying that a process executing in either of these two domains can print object _O_4\. Note that a process must be executing in domain _D_1 to read and write object_O_1, while only processes in domain_D_3 may execute object_O_1.
+Domains may share access rights. For example, in Figure 17.4, we have three domains: _D_ 1, _D_ 2, and _D_ 3\. The access right _<O_ 4, _{ _print_ }>_ is shared by _D_ 2 and _D_ 3, implying that a process executing in either of these two domains can print object _O_ 4. Note that a process must be executing in domain _D_ 1 to read and write object _O_ 1, while only processes in domain _D_ 3 may execute object _O_ 1.
 
 The association between a process and a domain may be either **static**, if the set of resources available to the process is fixed throughout the process’s lifetime, or **dynamic**. As might be expected, establishing dynamic protection domains is more complicated than establishing static protection domains.
 
@@ -899,11 +895,9 @@ Adomain can be realized in a variety of ways:
 
 • Each **_process_** may be a domain. In this case, the set of objects that can be accessed depends on the identity of the process. Domain switching occurs when one process sends a message to another process and then waits for a response.
 
-• Each **_procedure_**may be a domain. In this case, the set of objects that can be accessed corresponds to the local variables defined within the procedure. Domain switching occurs when a procedure call is made.
+• Each **_procedure_** may be a domain. In this case, the set of objects that can be accessed corresponds to the local variables defined within the procedure. Domain switching occurs when a procedure call is made.
 
-We discuss domain switching in greater detail in Section 17.5. Consider the standard dual-mode (kernel–usermode)model of operating-
-
-system execution. When a process is in kernel mode, it can execute privileged instructions and thus gain complete control of the computer system. In con- trast, when a process executes in user mode, it can invoke only nonprivileged instructions. Consequently, it can execute only within its predefined memory space. These two modes protect the operating system (executing in kernel domain) from the user processes (executing in user domain). In a multipro- grammed operating system, two protection domains are insufficient, since users also want to be protected from one another. Therefore, a more elaborate scheme is needed. We illustrate such a scheme by examining two influential operating systems—UNIX and Android—to see how they implement these concepts.
+We discuss domain switching in greater detail in Section 17.5. Consider the standard dual-mode (kernel–usermode)model of operating system execution. When a process is in kernel mode, it can execute privileged instructions and thus gain complete control of the computer system. In con- trast, when a process executes in user mode, it can invoke only nonprivileged instructions. Consequently, it can execute only within its predefined memory space. These two modes protect the operating system (executing in kernel domain) from the user processes (executing in user domain). In a multipro- grammed operating system, two protection domains are insufficient, since users also want to be protected from one another. Therefore, a more elaborate scheme is needed. We illustrate such a scheme by examining two influential operating systems—UNIX and Android—to see how they implement these concepts.
 
 ### Example: UNIX
 
@@ -923,7 +917,7 @@ In Android, distinct user IDs are provided on a per-application basis. When an a
 
 The general model of protection can be viewed abstractly as a matrix, called an **access matrix**. The rows of the access matrix represent domains, and the columns represent objects. Each entry in the matrix consists of a set of access rights. Because the column defines objects explicitly, we can omit the object name from the access right. The entry access(_i,j_) defines the set of operations that a process executing in domain _Di_ can invoke on object _Oj_.
 
-To illustrate these concepts, we consider the access matrix shown in Figure 17.5. There are four domains and four objects—three files (_F_1, _F_2, _F_3) and one laser printer. A process executing in domain _D_1 can read files _F_1 and _F_3\. A process executing in domain _D_4 has the same privileges as one executing in domain _D_1; but in addition, it can also write onto files _F_1 and _F_3\. The laser printer can be accessed only by a process executing in domain _D_2.
+To illustrate these concepts, we consider the access matrix shown in Figure 17.5. There are four domains and four objects—three files ( _F_ 1, _F_ 2, _F_ 3) and one laser printer. A process executing in domain _D_ 1 can read files _F_ 1 and _F_ 3. A process executing in domain _D_ 4 has the same privileges as one executing in domain _D_ 1; but in addition, it can also write onto files _F_ 1 and _F_ 3. The laser printer can be accessed only by a process executing in domain _D_ 2.
 
 The access-matrix scheme provides uswith themechanism for specifying a variety of policies. The mechanism consists of implementing the access matrix and ensuring that the semantic properties we have outlined hold. More specif- ically, we must ensure that a process executing in domain _Di_ can access only those objects specified in row _i_, and then only as allowed by the access-matrix entries.
 
@@ -933,15 +927,15 @@ The access matrix can implement policy decisions concerning protection. The poli
 
 We must also decide the domain in which each process executes. This last policy is usually decided by the operating system.
 
-The users normally decide the contents of the access-matrix entries. When a user creates a new object_Oj_, the column_Oj_ is added to the access matrix with the appropriate initialization entries, as dictated by the creator. The user may decide to enter some rights in some entries in column _j_ and other rights in other entries, as needed.
+The users normally decide the contents of the access-matrix entries. When a user creates a new object _Oj_ , the column _Oj_ is added to the access matrix with the appropriate initialization entries, as dictated by the creator. The user may decide to enter some rights in some entries in column _j_ and other rights in other entries, as needed.
 
 The access matrix provides an appropriate mechanism for defining and implementing strict control for both static and dynamic association between processes anddomains.Whenwe switch a process fromone domain to another, we are executing an operation (switch) on an object (the domain). We can control domain switching by including domains among the objects of the access matrix. Similarly, when we change the content of the access matrix, we are performing an operation on an object: the access matrix. Again, we can control these changes by including the accessmatrix itself as an object. Actually, since each entry in the access matrix can be modified individually, we must consider each entry in the access matrix as an object to be protected. Now, we need to consider only the operations possible on these new objects (domains and the access matrix) and decide howwewant processes to be able to execute these operations.
 
-Processes should be able to switch from one domain to another. Switching fromdomain_Di_ to domain_Dj_ is allowed if and only if the access right switch∈ access(_i_, _j_). Thus, in Figure 17.6, a process executing in domain _D_2 can switch to domain _D_3 or to domain _D_4\. A process in domain _D_4 can switch to _D_1, and one in domain _D_1 can switch to _D_2.
+Processes should be able to switch from one domain to another. Switching fromdomain _Di_ to domain _Dj_ is allowed if and only if the access right switch∈ access(_i_, _j_). Thus, in Figure 17.6, a process executing in domain _D_ 2 can switch to domain _D_ 3 or to domain _D_ 4. A process in domain _D_ 4 can switch to _D_ 1, and one in domain _D_ 1 can switch to _D_ 2.
 
 Allowing controlled change in the contents of the access-matrix entries requires three additional operations: copy, owner, and control. We examine these operations next.
 
-The ability to copy an access right from one domain (or row) of the access matrix to another is denoted by an asterisk (\*) appended to the access right. The copy right allows the access right to be copied only within the column (that is, for the object) for which the right is defined. For example, in Figure 17.7(a), a process executing in domain_D_2 can copy the read operation into any entry associated with file _F_2\. Hence, the access matrix of Figure 17.7(a) can be modified to the access matrix shown in Figure 17.7(b).  
+The ability to copy an access right from one domain (or row) of the access matrix to another is denoted by an asterisk (\*) appended to the access right. The copy right allows the access right to be copied only within the column (that is, for the object) for which the right is defined. For example, in Figure 17.7(a), a process executing in domain _D_ 2 can copy the read operation into any entry associated with file _F_ 2. Hence, the access matrix of Figure 17.7(a) can be modified to the access matrix shown in Figure 17.7(b).  
 
 ![Alt text](image-16.png)
 **Figure 17.6** Access matrix of Figure 17.5 with domains as objects.
@@ -956,9 +950,9 @@ A system may select only one of these three copy rights, or it may provide all t
 ![Alt text](image-17.png)
 **Figure 17.7** Access matrix with **_copy_** rights.  
 
-We also need a mechanism to allow addition of new rights and removal of some rights. The owner right controls these operations. If access(_i_, _j_) includes the owner right, then a process executing in domain _Di_ can add and remove any right in any entry in column _j_. For example, in Figure 17.8(a), domain _D_1 is the owner of _F_1 and thus can add and delete any valid right in column _F_1\. Similarly, domain _D_2 is the owner of _F_2 and _F_3 and thus can add and remove any valid right within these two columns. Thus, the access matrix of Figure 17.8(a) can be modified to the access matrix shown in Figure 17.8(b).
+We also need a mechanism to allow addition of new rights and removal of some rights. The owner right controls these operations. If access(_i_, _j_) includes the owner right, then a process executing in domain _Di_ can add and remove any right in any entry in column _j_. For example, in Figure 17.8(a), domain _D_ 1 is the owner of _F_ 1 and thus can add and delete any valid right in column _F_ 1. Similarly, domain _D_ 2 is the owner of _F_ 2 and _F_ 3 and thus can add and remove any valid right within these two columns. Thus, the access matrix of Figure 17.8(a) can be modified to the access matrix shown in Figure 17.8(b).
 
-The copy and owner rights allow a process to change the entries in a column. A mechanism is also needed to change the entries in a row. The control right is applicable only to domain objects. If access(_i_, _j_) includes the control right, then a process executing in domain _Di_ can remove any access right from row _j_. For example, suppose that, in Figure 17.6, we include the control right in access(_D_2, _D_4). Then, a process executing in domain _D_2 could modify domain _D_4, as shown in Figure 17.9.
+The copy and owner rights allow a process to change the entries in a column. A mechanism is also needed to change the entries in a row. The control right is applicable only to domain objects. If access(_i_, _j_) includes the control right, then a process executing in domain _Di_ can remove any access right from row _j_. For example, suppose that, in Figure 17.6, we include the control right in access(_D_ 2, _D_ 4). Then, a process executing in domain _D_ 2 could modify domain _D_ 4, as shown in Figure 17.9.
 
 The copy and owner rights provide us with a mechanism to limit the prop- agation of access rights. However, they do not give us the appropriate tools for preventing the propagation (or disclosure) of information. The problem of guaranteeing that no information initially held in an object canmigrate outside of its execution environment is called the **confinemen problem**. This problem is in general unsolvable (see the bibliographical notes at the end of the chapter).
 ![Alt text](image-18.png)
@@ -983,15 +977,15 @@ This implementation suffers from several drawbacks. The table is usually large a
 
 Each column in the access matrix can be implemented as an access list for one object, as described in Section 13.4.2. Obviously, the empty entries can be discarded. The resulting list for each object consists of ordered pairs _<_domain, rights-set_\>_, which define all domains with a nonempty set of access rights for that object.
 
-This approach can be extended easily to define a list plus a **_default_** set of access rights. When an operation_M_ on an object_Oj_ is attempted in domain_Di_, we search the access list for object _Oj_, looking for an entry _<Di_, _Rk>_ with_M_ ∈ _Rk_. If the entry is found, we allow the operation; if it is not, we check the default set. If_M_ is in the default set, we allow the access. Otherwise, access is denied, and an exception condition occurs. For efficiency, we may check the default set first and then search the access list.
+This approach can be extended easily to define a list plus a **_default_** set of access rights. When an operation _M_ on an object _Oj_ is attempted in domain _Di_, we search the access list for object _Oj_, looking for an entry _<Di_, _Rk>_ with _M_ ∈ _Rk_. If the entry is found, we allow the operation; if it is not, we check the default set. If _M_ is in the default set, we allow the access. Otherwise, access is denied, and an exception condition occurs. For efficiency, we may check the default set first and then search the access list.
 
 ### Capability Lists for Domains
 
-Rather than associating the columns of the access matrix with the objects as access lists, we can associate each row with its domain. A **capability list** for a domain is a list of objects together with the operations allowed on those objects. An object is often represented by its physical name or address, called a **capability**. To execute operation _M_ on object _Oj_, the process executes the operation_M_, specifying the capability (or pointer) for object_Oj_ as a parameter. Simple **_possession_** of the capability means that access is allowed.
+Rather than associating the columns of the access matrix with the objects as access lists, we can associate each row with its domain. A **capability list** for a domain is a list of objects together with the operations allowed on those objects. An object is often represented by its physical name or address, called a **capability**. To execute operation _M_ on object _Oj_, the process executes the operation _M_, specifying the capability (or pointer) for object _Oj_ as a parameter. Simple **_possession_** of the capability means that access is allowed.
 
 The capability list is associated with a domain, but it is never directly accessible to a process executing in that domain. Rather, the capability list is itself a protected object, maintained by the operating system and accessed by the user only indirectly. Capability-based protection relies on the fact that the capabilities are never allowed to migrate into any address space directly accessible by a user process (where they could be modified). If all capabilities are secure, the object they protect is also secure against unauthorized access.
 
-Capabilities were originally proposed as a kind of secure pointer, to meet the need for resource protection that was foreseen as multiprogrammed com- puter systems came of age. The idea of an inherently protectedpointer provides a foundation for protection that can be extended up to the application level.
+Capabilities were originally proposed as a kind of secure pointer, to meet the need for resource protection that was foreseen as multiprogrammed com- puter systems came of age. The idea of an inherently protected pointer provides a foundation for protection that can be extended up to the application level.
 
 To provide inherent protection,wemust distinguish capabilities fromother kinds of objects, and theymust be interpreted by an abstract machine onwhich higher-level programs run. Capabilities are usually distinguished from other data in one of two ways:
 

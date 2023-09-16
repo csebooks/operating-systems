@@ -115,39 +115,46 @@ Some operating systems provide facilities for locking an open file (or sec- tion
 
 File locks provide functionality similar to reader–writer locks, covered in Section 7.1.2. A **shared lock** is akin to a reader lock in that several processes can acquire the lock concurrently. An **exclusive lock** behaves like awriter lock; only one process at a time can acquire such a lock. It is important to note that not  
 
+```
+import java.io.; 
+import java.nio.channels.;
 
-import java.io.\*; import java.nio.channels.\*;
+public class LockingExample 
+{ 
+    public static final boolean EXCLUSIVE = false; public static final boolean SHARED = true;
 
-public class LockingExample _{_ public static final boolean EXCLUSIVE = false; public static final boolean SHARED = true;
+public static void main(String args[]) throws IOException {
+     FileLock sharedLock = null; FileLock exclusiveLock = null;
 
-public static void main(String args\[\]) throws IOException _{_ FileLock sharedLock = null; FileLock exclusiveLock = null;
-
-try _{_ RandomAccessFile raf = new RandomAccessFile("file.txt","rw");
+try { RandomAccessFile raf = new RandomAccessFile("file.txt","rw");
 
 // get the channel for the file FileChannel ch = raf.getChannel();
 
 // this locks the first half of the file - exclusive exclusiveLock = ch.lock(0, raf.length()/2, EXCLUSIVE);
 
-/\*\* Now modify the data . . . \*/
+/* Now modify the data . . . */
 
 // release the lock exclusiveLock.release();
 
 // this locks the second half of the file - shared sharedLock = ch.lock(raf.length()/2+1,raf.length(),SHARED);
 
-/\*\* Now read the data . . . \*/
+/* Now read the data . . . */
 
 // release the lock sharedLock.release();
 
-_}_ catch (java.io.IOException ioe) _{_ System.err.println(ioe);
+} 
+catch (java.io.IOException ioe) 
+{ 
+    System.err.println(ioe);
 
-_}_ finally _{_ if (exclusiveLock != null)
+} finally { if (exclusiveLock != null)
 
 exclusiveLock.release(); if (sharedLock != null)
 
-sharedLock.release(); _}_
+sharedLock.release(); }
 
-_} }_
-
+} }
+```
 **Figure 13.2** File-locking example in Java.
 
 all operating systems provide both types of locks: some systems provide only exclusive file locking.
@@ -634,7 +641,7 @@ Disks provide most of the secondary storage on which file systems are main- tain
 
 **1\.** A disk can be rewritten in place; it is possible to read a block from the disk, modify the block, and write it back into the same block.
 
-**2\.** Adisk can access directly any block of information it contains. Thus, it is simple to access any file either sequentially or randomly, and switching from one file to another requires the drive moving the read–write heads and waiting for the media to rotate.
+**2\.** A disk can access directly any block of information it contains. Thus, it is simple to access any file either sequentially or randomly, and switching from one file to another requires the drive moving the read–write heads and waiting for the media to rotate.
 
 Nonvolatile memory (NVM) devices are increasingly used for file storage and thus as a location for file systems. They differ from hard disks in that they cannot be rewritten in place and they have different performance characteris- tics. We discuss disk and NVM-device structure in detail in Chapter 11.
 
@@ -672,13 +679,13 @@ Several on-storage and in-memory structures are used to implement a file system.
 
 On storage, the file system may contain information about how to boot an operating system stored there, the total number of blocks, the number and location of free blocks, the directory structure, and individual files. Many of these structures are detailed throughout the remainder of this chapter. Here, we describe them briefly:
 
-• A**boot control block** (per volume) can contain information needed by the system to boot an operating system from that volume. If the disk does not contain an operating system, this block can be empty. It is typically the first block of a volume. In UFS, it is called the **boot block**. In NTFS, it is the **partition boot sector**.
+• A **boot control block** (per volume) can contain information needed by the system to boot an operating system from that volume. If the disk does not contain an operating system, this block can be empty. It is typically the first block of a volume. In UFS, it is called the **boot block**. In NTFS, it is the **partition boot sector**.
 
-• A**volume control block** (per volume) contains volume details, such as the number of blocks in the volume, the size of the blocks, a free-block count and free-block pointers, and a free-FCB count and FCB pointers. In UFS, this is called a **superblock**. In NTFS, it is stored in the **master fil table**.
+• A **volume control block** (per volume) contains volume details, such as the number of blocks in the volume, the size of the blocks, a free-block count and free-block pointers, and a free-FCB count and FCB pointers. In UFS, this is called a **superblock**. In NTFS, it is stored in the **master fil table**.
 
 • A directory structure (per file system) is used to organize the files. In UFS, this includes file names and associated inode numbers. In NTFS, it is stored in the master file table.  
 
-• Aper-file FCB containsmany details about the file. It has a unique identifier number to allow association with a directory entry. In NTFS, this informa- tion is actually stored within the master file table, which uses a relational database structure, with a row per file.
+• A per-file FCB containsmany details about the file. It has a unique identifier number to allow association with a directory entry. In NTFS, this informa- tion is actually stored within the master file table, which uses a relational database structure, with a row per file.
 
 The in-memory information is used for both file-system management and performance improvement via caching. The data are loaded at mount time, updated during file-system operations, and discarded at dismount. Several types of structures may be included.
 
@@ -802,9 +809,9 @@ The FAT allocation scheme can result in a significant number of disk head seeks,
 
 Linked allocation solves the external-fragmentation and size-declaration prob- lems of contiguous allocation. However, in the absence of a FAT, linked alloca- tion cannot support efficient direct access, since the pointers to the blocks are scattered with the blocks themselves all over the disk and must be retrieved in order. **Indexed allocation** solves this problem by bringing all the pointers together into one location: the **index block**.
 
-Each file has its own index block, which is an array of storage-block addresses. The _i_th entry in the index block points to the _i_th block of the file. The directory contains the address of the index block (Figure 14.7). To find and read the _i_th block, we use the pointer in the _i_th index-block entry. This scheme is similar to the paging scheme described in Section 9.3.
+Each file has its own index block, which is an array of storage-block addresses. The _i_ th entry in the index block points to the _i_ th block of the file. The directory contains the address of the index block (Figure 14.7). To find and read the _i_ th block, we use the pointer in the _i_ th index-block entry. This scheme is similar to the paging scheme described in Section 9.3.
 
-When the file is created, all pointers in the index block are set to null. When the _i_th block is first written, a block is obtained from the free-space manager, and its address is put in the _i_th index-block entry.
+When the file is created, all pointers in the index block are set to null. When the _i_ th block is first written, a block is obtained from the free-space manager, and its address is put in the _i_ th index-block entry.
 
 Indexed allocation supports direct access, without suffering from external fragmentation, because any free block on the storage device can satisfy a request for more space. Indexed allocation does suffer from wasted space, however. The pointer overhead of the index block is generally greater than the pointer overhead of linked allocation. Consider a common case in which we have a file of only one or two blocks. With linked allocation, we lose the space of only one pointer per block. With indexed allocation, an entire index block must be allocated, even if only one or two pointers will be non-null.
 
@@ -849,9 +856,7 @@ For NVM devices, there are no disk head seeks, so different algorithms and optim
 
 ## Free-Space Management
 
-Since storage space is limited, we need to reuse the space from deleted files for new files, if possible. (Write-once optical disks allow only one write to any given sector, and thus reuse is not physically possible.) To keep track of free disk space, the system maintains a **free-space list**. The free-space list records all free device blocks—those not allocated to some file or directory. To create a file, we search the free-space list for the required amount of space and allocate  
-
-that space to the new file. This space is then removed from the free-space list. When a file is deleted, its space is added to the free-space list. The free-space list, despite its name, is not necessarily implemented as a list, as we discuss next.
+Since storage space is limited, we need to reuse the space from deleted files for new files, if possible. (Write-once optical disks allow only one write to any given sector, and thus reuse is not physically possible.) To keep track of free disk space, the system maintains a **free-space list**. The free-space list records all free device blocks—those not allocated to some file or directory. To create a file, we search the free-space list for the required amount of space and allocate that space to the new file. This space is then removed from the free-space list. When a file is deleted, its space is added to the free-space list. The free-space list, despite its name, is not necessarily implemented as a list, as we discuss next.
 
 ### Bit Vector
 
@@ -877,7 +882,7 @@ the operating system simply needs a free block so that it can allocate that bloc
 
 ### Grouping
 
-A modification of the free-list approach stores the addresses of _n_ free blocks in the first free block. The first _n_−1 of these blocks are actually free. The last block contains the addresses of another _n_ free blocks, and so on. The addresses of a large number of free blocks can now be found quickly, unlike the situation when the standard linked-list approach is used.
+A modification of the free-list approach stores the addresses of _n_ free blocks in the first free block. The first _n_ −1 of these blocks are actually free. The last block contains the addresses of another _n_ free blocks, and so on. The addresses of a large number of free blocks can now be found quickly, unlike the situation when the standard linked-list approach is used.
 
 ### Counting
 
@@ -1229,7 +1234,6 @@ Just as a file must be opened before it can be used, a file system must be mount
 
 Themount procedure is straightforward. The operating system is given the name of the device and the **mount point**—the location within the file structure where the file system is to be attached. Some operating systems require that a file-system type be provided, while others inspect the structures of the device  
 
-/ ufs /devices devfs /dev dev /system/contract ctfs /proc proc /etc/mnttab mntfs /etc/svc/volatile tmpfs /system/object objfs /lib/libc.so.1 lofs /dev/fd fd /var ufs /tmp tmpfs /var/run tmpfs /opt ufs /zpbge zfs /zpbge/backup zfs /export/home zfs /var/mail zfs /var/spool/mqueue zfs /zpbg zfs /zpbg/zones zfs
 ![Alt text](image-30.png)
 **Figure 15.2** Solaris file systems.
 
@@ -1372,7 +1376,7 @@ Remote file systems have even more failure modes. Because of the complexity of n
 
 Consider a client in themidst of using a remote file system. It has files open from the remote host; among other activities, it may be performing directory lookups to open files, reading or writing data to files, and closing files. Now consider a partitioning of the network, a crash of the server, or even a scheduled shutdown of the server. Suddenly, the remote file system is no longer reachable. This scenario is rather common, so it would not be appropriate for the client system to act as it would if a local file system were lost. Rather, the system can either terminate all operations to the lost server or delay operations until the server is again reachable. These failure semantics are defined and implemented as part of the remote-file-system protocol. Termination of all operations can result in users’ losing data—and patience. Thus, most DFS protocols either enforce or allow delaying of file-system operations to remote hosts, with the hope that the remote host will become available again.
 
-To implement this kind of recovery from failure, some kind of **state infor- mation** may be maintained on both the client and the server. If both server and client maintain knowledge of their current activities and open files, then they can seamlessly recover from a failure. In the situation where the server crashes but must recognize that it has remotely mounted exported file systems and opened files, NFS Version 3 takes a simple approach, implementing a **stateless** DFS. In essence, it assumes that a client request for a file read orwritewould not have occurred unless the file system had been remotely mounted and the file had been previously open. The NFS protocol carries all the information needed to locate the appropriate file and perform the requested operation. Similarly, it does not track which clients have the exported volumes mounted, again assuming that if a request comes in, it must be legitimate. While this stateless approach makes NFS resilient and rather easy to implement, it also makes it unsecure. For example, forged read or write requests could be allowed by an NFS server. These issues are addressed in the industry standard NFS Version 4, in which NFS is made stateful to improve its security, performance, and functionality.
+To implement this kind of recovery from failure, some kind of **state information** may be maintained on both the client and the server. If both server and client maintain knowledge of their current activities and open files, then they can seamlessly recover from a failure. In the situation where the server crashes but must recognize that it has remotely mounted exported file systems and opened files, NFS Version 3 takes a simple approach, implementing a **stateless** DFS. In essence, it assumes that a client request for a file read orwritewould not have occurred unless the file system had been remotely mounted and the file had been previously open. The NFS protocol carries all the information needed to locate the appropriate file and perform the requested operation. Similarly, it does not track which clients have the exported volumes mounted, again assuming that if a request comes in, it must be legitimate. While this stateless approach makes NFS resilient and rather easy to implement, it also makes it unsecure. For example, forged read or write requests could be allowed by an NFS server. These issues are addressed in the industry standard NFS Version 4, in which NFS is made stateful to improve its security, performance, and functionality.
 
 ## Consistency Semantics
 
