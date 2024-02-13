@@ -5,7 +5,7 @@ weight: 2
 
 
 
-_Process Management_
+*_Process Management_*
 
 A _process_ is a program in execution. A process will need certain resources—such as CPU time, memory, files, and I/O devices—to accomplish its task. These resources are typically allocated to the process while it is executing.
 
