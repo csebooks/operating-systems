@@ -1,6 +1,6 @@
 ---
 title: 'Computer-System Organization'
-weight: 3
+weight: 2
 ---
 
 # Computer-System Organization
