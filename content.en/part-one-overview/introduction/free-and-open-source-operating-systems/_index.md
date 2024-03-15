@@ -1,6 +1,6 @@
 ---
 title: 'Free and Open-Source Operating Systems'
-weight: 12
+weight: 11
 ---
 
 # Free and Open-Source Operating Systems
