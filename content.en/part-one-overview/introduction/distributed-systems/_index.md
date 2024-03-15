@@ -1,6 +1,6 @@
 ---
 title: 'Distributed Systems'
-weight: 9
+weight: 8
 ---
 
 # Distributed Systems
