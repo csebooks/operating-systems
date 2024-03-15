@@ -1,6 +1,6 @@
 ---
 title: 'Kernel Data Structures'
-weight: 10
+weight: 9
 ---
 
 # Kernel Data Structures
