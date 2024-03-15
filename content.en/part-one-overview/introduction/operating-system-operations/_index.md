@@ -1,6 +1,6 @@
 ---
 title: 'Operating-System Operations'
-weight: 5
+weight: 4
 ---
 
 # Operating-System Operations
