@@ -1,6 +1,6 @@
 ---
 title: 'What Operating Systems Do'
-weight: 2
+weight: 1
 ---
 
 # What Operating Systems Do
