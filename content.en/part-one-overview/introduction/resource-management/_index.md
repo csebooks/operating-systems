@@ -1,6 +1,6 @@
 ---
 title: 'Resource Management'
-weight: 6
+weight: 5
 ---
 
 # Resource Management
