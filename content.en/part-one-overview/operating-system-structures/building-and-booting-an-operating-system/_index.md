@@ -1,6 +1,20 @@
 ---
 title: 'Building and Booting an Operating System'
 weight: 9
+references:
+    videos:
+        - youtube:wD0PrF3fGSY
+        - youtube:bDsTwHIqs2g
+    links:
+        - https://www.javatpoint.com/booting-in-operating-system
+        - https://www.geeksforgeeks.org/booting-and-dual-booting-of-operating-system/
+    books:
+        - b1:
+            title: Hands-on Booting
+            url: https://www.google.co.in/books/edition/Hands_on_Booting/lJjuDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Live Linux CDs
+            url: https://www.google.co.in/books/edition/Live_Linux_CDs/2S3eUgb39C8C?hl=en&gbpv=0
 ---
 
 # Building and Booting an Operating System
