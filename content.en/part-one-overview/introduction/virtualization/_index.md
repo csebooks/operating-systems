@@ -1,6 +1,20 @@
 ---
 title: 'Virtualization'
 weight: 7
+references:
+    videos:
+        - youtube:FZR0rG3HKIk
+        - youtube:UBVVq-xz5i0
+    links:
+        -https://www.ibm.com/topics/virtualization
+        - https://www.geeksforgeeks.org/virtualization-cloud-computing-types/
+    books:
+        - b1:
+            title: Virtualization A Manager's Guide
+            url: https://www.google.co.in/books/edition/Virtualization/dV_L5CbsDscC?hl=en&gbpv=0
+        - b2:
+            title: Virtualization Essentials
+            url:  https://www.google.co.in/books/edition/Virtualization_Essentials/_xi3EAAAQBAJ?hl=en&gbpv=0
 ---
 
 # Virtualization
