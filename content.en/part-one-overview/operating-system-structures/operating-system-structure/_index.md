@@ -1,6 +1,20 @@
 ---
 title: 'Operating-System Structure'
 weight: 8
+references:
+    videos:
+        - youtube:XXPBl20J22w
+        - youtube:beARiqXjbUA 
+    links:
+        - https://www.javatpoint.com/operating-system-structure#:~:text=The%20operating%20system%20is%20divided,the%20OS%20became%20progressively%20better.
+        - https://www.tutorialspoint.com/Operating-System-Structure
+    books:
+        - b1:
+            title: Operating System, 2nd Edition 
+            url: https://www.google.co.in/books/edition/Operating_System_2nd_Edition/MZJDDAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Operating Systems 
+            url:  https://www.google.co.in/books/edition/Operating_Systems/gSy8qdmf3qEC?hl=en&gbpv=0
 ---
 
 # Operating-System Structure
