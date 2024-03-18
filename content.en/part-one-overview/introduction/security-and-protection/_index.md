@@ -1,6 +1,20 @@
 ---
 title: 'Security and Protection'
 weight: 6
+references:
+    videos:
+        - youtube:fQlG5zzUNy8
+        - youtube:Abta0j826Bk
+    links:
+        - https://www.geeksforgeeks.org/difference-between-security-and-protection/
+        - https://www.javatpoint.com/security-vs-protection-in-operating-system
+    books:
+        - b1:
+            title: Internet of Things Security and Data Protection 
+            url: https://www.google.co.in/books/edition/Internet_of_Things_Security_and_Data_Pro/Ws2NDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Quality Of Protection 
+            url:  https://www.google.co.in/books/edition/Quality_Of_Protection/W09ZuB8hMW8C?hl=en&gbpv=0
 ---
 
 # Security and Protection
