@@ -1,6 +1,21 @@
 ---
 title: 'Operating-System Debugging'
 weight: 10
+references:
+    videos:
+        - youtube:QzPY9JO3uIw
+        - youtube:7yeiui9bwZg
+    links:
+        - https://www.geeksforgeeks.org/operating-system-debugging/
+        - https://www.tutorialspoint.com/operating-system-debugging
+    books:
+        - b1:
+            title:Debugging Embedded and Real-Time Systems
+            url: https://www.google.co.in/books/edition/Debugging_Embedded_and_Real_Time_Systems/aNrxDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Advanced Windows Debugging
+            url:  https://www.google.co.in/books/edition/Advanced_Windows_Debugging/XsQCd-r0bU8C?hl=en&gbpv=0
+
 ---
 
 # Operating-System Debugging
