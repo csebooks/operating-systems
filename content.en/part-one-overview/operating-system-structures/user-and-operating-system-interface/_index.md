@@ -1,6 +1,20 @@
 ---
 title: 'User and Operating-System Interface'
 weight: 2
+references:
+    videos:
+        - youtube:psDpbWscPuE
+        - youtube:O_256Dn_lng
+    links:
+        - https://www.tutorialspoint.com/what-is-the-user-interface-and-operating-system-interface
+        - https://www.geeksforgeeks.org/user-interface-ui/
+    books:
+        - b1:
+            title: Operating Systems
+            url: https://www.google.co.in/books/edition/Operating_Systems_Principles_And_Design/fDZxNHyVcqIC?hl=en&authuser=2&gbpv=0
+        - b2:
+            title: User Interface Design for Programmers
+            url: https://www.google.co.in/books/edition/User_Interface_Design_for_Programmers/V0QnCgAAQBAJ?hl=en&authuser=2&gbpv=0
 ---
 
 # User and Operating-System Interface
