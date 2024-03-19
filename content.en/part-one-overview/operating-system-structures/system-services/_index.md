@@ -1,6 +1,20 @@
 ---
 title: 'System Services'
 weight: 4
+references:
+    videos:
+        - youtube:q7SqTVrdmUM
+        - youtube:TQWERtMoKbI
+    links:
+        - https://www.geeksforgeeks.org/operating-system-services/
+        - https://www.javatpoint.com/operating-system-services
+    books:
+        - b1:
+            title: Win32 System Services
+            url: https://www.google.co.in/books/edition/Win32_System_Services/JCG5aNnGlYsC?hl=en&authuser=2&gbpv=0
+        - b2:
+            title: Fundamentals of Service Systems
+            url: https://www.google.co.in/books/edition/Fundamentals_of_Service_Systems/v6cvCwAAQBAJ?hl=en&authuser=2&gbpv=0
 ---
 
 # System Services
