@@ -1,6 +1,20 @@
 ---
 title: 'Computer-System Architecture'
 weight: 3
+references:
+    videos:
+        - youtube:So9SR3qpWsM
+        - youtube:qfUZBKDh9BY
+    links:
+        - https://www.spiceworks.com/tech/tech-general/articles/what-is-computer-architecture/
+        - https://www.tutorialspoint.com/Computer-System-Architecture
+    books:
+        - b1:
+            title: COMPUTER ORGANIZATION AND ARCHITECTURE
+            url: https://www.google.co.in/books/edition/COMPUTER_ORGANIZATION_AND_ARCHITECTURE/7pEXnirv6jYC?hl=en
+        - b2:
+           title: Computer System Architecture 
+            url: https://www.google.co.in/books/edition/Computer_System_Architecture/AUSYPwAACAAJ?hl=en
 ---
 
 # Computer-System Architecture
