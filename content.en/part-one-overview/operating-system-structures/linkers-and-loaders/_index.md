@@ -1,6 +1,20 @@
 ---
 title: 'Linkers and Loaders'
 weight: 5
+references:
+    videos:
+        - youtube:j7VU5A8ajSA
+        - youtube:w74NyYOIdII
+    links:
+        - https://www.geeksforgeeks.org/difference-between-linker-and-loader/
+        - https://techdifferences.com/difference-between-linker-and-loader.html
+    books:
+        - b1:
+            title: Linkers and Loaders 
+            url: https://www.google.co.in/books/edition/Linkers_and_Loaders/Id9cYsIdjIwC?hl=en&gbpv=1&dq=Linkers+and+Loaders&printsec=frontcover
+        - b2:
+            title: Assemblers And Loaders
+            url: https://www.google.co.in/books/edition/Assemblers_and_Loaders/va9QAAAAMAAJ?hl=en&gbpv=0&bsq=Linkers%20and%20Loaders
 ---
 
 # Linkers and Loaders
