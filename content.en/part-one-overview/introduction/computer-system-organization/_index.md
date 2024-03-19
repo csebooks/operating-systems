@@ -1,6 +1,20 @@
 ---
 title: 'Computer-System Organization'
 weight: 2
+references:
+    videos:
+        - youtube:CN70o11-uZM
+        - youtube:42_J4TmMbqo
+    links:
+        - https://www.tutorialspoint.com/Computer-System-Organisation
+        - https://www.javatpoint.com/computer-organization-and-architecture-tutorial
+    books:
+        - b1:
+            title: Computer Organization & Architecture 7e
+            url: https://www.google.co.in/books/edition/Computer_Organization_Architecture_7e/11Z1m4WQh1cC?hl=en&gbpv=0
+        - b2:
+           title: COMPUTER ORGANIZATION AND ARCHITECTURE
+            url: https://www.google.co.in/books/edition/COMPUTER_ORGANIZATION_AND_ARCHITECTURE/hZQ4jAdpUAAC?hl=en&gbpv=0
 ---
 
 # Computer-System Organization
