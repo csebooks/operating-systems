@@ -1,6 +1,20 @@
 ---
 title: 'Operating-System Design and Implementation'
 weight: 7
+references:
+    videos:
+        - youtube:t_McsJ1RGQg
+        - youtube:acPvdGOYK4I
+    links:
+        - https://www.geeksforgeeks.org/design-and-implementation-in-operating-system/
+        - https://www.tutorialspoint.com/operating-system-design-and-implementation
+    books:
+        - b1:
+            title: Operating Systems 
+            url: https://www.google.co.in/books/edition/Operating_Systems/RYU_AQAAIAAJ?hl=en&gbpv=0&bsq=Operating-System%20Design%20and%20Implementation
+        - b2:
+            title: Introduction to Operating System Design and Implementation
+            url: https://www.google.co.in/books/edition/Introduction_to_Operating_System_Design/KisFwig6YnAC?hl=en&gbpv=0
 ---
 
 # Operating-System Design and Implementation
