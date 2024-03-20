@@ -1,6 +1,20 @@
 ---
 title: 'Scheduling Algorithms'
 weight: 3
+references:
+    videos:
+        - youtube:WYo1SpUh9FI
+        - youtube:pYO-FAg-TpQ
+    links:
+        - https://www.tutorialspoint.com/operating_system/os_process_scheduling_algorithms.htm
+        - https://www.javatpoint.com/os-scheduling-algorithms
+    books:
+        - b1:
+            title: Scheduling Algorithms
+            url: https://www.google.co.in/books/edition/Scheduling_Algorithms/2_v5BwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Scheduling Algorithm
+            url: https://www.google.co.in/books/edition/Scheduling_Algorithms/T2jrCAAAQBAJ?hl=en&gbpv=0
 ---
 
 # Scheduling Algorithms
