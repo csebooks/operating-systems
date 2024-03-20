@@ -13,7 +13,7 @@ references:
             title: Interprocess Communications in Linux 
             url:  https://www.google.co.in/books/edition/Interprocess_Communications_in_Linux/pF2ka_E_R5YC?hl=en&gbpv=0
         - b2:
-            title: Interprocess Communications in UNIX 
+            title: Interprocess Communications in UNIX
             url:  https://www.google.co.in/books/edition/Interprocess_Communications_in_UNIX/kLhQAAAAMAAJ?hl=en&gbpv=0&bsq=Interprocess%20Communication
 ---
 ---
