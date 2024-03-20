@@ -1,6 +1,20 @@
 ---
 title: 'Examples of IPC Systems'
 weight: 7
+references:
+    videos:
+        - youtube: MeheoZnhODM
+        - youtube: v3vofFS2RzI
+    links:
+        -https://www.scaler.com/topics/operating-system/inter-process-communication-in-os/ 
+        -https://www.quora.com/What-is-the-real-world-example-of-inter-process-communication-in-terms-of-distributed-operating-system 
+    books:
+        - b1:
+            title: Interprocess Communications in Linux 
+            url: https://www.google.co.in/books/edition/Interprocess_Communications_in_Linux/pF2ka_E_R5YC?hl=en&gbpv=0 
+        - b2:
+            title: Interprocess Communications in UNIX 
+            url: https://www.google.co.in/books/edition/Interprocess_Communications_in_UNIX/Jo4pAQAAMAAJ?hl=en&gbpv=0&bsq=examples%20of%20ipc%20systems%20books
 ---
 
 # Examples of IPC Systems
