@@ -1,6 +1,20 @@
 ---
 title: 'Process Concept'
 weight: 1
+references:
+    videos:
+        - youtube:udOPPbQhASg
+        - youtube:8fCLPCMsVA0
+    links:
+        - https://www.geeksforgeeks.org/introduction-of-process-management/
+        - https://www.javatpoint.com/what-is-the-process-in-operating-system
+    books:
+        - b1:
+            title: Manage The Desing Process  
+            url: https://www.google.co.in/books/edition/Managing_the_Design_Process_Concept_Deve/gRbmERbvbO4C?hl=en&gbpv=0
+        - b2:
+            title: Bow Ties in Risk Management 
+            url:  https://www.google.co.in/books/edition/Bow_Ties_in_Risk_Management/IMJqDwAAQBAJ?hl=en&gbpv=0
 ---
 
 # Process Concept
