@@ -1,6 +1,20 @@
 ---
 title: 'Thread Libraries'
 weight: 4
+references:
+    videos:
+        - youtube: Kvlko2qaFMM
+        - youtube: NvI946FcWzk
+    links:
+        - https://www.geeksforgeeks.org/thread-libraries/
+        - https://www.tutorialspoint.com/what-are-thread-libraries
+    books:
+        - b1:
+            title: Programming with POSIX threads  
+            url: https://www.google.co.in/books/edition/Programming_with_POSIX_Threads/_xvnuFzo7q0C?hl=en&gbpv=0
+        - b2:
+            title: Multithreaded Programming with Pthreads
+            url: https://www.google.co.in/books/edition/Multithreaded_Programming_with_Pthreads/63cpAQAAMAAJ?hl=en&gbpv=0&bsq=Thread%20Libraries%20books
 ---
 
 # Thread Libraries
