@@ -1,6 +1,20 @@
 ---
 title: 'Scheduling Criteria'
 weight: 2
+references:
+    videos:
+        - youtube: bWHFY8-rL5I
+        - youtube: rFt1hwh-8zU
+    links:
+        - https://www.geeksforgeeks.org/cpu-scheduling-criteria/
+        - https://www.javatpoint.com/os-cpu-scheduling
+    books:
+        - b1:
+            title: Algorithms for Scheduling Problems
+            url: https://www.google.co.in/books/edition/Algorithms_for_Scheduling_Problems/Da1qDwAAQBAJ?hl=en&authuser=2&gbpv=0
+        - b2:
+            title: Multicriteria Scheduling 
+            url: https://www.google.co.in/books/edition/Multicriteria_Scheduling/BHj4_XdncLsC?hl=en&authuser=2&gbpv=0
 ---
 
 # Scheduling Criteria
