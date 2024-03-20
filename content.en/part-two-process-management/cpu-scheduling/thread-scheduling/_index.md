@@ -1,6 +1,20 @@
 ---
 title: 'Thread Scheduling'
 weight: 4
+references:
+    videos:
+        - youtube: 7q22vVYKpnQ
+        - youtube: VbQwCEYtWZM
+    links:
+        - https://www.geeksforgeeks.org/thread-scheduling/
+        - https://www.javatpoint.com/thread-scheduler-in-java
+    books:
+        - b1:
+            title: Java Threads 
+            url: https://www.google.co.in/books/edition/Java_Threads/r8hhO7oGKrEC?hl=en&gbpv=0
+        - b2:
+            title: Thread Time
+            url: https://www.google.co.in/books/edition/Thread_Time/YJtQAAAAMAAJ?hl=en&gbpv=0&bsq=Thread%20Scheduling%20book 
 ---
 
 # Thread Scheduling
