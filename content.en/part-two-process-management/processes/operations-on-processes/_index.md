@@ -1,6 +1,20 @@
 ---
 title: 'Operations on Processes'
 weight: 3
+references:
+    videos:
+        - youtube:pSW9d3Oaie8
+        - youtube:TWXdAaRsrMs
+    links:
+        - https://www.geeksforgeeks.org/operations-on-processes/
+        - https://www.tutorialspoint.com/what-are-the-operations-on-process
+    books:
+        - b1:
+            title: Operations and Process Management gi 
+            url: https://www.google.co.in/books/edition/Operations_and_Process_Management/XBRqtQAACAAJ?hl=en
+        - b2:
+            title: Operations and Process Management 
+            url: https://www.google.co.in/books/edition/Operations_and_Process_Management/vA5MDwAAQBAJ?hl=en&gbpv=0
 ---
 
 # Operations on Processes
