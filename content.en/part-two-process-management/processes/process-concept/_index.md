@@ -13,7 +13,7 @@ references:
             title: Manage The Desing Process  
             url: https://www.google.co.in/books/edition/Managing_the_Design_Process_Concept_Deve/gRbmERbvbO4C?hl=en&gbpv=0
         - b2:
-            title: Bow Ties in Risk Management 
+            title: Bow Ties in Risk Management Link 
             url:  https://www.google.co.in/books/edition/Bow_Ties_in_Risk_Management/IMJqDwAAQBAJ?hl=en&gbpv=0
 ---
 
