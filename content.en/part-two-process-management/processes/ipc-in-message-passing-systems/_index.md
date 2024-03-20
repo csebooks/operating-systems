@@ -1,6 +1,20 @@
 ---
 title: 'IPC in Message-Passing Systems'
 weight: 6
+references:
+    videos:
+        - youtube: LuuSXWkDJOo
+        - youtube: fViAyFLOYxU
+    links:
+        - https://www.tutorialspoint.com/message-passing-model-of-process-communication
+        - https://eng.libretexts.org/Courses/Delta_College/Operating_System%3A_The_Basics/05%3A_Process_Synchronization/5.4%3A_Interprocess_Communication/5.4.3%3A_IPC_-_Message_Passing_Shared_Memory
+    books:
+        - b1:
+            title: Interprocess Communications in Linux
+            url: https://www.google.co.in/books/edition/Interprocess_Communications_in_Linux/pF2ka_E_R5YC?hl=en&gbpv=0
+        - b2:
+            title: Interprocess Communications in UNIX
+            url: https://www.google.co.in/books/edition/Interprocess_Communications_in_UNIX/Jo4pAQAAMAAJ?hl=en&gbpv=0&bsq=IPC%20in%20Message-Passing%20Systems%20books
 ---
 
 # IPC in Message-Passing Systems
