@@ -1,6 +1,20 @@
 ---
 title: 'Operating-System Examples'
 weight: 7
+references:
+    videos:
+        - youtube:JqmrEVJUyss
+        - youtube:fkGCLIQx1MI
+    links:
+        - https://www.exampleslab.com/20-examples-of-operating-systems/
+        - https://www.guru99.com/operating-system-tutorial.html
+    books:
+        - b1:
+            title: Operating Systems 
+            url: https://www.google.co.in/books/edition/Operating_Systems/0a-ouwEACAAJ?hl=en
+        - b2:
+            title: Operating System Concepts
+            url: https://www.google.co.in/books/edition/Operating_System_Concepts/saoEEAAAQBAJ?hl=en&authuser=2&gbpv=0
 ---
 
 # Operating-System Examples
