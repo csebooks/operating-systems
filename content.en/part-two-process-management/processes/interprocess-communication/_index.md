@@ -1,6 +1,21 @@
 ---
 title: 'Interprocess Communication'
 weight: 4
+references:
+    videos:
+        - youtube:dJuYKfR8vec
+        - youtube:fSMVWmGPqlM
+    links:
+        - https://www.geeksforgeeks.org/inter-process-communication-ipc/
+        - https://www.javatpoint.com/what-is-inter-process-communication
+    books:
+        - b1:
+            title: Interprocess Communications in Linux 
+            url:  https://www.google.co.in/books/edition/Interprocess_Communications_in_Linux/pF2ka_E_R5YC?hl=en&gbpv=0
+        - b2:
+            title: Interprocess Communications in UNIX
+            url:  https://www.google.co.in/books/edition/Interprocess_Communications_in_UNIX/kLhQAAAAMAAJ?hl=en&gbpv=0&bsq=Interprocess%20Communication
+---
 ---
 
 # Interprocess Communication

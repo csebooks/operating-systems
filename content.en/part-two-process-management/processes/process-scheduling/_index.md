@@ -1,6 +1,20 @@
 ---
 title: 'Process Scheduling'
 weight: 2
+references:
+    videos:
+        - youtube:2h3eWaPx8SA
+        - youtube:JhmoI9nTet4
+    links:
+        - https://www.geeksforgeeks.org/process-schedulers-in-operating-system/
+        - https://www.tutorialspoint.com/operating_system/os_process_scheduling.htm
+    books:
+        - b1:
+            title: Production Process Scheduling
+            url:  https://www.google.co.in/books/edition/Production_Process_Scheduling/c2h_tQEACAAJ?hl=en
+        - b2:
+            title: Process Scheduling a Complete Guide - 2020 Edition 
+            url:  https://www.google.co.in/books/edition/Process_Scheduling_a_Complete_Guide_2020/pniJzQEACAAJ?hl=en
 ---
 
 # Process Scheduling
