@@ -1,6 +1,20 @@
 ---
 title: 'Distributed Systems'
 weight: 8
+references:
+    videos:
+        - youtube:NYBKXzl5bWU
+        - youtube:rYK-kTBUrK4
+    links:
+        - https://www.geeksforgeeks.org/what-is-a-distributed-system/
+        - https://www.confluent.io/learn/distributed-systems/
+    books:
+        - b1:
+            title: Distributed Algorithms 
+            url:  https://www.google.co.in/books/edition/Distributed_Algorithms/QqNWAgAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Designing Distributed Systems
+            url: https://www.google.co.in/books/edition/Designing_Distributed_Systems/5hJNDwAAQBAJ?hl=en&gbpv=0
 ---
 
 # Distributed Systems

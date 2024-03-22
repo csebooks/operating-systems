@@ -1,6 +1,20 @@
 ---
 title: 'Kernel Data Structures'
 weight: 9
+references:
+    videos:
+        - youtube:CT5Ao7DZ11E
+        - youtube:B59VZmnCVrc
+    links:
+        - https://www.tutorialspoint.com/Kernel-Data-Structures
+        - https://www.ibm.com/docs/en/aix/7.2?topic=threads-kernel-data-structures
+    books:
+        - b1:
+            title: Linux Kernel Development
+            url:  https://www.google.co.in/books/edition/Linux_Kernel_Development/1nCQJE0oRE0C?hl=en&gbpv=0
+        - b2:
+            title: Mastering Linux Kernel Development
+            url: https://www.google.co.in/books/edition/Mastering_Linux_Kernel_Development/uxhKDwAAQBAJ?hl=en&gbpv=0
 ---
 
 # Kernel Data Structures

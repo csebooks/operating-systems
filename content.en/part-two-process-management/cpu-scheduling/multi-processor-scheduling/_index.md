@@ -1,6 +1,21 @@
 ---
 title: 'Multi-Processor Scheduling'
 weight: 5
+references:
+    videos:
+        - youtube: aKjDqOguxjA
+        - youtube: 5e01cL_MLRQ
+    links:
+        - https://www.geeksforgeeks.org/multiple-processor-scheduling-in-operating-system/
+        - https://www.javatpoint.com/multiple-processors-scheduling-in-operating-system
+    books:
+        - b1:
+            title: Multiprocessor Scheduling for Real-Time Systems 
+            url: https://www.google.co.in/books/edition/Multiprocessor_Scheduling_for_Real_Time/EDoLBgAAQBAJ?hl=en&gbpv=0
+            
+        - b2:
+            title: Energy-aware Scheduling on Multiprocessor Platforms 
+            url: https://www.google.co.in/books/edition/Energy_aware_Scheduling_on_Multiprocesso/MpK64EOtSjoC?hl=en&gbpv=0
 ---
 
 # Multi-Processor Scheduling
