@@ -1,6 +1,20 @@
 ---
 title: 'System Calls'
 weight: 3
+references:
+    videos:
+        - youtube:lhToWeuWWfw
+        - youtube:EavqupVh8ls
+    links:
+        - https://www.geeksforgeeks.org/introduction-of-system-call/
+        - https://www.javatpoint.com/system-calls-in-operating-system
+    books:
+        - b1:
+            title: The Linux Programming Interface
+            url: https://www.google.co.in/books/edition/The_Linux_Programming_Interface/Ps2SH727eCIC?hl=en&authuser=2&gbpv=0
+        - b2:
+            title: Operating System Concepts 
+            url: https://www.google.co.in/books/edition/Operating_System_Concepts_10e_Abridged_P/VFV1DwAAQBAJ?hl=en&authuser=2&gbpv=0
 ---
 
 # System Calls

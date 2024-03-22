@@ -1,6 +1,20 @@
 ---
 title: 'Basic Concepts'
 weight: 1
+references:
+    videos:
+        - youtube:aytWaG4mEJI
+        - youtube:elzvHG6M-eU
+    links:
+        - https://www.studytonight.com/operating-system/cpu-scheduling
+        - https://www.geeksforgeeks.org/cpu-scheduling-in-operating-systems/
+    books:
+        - b1:
+            title: Computer Fundamentals
+            url: https://www.google.co.in/books/edition/Computer_Fundamentals/zyOYs2EqZDgC?hl=en&authuser=2&gbpv=0
+        - b2:
+            title: Learn Operating System in 24 Hours
+            url: https://www.google.co.in/books/edition/Learn_Operating_System_in_24_Hours/Zvh7EAAAQBAJ?hl=en&authuser=2&gbpv=0
 ---
 
 # Basic Concepts
