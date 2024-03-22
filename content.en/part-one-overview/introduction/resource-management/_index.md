@@ -1,6 +1,21 @@
 ---
 title: 'Resource Management'
 weight: 5
+references:
+    videos:
+        - youtube:Jcz4vo1zqKk
+        - youtube:bI9RZjF-538
+    links:
+        - https://www.planview.com/resources/guide/resource-management-software/resource-management-leverage-people-budgets/
+        - https://www.wrike.com/blog/what-is-resource-management/
+    books:
+        - b1:
+            title: Human Resource Management 
+            url: https://www.google.co.in/books/edition/Human_Resource_Management/MmYiX5JxPY8C?hl=en&gbpv=0
+        - b2:
+            title: RESOURCE MANAGEMENT TECHNIQUES 
+            url: https://www.google.co.in/books/edition/RESOURCE_MANAGEMENT_TECHNIQUES/OtUxEAAAQBAJ?hl=en&gbpv=0
+
 ---
 
 # Resource Management

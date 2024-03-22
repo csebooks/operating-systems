@@ -1,6 +1,20 @@
 ---
 title: 'Operating-System Operations'
 weight: 4
+references:
+    videos:
+        - youtube:gZIv4mAZP2g
+        - youtube:VjPgYcQqqN0
+    links:
+        - https://www.tutorialspoint.com/Operating-System-Operations
+        - https://www.geeksforgeeks.org/functions-of-operating-system/
+    books:
+        - b1:
+            title: Operating Systems Three Easy Pieces
+            url: https://www.google.co.in/books/edition/Operating_Systems/0a-ouwEACAAJ?hl=en
+        - b2:
+            title: Operating System – A Practical Approach 
+            url: https://www.google.co.in/books/edition/Operating_System_A_Practical_Approach/zDRlDwAAQBAJ?hl=en&gbpv=0
 ---
 
 # Operating-System Operations

@@ -1,6 +1,20 @@
 ---
 title: 'Implicit Threading'
 weight: 5
+references:
+    videos:
+        - youtube: dHB1UNv5I10
+        - youtube: 4p8uzhc-XLM
+    links:
+        - https://www.tutorialspoint.com/implicit-threading-and-language-based-threads
+        - https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/ImplicitThreads.html
+    books:
+        - b1:
+            title: Multithreaded Programming with Java Technology 
+            url: https://www.google.co.in/books/edition/Multithreaded_Programming_with_Java_Tech/bIchilfV3bcC?hl=en&gbpv=0
+        - b2:
+            title: Java Concurrency in Practice 
+            url: https://www.google.co.in/books/edition/Java_Concurrency_in_Practice/fv4tEfwgcjsC?hl=en&gbpv=0
 ---
 
 # Implicit Threading

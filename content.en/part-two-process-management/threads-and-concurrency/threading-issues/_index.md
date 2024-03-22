@@ -1,6 +1,20 @@
 ---
 title: 'Threading Issues'
 weight: 6
+references:
+    videos:
+        - youtube: dHB1UNv5I10&t
+        - youtube: o2Sf0GHWpmk
+    links:
+        - https://www.geeksforgeeks.org/threading-issues/
+        - https://www.tutorialspoint.com/what-are-threading-issues
+    books:
+        - b1:
+            title: C# THREAD HB 
+            url: https://www.google.co.in/books/edition/C_THREAD_HB/jwKMvgEACAAJ?hl=en
+        - b2:
+            title: Modern Multithreading
+            url: https://www.google.co.in/books/edition/Modern_Multithreading/4dZWn8rnU2cC?hl=en&gbpv=0
 ---
 
 # Threading Issues
