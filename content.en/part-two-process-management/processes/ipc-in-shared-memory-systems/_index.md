@@ -1,6 +1,20 @@
 ---
 title: 'IPC in Shared-Memory Systems'
 weight: 5
+references:
+    videos:
+        -youtube: uHtzOFwgD74 
+        -youtube: fSMVWmGPqlM 
+    links:
+        - https://www.geeksforgeeks.org/ipc-shared-memory/
+        - https://www.javatpoint.com/ipc-through-shared-memory
+    books:
+        - b1:
+            title: Shared Memory Application Programming 
+            url: https://www.google.co.in/books/edition/Shared_Memory_Application_Programming/djYdCAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Scalable Shared Memory Multiprocessors 
+            url: https://www.google.co.in/books/edition/Scalable_Shared_Memory_Multiprocessors/OJzbBwAAQBAJ?hl=en&gbpv=0
 ---
 
 # IPC in Shared-Memory Systems
