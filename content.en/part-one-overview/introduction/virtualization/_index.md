@@ -6,7 +6,7 @@ references:
         - youtube:FZR0rG3HKIk
         - youtube:UBVVq-xz5i0
     links:
-        -https://www.ibm.com/topics/virtualization
+        - https://www.ibm.com/topics/virtualization
         - https://www.geeksforgeeks.org/virtualization-cloud-computing-types/
     books:
         - b1:

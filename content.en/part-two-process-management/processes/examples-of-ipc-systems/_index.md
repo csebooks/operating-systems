@@ -6,8 +6,8 @@ references:
         - youtube:MeheoZnhODM
         - youtube:v3vofFS2RzI
     links:
-        -https://www.scaler.com/topics/operating-system/inter-process-communication-in-os/ 
-        -https://www.quora.com/What-is-the-real-world-example-of-inter-process-communication-in-terms-of-distributed-operating-system 
+        - https://www.scaler.com/topics/operating-system/inter-process-communication-in-os/ 
+        - https://www.quora.com/What-is-the-real-world-example-of-inter-process-communication-in-terms-of-distributed-operating-system 
     books:
         - b1:
             title: Interprocess Communications in Linux 

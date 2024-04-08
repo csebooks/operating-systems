@@ -3,8 +3,8 @@ title: 'IPC in Message-Passing Systems'
 weight: 6
 references:
     videos:
-        - youtube: LuuSXWkDJOo
-        - youtube: fViAyFLOYxU
+        - youtube:LuuSXWkDJOo
+        - youtube:fViAyFLOYxU
     links:
         - https://www.tutorialspoint.com/message-passing-model-of-process-communication
         - https://eng.libretexts.org/Courses/Delta_College/Operating_System%3A_The_Basics/05%3A_Process_Synchronization/5.4%3A_Interprocess_Communication/5.4.3%3A_IPC_-_Message_Passing_Shared_Memory

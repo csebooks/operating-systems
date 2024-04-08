@@ -3,8 +3,8 @@ title: 'Implicit Threading'
 weight: 5
 references:
     videos:
-        - youtube: dHB1UNv5I10
-        - youtube: 4p8uzhc-XLM
+        - youtube:dHB1UNv5I10
+        - youtube:4p8uzhc-XLM
     links:
         - https://www.tutorialspoint.com/implicit-threading-and-language-based-threads
         - https://w3.cs.jmu.edu/kirkpams/OpenCSF/Books/csf/html/ImplicitThreads.html
