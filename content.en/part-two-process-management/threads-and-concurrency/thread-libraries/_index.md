@@ -3,8 +3,8 @@ title: 'Thread Libraries'
 weight: 4
 references:
     videos:
-        - youtube: Kvlko2qaFMM
-        - youtube: NvI946FcWzk
+        - youtube:Kvlko2qaFMM
+        - youtube:NvI946FcWzk
     links:
         - https://www.geeksforgeeks.org/thread-libraries/
         - https://www.tutorialspoint.com/what-are-thread-libraries
