@@ -10,7 +10,7 @@ references:
         - https://www.tutorialspoint.com/operating-system-debugging
     books:
         - b1:
-            title:Debugging Embedded and Real-Time Systems
+            title: Debugging Embedded and Real-Time Systems
             url: https://www.google.co.in/books/edition/Debugging_Embedded_and_Real_Time_Systems/aNrxDwAAQBAJ?hl=en&gbpv=0
         - b2:
             title: Advanced Windows Debugging

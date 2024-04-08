@@ -11,7 +11,7 @@ references:
     books:
         - b1:
             title: Operating System  
-            url: : https://www.google.co.in/books/edition/Operating_Systems/dBQFXs5NPEYC?hl=en&gbpv=0&bsq=Why%20Applications%20Are%20Operating-System%20Specific
+            url: https://www.google.co.in/books/edition/Operating_Systems/dBQFXs5NPEYC?hl=en&gbpv=0&bsq=Why%20Applications%20Are%20Operating-System%20Specific
         - b2:
             title: Operating System
             url: https://www.google.co.in/books/edition/Operating_System/-p7C6ZbdwgUC?hl=en&gbpv=1&dq=Why+Applications+Are+Operating-System+Specific&printsec=frontcover

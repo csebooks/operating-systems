@@ -13,7 +13,7 @@ references:
             title: Understanding Operating Systems
             url: https://www.google.co.in/books/edition/Understanding_Operating_Systems/bXMhAQAAIAAJ?hl=en&gbpv=0&bsq=What%20Operating%20Systems%20Do%20books
         - b2:
-           title: Operating Systems
+            title: Operating Systems
             url: https://www.google.co.in/books/edition/Operating_Systems_Principles_And_Design/fDZxNHyVcqIC?hl=en&gbpv=0
 ---
 

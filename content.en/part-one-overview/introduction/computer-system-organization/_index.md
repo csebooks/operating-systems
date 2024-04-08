@@ -13,7 +13,7 @@ references:
             title: Computer Organization & Architecture 7e
             url: https://www.google.co.in/books/edition/Computer_Organization_Architecture_7e/11Z1m4WQh1cC?hl=en&gbpv=0
         - b2:
-           title: COMPUTER ORGANIZATION AND ARCHITECTURE
+            title: COMPUTER ORGANIZATION AND ARCHITECTURE
             url: https://www.google.co.in/books/edition/COMPUTER_ORGANIZATION_AND_ARCHITECTURE/hZQ4jAdpUAAC?hl=en&gbpv=0
 ---
 
