@@ -3,8 +3,8 @@ title: 'Scheduling Criteria'
 weight: 2
 references:
     videos:
-        - youtube: bWHFY8-rL5I
-        - youtube: rFt1hwh-8zU
+        - youtube:bWHFY8-rL5I
+        - youtube:rFt1hwh-8zU
     links:
         - https://www.geeksforgeeks.org/cpu-scheduling-criteria/
         - https://www.javatpoint.com/os-cpu-scheduling

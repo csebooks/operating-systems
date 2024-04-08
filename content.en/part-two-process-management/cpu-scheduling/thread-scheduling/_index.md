@@ -3,8 +3,8 @@ title: 'Thread Scheduling'
 weight: 4
 references:
     videos:
-        - youtube: 7q22vVYKpnQ
-        - youtube: VbQwCEYtWZM
+        - youtube:7q22vVYKpnQ
+        - youtube:VbQwCEYtWZM
     links:
         - https://www.geeksforgeeks.org/thread-scheduling/
         - https://www.javatpoint.com/thread-scheduler-in-java

@@ -3,8 +3,8 @@ title: 'IPC in Shared-Memory Systems'
 weight: 5
 references:
     videos:
-        -youtube: uHtzOFwgD74 
-        -youtube: fSMVWmGPqlM 
+        -youtube:uHtzOFwgD74 
+        -youtube:fSMVWmGPqlM 
     links:
         - https://www.geeksforgeeks.org/ipc-shared-memory/
         - https://www.javatpoint.com/ipc-through-shared-memory

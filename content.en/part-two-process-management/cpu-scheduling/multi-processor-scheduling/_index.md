@@ -3,8 +3,8 @@ title: 'Multi-Processor Scheduling'
 weight: 5
 references:
     videos:
-        - youtube: aKjDqOguxjA
-        - youtube: 5e01cL_MLRQ
+        - youtube:aKjDqOguxjA
+        - youtube:5e01cL_MLRQ
     links:
         - https://www.geeksforgeeks.org/multiple-processor-scheduling-in-operating-system/
         - https://www.javatpoint.com/multiple-processors-scheduling-in-operating-system
