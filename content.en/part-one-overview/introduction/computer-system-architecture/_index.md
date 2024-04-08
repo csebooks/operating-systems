@@ -13,7 +13,7 @@ references:
             title: COMPUTER ORGANIZATION AND ARCHITECTURE
             url: https://www.google.co.in/books/edition/COMPUTER_ORGANIZATION_AND_ARCHITECTURE/7pEXnirv6jYC?hl=en
         - b2:
-           title: Computer System Architecture 
+            title: Computer System Architecture 
             url: https://www.google.co.in/books/edition/Computer_System_Architecture/AUSYPwAACAAJ?hl=en
 ---
 
